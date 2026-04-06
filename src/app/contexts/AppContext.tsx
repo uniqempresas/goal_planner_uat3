@@ -5,7 +5,11 @@ import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
 import type { Database } from '../../lib/supabase';
 
-type User = Database['public']['Tables']['users']['Row'] | null;
+type User = {
+  id: string;
+  email: string;
+  name: string;
+} | null;
 
 interface Area extends Database['public']['Tables']['areas']['Row'] {}
 interface Meta extends Database['public']['Tables']['metas']['Row'] {}
@@ -152,7 +156,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       password,
     });
     if (error) throw error;
-    setUser(data.user);
+    setUser({
+      id: data.user.id,
+      email: data.user.email || '',
+      name: data.user.user_metadata?.name || email.split('@')[0],
+    });
     setIsAuthenticated(true);
   }, []);
 
@@ -179,7 +187,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
     if (error) throw error;
     if (data.user) {
-      setUser(data.user);
+      setUser({
+        id: data.user.id,
+        email: data.user.email || '',
+        name: name || email.split('@')[0],
+      });
       setIsAuthenticated(true);
     }
   }, []);
@@ -187,7 +199,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        setUser(session.user as User);
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Usuário',
+        });
         setIsAuthenticated(true);
       }
       setLoading(false);
@@ -195,7 +211,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser(session.user as User);
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Usuário',
+        });
         setIsAuthenticated(true);
       } else {
         setUser(null);

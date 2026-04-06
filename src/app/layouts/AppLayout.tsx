@@ -5,7 +5,7 @@ import {
   Star, LogOut, User as UserIcon, Menu, X, Sun, CalendarRange,
   Mountain, CalendarDays, CalendarCheck, CheckSquare, TrendingUp,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
 
 interface NavGroup {
@@ -137,10 +137,31 @@ function NavItem({ group, collapsed }: { group: NavGroup; collapsed: boolean }) 
 }
 
 export function AppLayout() {
-  const { user, logout, sidebarOpen, setSidebarOpen } = useApp();
+  const { user, logout, sidebarOpen, setSidebarOpen, loading, isAuthenticated } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const collapsed = !sidebarOpen;
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/login', { replace: true });
+    }
+  }, [loading, isAuthenticated, navigate]);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-slate-500 text-sm">Carregando...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const handleLogout = () => {
     logout();
@@ -188,18 +209,18 @@ export function AppLayout() {
           <button
             onClick={handleLogout}
             className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-slate-300 hover:text-white"
-            title={user.name}
+            title={user?.name || 'Usuário'}
           >
             <UserIcon size={15} />
           </button>
         ) : (
-          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium shrink-0">
-              {user.name.charAt(0)}
+              {user?.name?.charAt(0) || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-white text-sm font-medium truncate">{user.name}</div>
-              <div className="text-slate-400 text-xs truncate">{user.email}</div>
+              <div className="text-white text-sm font-medium truncate">{user?.name || 'Usuário'}</div>
+              <div className="text-slate-400 text-xs truncate">{user?.email || ''}</div>
             </div>
             <button
               onClick={handleLogout}
