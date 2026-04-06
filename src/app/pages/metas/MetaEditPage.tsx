@@ -98,8 +98,9 @@ export default function MetaEditPage() {
       
       await loadMetas();
       navigate(`/metas/${nivel}/${id}`);
-    } catch (error) {
-      console.error('Erro ao atualizar meta:', error);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido';
+      console.error('Erro ao atualizar meta:', message);
     }
   };
 
