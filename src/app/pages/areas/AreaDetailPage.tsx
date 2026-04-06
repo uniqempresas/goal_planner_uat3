@@ -1,15 +1,27 @@
 import { useParams, Link, useNavigate } from 'react-router';
-import { ArrowLeft, Pencil, Target, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowLeft, Pencil, Target, CheckCircle2, Clock, Trash2 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Progress } from '../../components/ui/progress';
+import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../../components/ui/alert-dialog';
 
 export default function AreaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getAreaById, grandesMetas } = useApp();
+  const { getAreaById, grandesMetas, deleteArea } = useApp();
 
   const area = getAreaById(id || '');
 
@@ -45,29 +57,61 @@ export default function AreaDetailPage() {
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link to="/areas" className="hover:text-indigo-600">Áreas</Link>
         <span>/</span>
-        <span className="text-slate-800">{area.name}</span>
+        <span className="text-slate-800">{area.nome}</span>
       </div>
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-start gap-6 mb-8">
         <div
           className="w-20 h-20 rounded-xl flex items-center justify-center text-4xl shrink-0"
-          style={{ backgroundColor: area.color + '20' }}
+          style={{ backgroundColor: (area.cor || '#6366f1') + '20' }}
         >
-          {area.emoji || '🎯'}
+          {area.icone || '🎯'}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-slate-800">{area.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-800">{area.nome}</h1>
             <Link to={`/areas/${area.id}/edit`}>
               <Button variant="outline" size="sm" className="gap-2">
                 <Pencil className="h-4 w-4" />
                 Editar
               </Button>
             </Link>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-600 hover:bg-red-50 border-red-200">
+                  <Trash2 className="h-4 w-4" />
+                  Excluir
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir Área</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir a área "{area.nome}"? Esta ação não pode ser desfeita e todas as metas vinculadas a esta área ficarão órfãs.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      try {
+                        await deleteArea(id!);
+                        navigate('/areas');
+                      } catch (error) {
+                        console.error('Erro ao excluir área:', error);
+                      }
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-          {area.description && (
-            <p className="text-slate-500 mb-4 max-w-2xl">{area.description}</p>
+          {area.descricao && (
+            <p className="text-slate-500 mb-4 max-w-2xl">{area.descricao}</p>
           )}
           <Button variant="ghost" size="sm" onClick={() => navigate('/areas')} className="gap-1 p-0 hover:bg-transparent hover:text-indigo-600">
             <ArrowLeft className="h-4 w-4" />
@@ -114,7 +158,7 @@ export default function AreaDetailPage() {
         <CardContent>
           <div className="flex items-center gap-4">
             <Progress value={progresso} className="flex-1 h-3" style={{ 
-              '--progress-background': area.color 
+              '--progress-background': area.cor || '#6366f1' 
             } as React.CSSProperties} />
             <span className="text-lg font-semibold text-slate-800 min-w-[60px] text-right">{progresso}%</span>
           </div>
@@ -155,10 +199,10 @@ export default function AreaDetailPage() {
                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className="h-full rounded-full" 
-                            style={{ 
+                              style={{ 
                               width: `${metaProgress}%`, 
-                              backgroundColor: meta.status === 'concluida' ? '#22c55e' : area.color 
-                            }} 
+                              backgroundColor: meta.status === 'concluida' ? '#22c55e' : (area.cor || '#6366f1') 
+                            }}
                           />
                         </div>
                       </div>

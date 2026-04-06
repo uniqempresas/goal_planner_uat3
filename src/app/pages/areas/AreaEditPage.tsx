@@ -22,10 +22,10 @@ export default function AreaEditPage() {
   const form = useForm<AreaFormSchema>({
     resolver: zodResolver(areaFormSchema),
     defaultValues: {
-      name: area?.name || '',
-      emoji: area?.emoji || '🎯',
-      color: area?.color || '#6366f1',
-      description: area?.description || '',
+      name: area?.nome || '',
+      emoji: area?.icone || '🎯',
+      color: area?.cor || '#6366f1',
+      description: area?.descricao || '',
     },
   });
 
@@ -62,7 +62,7 @@ export default function AreaEditPage() {
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link to="/areas" className="hover:text-indigo-600">Áreas</Link>
         <span>/</span>
-        <Link to={`/areas/${id}`} className="hover:text-indigo-600">{area.name}</Link>
+        <Link to={`/areas/${id}`} className="hover:text-indigo-600">{area.nome}</Link>
         <span>/</span>
         <span className="text-slate-800">Editar</span>
       </div>
