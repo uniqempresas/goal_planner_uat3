@@ -13,6 +13,7 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import AreasListPage from './pages/areas/AreasListPage';
 import AreaDetailPage from './pages/areas/AreaDetailPage';
+import AreaCreatePage from './pages/areas/AreaCreatePage';
 import AreaEditPage from './pages/areas/AreaEditPage';
 
 import GrandesMetasPage from './pages/metas/GrandesMetasPage';
@@ -23,6 +24,7 @@ import MetasDiariasPage from './pages/metas/MetasDiariasPage';
 
 import AgendaHojePage from './pages/agenda/AgendaHojePage';
 import AgendaSemanaPage from './pages/agenda/AgendaSemanaPage';
+import TarefaCreatePage from './pages/agenda/TarefaCreatePage';
 
 import TemplatesListPage from './pages/templates/TemplatesListPage';
 import ConquistasPage from './pages/ConquistasPage';
@@ -35,6 +37,9 @@ import ConfiguracoesSegurancaPage from './pages/configuracoes/ConfiguracoesSegur
 import ConfiguracoesNotificacoesPage from './pages/configuracoes/ConfiguracoesNotificacoesPage';
 
 import PlaceholderPage from './pages/PlaceholderPage';
+import MetaCreatePage from './pages/metas/MetaCreatePage';
+import MetaDetailPage from './pages/metas/MetaDetailPage';
+import MetaEditPage from './pages/metas/MetaEditPage';
 
 export const router = createBrowserRouter([
   // Public routes
@@ -59,41 +64,42 @@ export const router = createBrowserRouter([
 
       // Áreas
       { path: '/areas', Component: AreasListPage },
+      { path: '/areas/criar', Component: AreaCreatePage },
       { path: '/areas/:id', Component: AreaDetailPage },
       { path: '/areas/:id/edit', Component: AreaEditPage },
 
       // Metas
       { path: '/metas', loader: () => redirect('/metas/grandes') },
       { path: '/metas/grandes', Component: GrandesMetasPage },
-      { path: '/metas/grandes/criar', Component: PlaceholderPage },
-      { path: '/metas/grandes/:id', Component: PlaceholderPage },
-      { path: '/metas/grandes/:id/editar', Component: PlaceholderPage },
+      { path: '/metas/grandes/criar', Component: MetaCreatePage },
+      { path: '/metas/grandes/:id', Component: MetaDetailPage },
+      { path: '/metas/grandes/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/anual', Component: MetasAnuaisPage },
-      { path: '/metas/anual/criar', Component: PlaceholderPage },
-      { path: '/metas/anual/:id', Component: PlaceholderPage },
-      { path: '/metas/anual/:id/editar', Component: PlaceholderPage },
+      { path: '/metas/anual/criar', Component: MetaCreatePage },
+      { path: '/metas/anual/:id', Component: MetaDetailPage },
+      { path: '/metas/anual/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/mensal', Component: MetasMensaisPage },
-      { path: '/metas/mensal/criar', Component: PlaceholderPage },
-      { path: '/metas/mensal/:id', Component: PlaceholderPage },
-      { path: '/metas/mensal/:id/editar', Component: PlaceholderPage },
+      { path: '/metas/mensal/criar', Component: MetaCreatePage },
+      { path: '/metas/mensal/:id', Component: MetaDetailPage },
+      { path: '/metas/mensal/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/semanal', Component: MetasSemanaisPage },
-      { path: '/metas/semanal/criar', Component: PlaceholderPage },
-      { path: '/metas/semanal/:id', Component: PlaceholderPage },
-      { path: '/metas/semanal/:id/editar', Component: PlaceholderPage },
+      { path: '/metas/semanal/criar', Component: MetaCreatePage },
+      { path: '/metas/semanal/:id', Component: MetaDetailPage },
+      { path: '/metas/semanal/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/diaria', Component: MetasDiariasPage },
-      { path: '/metas/diaria/criar', Component: PlaceholderPage },
-      { path: '/metas/diaria/:id', Component: PlaceholderPage },
-      { path: '/metas/diaria/:id/editar', Component: PlaceholderPage },
+      { path: '/metas/diaria/criar', Component: MetaCreatePage },
+      { path: '/metas/diaria/:id', Component: MetaDetailPage },
+      { path: '/metas/diaria/:id/editar', Component: MetaEditPage },
 
       // Agenda
       { path: '/agenda', loader: () => redirect('/agenda/hoje') },
       { path: '/agenda/hoje', Component: AgendaHojePage },
       { path: '/agenda/semana', Component: AgendaSemanaPage },
-      { path: '/agenda/tarefas/criar', Component: PlaceholderPage },
+      { path: '/agenda/tarefas/criar', Component: TarefaCreatePage },
       { path: '/agenda/tarefas/:id/editar', Component: PlaceholderPage },
 
       // Templates

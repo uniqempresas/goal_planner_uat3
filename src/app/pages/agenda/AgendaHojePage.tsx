@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import {
   Star, AlertTriangle, Sun, Cloud, Moon, RefreshCw, Calendar,
   CheckCircle2, Circle, ChevronDown, ChevronUp, Plus, Clock,
   Target, Flame,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
+import EmptyState from '../../components/empty-state/EmptyState';
 import { type Tarefa, type TimeBlock, blockConfig } from '../../data/mockData';
 
 const blockOrder: TimeBlock[] = ['oneThing', 'atrasadas', 'manha', 'tarde', 'noite', 'habitos', 'recorrentes'];
@@ -228,25 +230,38 @@ export default function AgendaHojePage() {
         </div>
       </div>
 
-      {/* Time Blocks */}
-      <div className="space-y-4">
-        {blockOrder.map(block => (
-          <TimeBlockSection
-            key={block}
-            block={block}
-            tarefas={tarefasHoje.filter(t => t.block === block)}
-            onToggle={toggleTarefa}
-          />
-        ))}
-      </div>
+      {/* Empty State or Time Blocks */}
+      {tarefasHoje.length === 0 ? (
+        <EmptyState
+          icon={<Calendar className="w-12 h-12" />}
+          title="Nenhuma tarefa para hoje"
+          description="Adicione tarefas para organizar seu dia e acompanhar seu progresso."
+          actionLabel="Criar Primeira Tarefa"
+          actionHref="/agenda/tarefas/criar"
+        />
+      ) : (
+        <>
+          {/* Time Blocks */}
+          <div className="space-y-4">
+            {blockOrder.map(block => (
+              <TimeBlockSection
+                key={block}
+                block={block}
+                tarefas={tarefasHoje.filter(t => t.block === block)}
+                onToggle={toggleTarefa}
+              />
+            ))}
+          </div>
 
-      {/* Add task floating */}
-      <div className="mt-6 bg-slate-50 rounded-xl border border-dashed border-slate-200 p-4 text-center">
-        <button className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm mx-auto transition-colors cursor-pointer">
-          <Plus size={16} />
-          Adicionar nova tarefa ao dia
-        </button>
-      </div>
+          {/* Add task floating */}
+          <div className="mt-6 bg-slate-50 rounded-xl border border-dashed border-slate-200 p-4 text-center">
+            <Link to="/agenda/tarefas/criar" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm mx-auto transition-colors">
+              <Plus size={16} />
+              Adicionar nova tarefa ao dia
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 }

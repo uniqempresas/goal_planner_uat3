@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { ArrowRight, Plus, Target } from 'lucide-react';
+import { ArrowRight, Plus, Target, Layers } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
 
@@ -45,11 +45,11 @@ export default function AreasListPage() {
       {/* Empty State */}
       {areas.length === 0 ? (
         <EmptyState
-          icon={<Target className="w-12 h-12" />}
-          title="Nenhuma área ainda"
+          icon={<Layers className="w-12 h-12" />}
+          title="Nenhuma área criada"
           description="Crie áreas para organizar suas metas por dimensões de vida."
           actionLabel="Criar Primeira Área"
-          actionHref="/areas/criar" // TODO: Create this route
+          actionHref="/areas/criar"
         />
       ) : (
         <>

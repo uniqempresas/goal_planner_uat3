@@ -5,6 +5,7 @@ import {
   Calendar, TrendingUp, CheckCircle2, Circle, Pause,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
+import EmptyState from '../../components/empty-state/EmptyState';
 import { type Meta, levelConfig } from '../../data/mockData';
 
 function StatusBadge({ status }: { status: Meta['status'] }) {
@@ -252,9 +253,19 @@ export default function GrandesMetasPage() {
 
       {/* Meta Cards */}
       <div className="space-y-5">
-        {grandesMetas.map(meta => (
-          <MetaCard key={meta.id} meta={meta} />
-        ))}
+        {grandesMetas.length === 0 ? (
+          <EmptyState
+            icon={<Mountain className="w-12 h-12" />}
+            title="Nenhuma Grande Meta criada"
+            description="Crie sua primeira Grande Meta (3 anos) para começar a construir sua visão de longo prazo."
+            actionLabel="Criar Primeira Grande Meta"
+            actionHref="/metas/grandes/criar"
+          />
+        ) : (
+          grandesMetas.map(meta => (
+            <MetaCard key={meta.id} meta={meta} />
+          ))
+        )}
       </div>
 
       {/* Empty hint */}

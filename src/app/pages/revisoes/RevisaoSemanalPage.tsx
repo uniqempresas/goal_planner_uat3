@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, ChevronRight, Star, TrendingUp, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Circle, ChevronRight, Star, TrendingUp, AlertTriangle, Target } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
+import EmptyState from '../../components/empty-state/EmptyState';
 
 const checklist = [
   { id: 'r1', step: 'Revisar tarefas da semana', desc: 'O que foi feito? O que ficou pendente?', category: 'retrospectiva' },
@@ -76,35 +77,45 @@ export default function RevisaoSemanalPage() {
       </div>
 
       {/* Metas da Semana */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
-        <h3 className="text-slate-700 text-sm mb-3">Metas Semanais — Como foi?</h3>
-        <div className="space-y-3">
-          {metasSemanais.map(meta => (
-            <div key={meta.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
-              {meta.progress >= 80 ? (
-                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
-              ) : meta.progress >= 40 ? (
-                <TrendingUp size={16} className="text-amber-500 shrink-0" />
-              ) : (
-                <AlertTriangle size={16} className="text-red-400 shrink-0" />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-slate-700 text-sm truncate">{meta.title}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-emerald-500"
-                      style={{ width: `${meta.progress}%` }}
-                    />
+      {metasSemanais.length === 0 ? (
+        <EmptyState
+          icon={<Target className="w-12 h-12" />}
+          title="Nenhuma meta semanal criada"
+          description="Crie metas semanais para ter o que avaliar nesta revisão."
+          actionLabel="Criar Meta Semanal"
+          actionHref="/metas/semanal/criar"
+        />
+      ) : (
+        <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
+          <h3 className="text-slate-700 text-sm mb-3">Metas Semanais — Como foi?</h3>
+          <div className="space-y-3">
+            {metasSemanais.map(meta => (
+              <div key={meta.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
+                {meta.progress >= 80 ? (
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                ) : meta.progress >= 40 ? (
+                  <TrendingUp size={16} className="text-amber-500 shrink-0" />
+                ) : (
+                  <AlertTriangle size={16} className="text-red-400 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-slate-700 text-sm truncate">{meta.title}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-emerald-500"
+                        style={{ width: `${meta.progress}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-slate-400">{meta.progress}%</span>
                   </div>
-                  <span className="text-xs text-slate-400">{meta.progress}%</span>
                 </div>
+                {meta.isOneThing && <Star size={12} className="text-amber-500 fill-amber-400 shrink-0" />}
               </div>
-              {meta.isOneThing && <Star size={12} className="text-amber-500 fill-amber-400 shrink-0" />}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Checklist */}
       <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">

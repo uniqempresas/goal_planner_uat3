@@ -2,6 +2,7 @@
 import { Link } from 'react-router';
 import { Plus, ArrowRight, Star, Calendar, Target } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
+import EmptyState from '../../components/empty-state/EmptyState';
 import { type Meta, type MetaLevel, levelConfig } from '../../data/mockData';
 
 const levelIcons: Record<MetaLevel, string> = {
@@ -165,17 +166,13 @@ export function MetasListPage({ level, metas, createPath, title, subtitle, focus
       {/* List */}
       <div className="space-y-3">
         {metas.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <p className="mb-4">Nenhuma meta criada ainda.</p>
-            <Link
-              to={createPath}
-              className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm"
-              style={{ backgroundColor: cfg.color }}
-            >
-              <Plus size={15} />
-              Criar primeira meta
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Target className="w-12 h-12" />}
+            title={`Nenhuma ${cfg.label} criada`}
+            description={`Crie uma meta para começar a tracked seu progresso.`}
+            actionLabel={`Criar Primeira ${cfg.label}`}
+            actionHref={createPath}
+          />
         ) : (
           metas.map(meta => <MetaRow key={meta.id} meta={meta} level={level} />)
         )}

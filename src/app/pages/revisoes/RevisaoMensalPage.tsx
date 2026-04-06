@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, TrendingUp, Target, BarChart2 } from 'lucide-react';
+import { CheckCircle2, Circle, TrendingUp, Target, BarChart2, Calendar } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
+import EmptyState from '../../components/empty-state/EmptyState';
 
 export default function RevisaoMensalPage() {
   const { metasMensais, metasAnuais, areas } = useApp();
@@ -59,41 +60,51 @@ export default function RevisaoMensalPage() {
       </div>
 
       {/* Metas Mensais Progress */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
-        <h3 className="text-slate-700 text-sm mb-4">Resultado das Metas Mensais</h3>
-        <div className="space-y-4">
-          {metasMensais.map(meta => {
-            const area = areas.find(a => a.id === meta.areaId);
-            return (
-              <div key={meta.id}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2">
-                    {area && <span className="text-sm">{area.emoji}</span>}
-                    <span className="text-slate-700 text-sm">{meta.title}</span>
+      {metasMensais.length === 0 ? (
+        <EmptyState
+          icon={<Calendar className="w-12 h-12" />}
+          title="Nenhuma meta mensal criada"
+          description="Crie metas mensais para ter o que avaliar nesta revisão."
+          actionLabel="Criar Meta Mensal"
+          actionHref="/metas/mensal/criar"
+        />
+      ) : (
+        <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
+          <h3 className="text-slate-700 text-sm mb-4">Resultado das Metas Mensais</h3>
+          <div className="space-y-4">
+            {metasMensais.map(meta => {
+              const area = areas.find(a => a.id === meta.areaId);
+              return (
+                <div key={meta.id}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      {area && <span className="text-sm">{area.emoji}</span>}
+                      <span className="text-slate-700 text-sm">{meta.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-600">{meta.progress}%</span>
+                      {meta.progress >= 80 ? (
+                        <CheckCircle2 size={14} className="text-emerald-500" />
+                      ) : (
+                        <TrendingUp size={14} className="text-amber-500" />
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-600">{meta.progress}%</span>
-                    {meta.progress >= 80 ? (
-                      <CheckCircle2 size={14} className="text-emerald-500" />
-                    ) : (
-                      <TrendingUp size={14} className="text-amber-500" />
-                    )}
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${meta.progress}%`,
+                        backgroundColor: meta.progress >= 80 ? '#10B981' : meta.progress >= 50 ? '#F59E0B' : '#EF4444'
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${meta.progress}%`,
-                      backgroundColor: meta.progress >= 80 ? '#10B981' : meta.progress >= 50 ? '#F59E0B' : '#EF4444'
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Areas overview */}
       <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
