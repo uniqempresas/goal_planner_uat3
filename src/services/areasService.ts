@@ -29,9 +29,17 @@ export const areasService = {
   },
 
   async create(userId: string, area: Omit<AreaInsert, 'user_id'>): Promise<Area> {
+    // Mapear campos do frontend para o banco de dados
+    const areaData = {
+      nome: (area as unknown as { name: string }).name,
+      icone: (area as unknown as { emoji: string }).emoji,
+      cor: (area as unknown as { color: string }).color,
+      descricao: (area as unknown as { description: string }).description,
+    };
+
     const { data, error } = await supabase
       .from('areas')
-      .insert({ ...area, user_id: userId })
+      .insert({ ...areaData, user_id: userId })
       .select()
       .single();
 
@@ -40,9 +48,24 @@ export const areasService = {
   },
 
   async update(id: string, area: Partial<AreaUpdate>): Promise<Area> {
+    // Mapear campos do frontend para o banco de dados
+    const areaData: Record<string, unknown> = {};
+    if ((area as unknown as { name?: string }).name !== undefined) {
+      areaData.nome = (area as unknown as { name: string }).name;
+    }
+    if ((area as unknown as { emoji?: string }).emoji !== undefined) {
+      areaData.icone = (area as unknown as { emoji: string }).emoji;
+    }
+    if ((area as unknown as { color?: string }).color !== undefined) {
+      areaData.cor = (area as unknown as { color: string }).color;
+    }
+    if ((area as unknown as { description?: string }).description !== undefined) {
+      areaData.descricao = (area as unknown as { description: string }).description;
+    }
+
     const { data, error } = await supabase
       .from('areas')
-      .update(area)
+      .update(areaData)
       .eq('id', id)
       .select()
       .single();
