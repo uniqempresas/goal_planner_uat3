@@ -56,7 +56,13 @@ export const metasService = {
   async create(userId: string, meta: Omit<MetaInsert, 'user_id'>): Promise<Meta> {
     const { data, error } = await supabase
       .from('metas')
-      .insert({ ...meta, user_id: userId })
+      .insert({ 
+        ...meta, 
+        user_id: userId,
+        status: meta.status || 'ativa',
+        one_thing: meta.one_thing || false,
+        metricas: meta.metricas || {}
+      })
       .select()
       .single();
 

@@ -11,13 +11,19 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
     try {
       await register(name, email, password);
       navigate('/dashboard');
+    } catch (err: unknown) {
+      // Extrai a mensagem de erro do Supabase
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -31,6 +37,11 @@ export default function RegisterPage() {
       </div>
 
       <div className="bg-slate-800/60 backdrop-blur border border-slate-700/50 rounded-2xl p-8">
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-slate-300 text-sm mb-2">Nome completo</label>
