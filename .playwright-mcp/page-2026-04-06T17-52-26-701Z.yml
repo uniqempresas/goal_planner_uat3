@@ -1,0 +1,179 @@
+- generic [ref=e185]:
+  - complementary [ref=e186]:
+    - generic [ref=e187]:
+      - generic [ref=e188]:
+        - img [ref=e190]
+        - generic [ref=e194]:
+          - generic [ref=e195]: Goal Planner
+          - generic [ref=e196]: A Única Coisa
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - img [ref=e199]
+          - generic [ref=e201]: ONE Thing Hoje
+        - paragraph [ref=e202]: Escrever artigo sobre React Server Components
+      - navigation [ref=e203]:
+        - link "Dashboard" [ref=e204] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e206]
+          - generic [ref=e211]: Dashboard
+        - link "Áreas de Vida" [ref=e212] [cursor=pointer]:
+          - /url: /areas
+          - img [ref=e214]
+          - generic [ref=e218]: Áreas de Vida
+        - generic [ref=e219]:
+          - button "Metas" [ref=e220] [cursor=pointer]:
+            - img [ref=e222]
+            - generic [ref=e226]: Metas
+            - img [ref=e227]
+          - generic [ref=e229]:
+            - link "Grandes (3 anos)" [ref=e230] [cursor=pointer]:
+              - /url: /metas/grandes
+              - img [ref=e232]
+              - generic [ref=e234]: Grandes (3 anos)
+            - link "Anuais" [ref=e235] [cursor=pointer]:
+              - /url: /metas/anual
+              - img [ref=e237]
+              - generic [ref=e239]: Anuais
+            - link "Mensais" [ref=e240] [cursor=pointer]:
+              - /url: /metas/mensal
+              - img [ref=e242]
+              - generic [ref=e245]: Mensais
+            - link "Semanais" [ref=e246] [cursor=pointer]:
+              - /url: /metas/semanal
+              - img [ref=e248]
+              - generic [ref=e250]: Semanais
+            - link "Diárias" [ref=e251] [cursor=pointer]:
+              - /url: /metas/diaria
+              - img [ref=e253]
+              - generic [ref=e256]: Diárias
+        - generic [ref=e257]:
+          - button "Agenda" [ref=e258] [cursor=pointer]:
+            - img [ref=e260]
+            - generic [ref=e262]: Agenda
+            - img [ref=e263]
+          - generic [ref=e265]:
+            - link "Hoje" [ref=e266] [cursor=pointer]:
+              - /url: /agenda/hoje
+              - img [ref=e268]
+              - generic [ref=e274]: Hoje
+            - link "Semana" [ref=e275] [cursor=pointer]:
+              - /url: /agenda/semana
+              - img [ref=e277]
+              - generic [ref=e279]: Semana
+        - link "Templates" [ref=e280] [cursor=pointer]:
+          - /url: /templates
+          - img [ref=e282]
+          - generic [ref=e284]: Templates
+        - generic [ref=e285]:
+          - button "Revisões" [ref=e286] [cursor=pointer]:
+            - img [ref=e288]
+            - generic [ref=e292]: Revisões
+            - img [ref=e293]
+          - generic [ref=e295]:
+            - link "Semanal" [ref=e296] [cursor=pointer]:
+              - /url: /revisoes/semanal
+              - generic [ref=e297]: Semanal
+            - link "Mensal" [ref=e298] [cursor=pointer]:
+              - /url: /revisoes/mensal
+              - generic [ref=e299]: Mensal
+        - link "Conquistas" [ref=e300] [cursor=pointer]:
+          - /url: /conquistas
+          - img [ref=e302]
+          - generic [ref=e308]: Conquistas
+        - link "Configurações" [ref=e309] [cursor=pointer]:
+          - /url: /configuracoes
+          - img [ref=e311]
+          - generic [ref=e314]: Configurações
+      - generic [ref=e316]:
+        - generic [ref=e317]: H
+        - generic [ref=e318]:
+          - generic [ref=e319]: Henrique Silva
+          - generic [ref=e320]: henriqsillva@gmail.com
+        - button "Sair" [ref=e321] [cursor=pointer]:
+          - img [ref=e322]
+  - generic [ref=e325]:
+    - banner [ref=e326]:
+      - button [ref=e327] [cursor=pointer]:
+        - img [ref=e328]
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - img [ref=e331]
+          - generic [ref=e333]: 14 dias seguidos
+        - generic [ref=e334]:
+          - img [ref=e335]
+          - generic [ref=e338]: Hoje, 28 Mar 2026
+    - main [ref=e339]:
+      - generic [ref=e340]:
+        - generic [ref=e341]:
+          - generic [ref=e342]:
+            - heading "Olá, Henrique 👋" [level=1] [ref=e343]
+            - paragraph [ref=e344]: Sexta-feira, 28 de Março de 2026
+          - link "Ver Agenda de Hoje" [ref=e346] [cursor=pointer]:
+            - /url: /agenda/hoje
+            - img [ref=e347]
+            - text: Ver Agenda de Hoje
+        - generic [ref=e349]:
+          - generic [ref=e350]:
+            - generic [ref=e351]:
+              - img [ref=e352]
+              - generic [ref=e355]: Tarefas hoje
+            - generic [ref=e356]: 0/0
+            - generic [ref=e357]: NaN% concluído
+          - generic [ref=e358]:
+            - generic [ref=e359]:
+              - img [ref=e360]
+              - generic [ref=e362]: Sequência
+            - generic [ref=e363]: undefined dias
+            - generic [ref=e364]: Melhor sequência
+          - generic [ref=e365]:
+            - generic [ref=e366]:
+              - img [ref=e367]
+              - generic [ref=e369]: Foco esta semana
+            - generic [ref=e370]: undefinedh
+            - generic [ref=e371]: undefined/undefined tarefas
+          - generic [ref=e372]:
+            - generic [ref=e373]:
+              - img [ref=e374]
+              - generic [ref=e375]: Hábitos
+            - generic [ref=e376]: undefined/undefined
+            - generic [ref=e377]: Esta semana
+        - generic [ref=e378]:
+          - generic [ref=e380]:
+            - generic [ref=e381]:
+              - img [ref=e382]
+              - heading "Grandes Metas" [level=3] [ref=e384]
+              - generic [ref=e385]: 3 anos
+            - link "Ver todas" [ref=e386] [cursor=pointer]:
+              - /url: /metas/grandes
+              - text: Ver todas
+              - img [ref=e387]
+          - generic [ref=e389]:
+            - generic [ref=e390]:
+              - generic [ref=e391]:
+                - heading "Áreas de Vida" [level=3] [ref=e392]
+                - link "Ver" [ref=e393] [cursor=pointer]:
+                  - /url: /areas
+                  - text: Ver
+                  - img [ref=e394]
+              - generic [ref=e396]:
+                - generic [ref=e399]: "%"
+                - generic [ref=e404]: "%"
+                - generic [ref=e409]: "%"
+                - generic [ref=e414]: "%"
+            - generic [ref=e418]:
+              - generic [ref=e419]:
+                - img [ref=e420]
+                - heading "Metas Anuais" [level=3] [ref=e424]
+              - link "Ver" [ref=e425] [cursor=pointer]:
+                - /url: /metas/anual
+                - text: Ver
+                - img [ref=e426]
+            - generic [ref=e428]:
+              - generic [ref=e429]:
+                - img [ref=e430]
+                - generic [ref=e433]: Focusing Question
+              - paragraph [ref=e434]:
+                - text: "\"Qual é a ÚNICA coisa que posso fazer"
+                - strong [ref=e435]: agora
+                - text: ", de tal forma que tudo o mais se torne mais fácil ou desnecessário?\""
+              - paragraph [ref=e437]: — Gary Keller, A Única Coisa

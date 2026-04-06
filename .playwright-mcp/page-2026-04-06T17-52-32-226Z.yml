@@ -1,0 +1,232 @@
+- generic [ref=e185]:
+  - complementary [ref=e186]:
+    - generic [ref=e438]:
+      - generic [ref=e439]:
+        - img [ref=e441]
+        - generic [ref=e445]:
+          - generic [ref=e446]: Goal Planner
+          - generic [ref=e447]: A Única Coisa
+      - generic [ref=e448]:
+        - generic [ref=e449]:
+          - img [ref=e450]
+          - generic [ref=e452]: ONE Thing Hoje
+        - paragraph [ref=e453]: Escrever artigo sobre React Server Components
+      - navigation [ref=e454]:
+        - link "Dashboard" [ref=e455] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e457]
+          - generic [ref=e462]: Dashboard
+        - link "Áreas de Vida" [ref=e463] [cursor=pointer]:
+          - /url: /areas
+          - img [ref=e465]
+          - generic [ref=e469]: Áreas de Vida
+        - generic [ref=e470]:
+          - button "Metas" [ref=e471] [cursor=pointer]:
+            - img [ref=e473]
+            - generic [ref=e477]: Metas
+            - img [ref=e478]
+          - generic [ref=e480]:
+            - link "Grandes (3 anos)" [ref=e481] [cursor=pointer]:
+              - /url: /metas/grandes
+              - img [ref=e483]
+              - generic [ref=e485]: Grandes (3 anos)
+            - link "Anuais" [ref=e486] [cursor=pointer]:
+              - /url: /metas/anual
+              - img [ref=e488]
+              - generic [ref=e490]: Anuais
+            - link "Mensais" [ref=e491] [cursor=pointer]:
+              - /url: /metas/mensal
+              - img [ref=e493]
+              - generic [ref=e496]: Mensais
+            - link "Semanais" [ref=e497] [cursor=pointer]:
+              - /url: /metas/semanal
+              - img [ref=e499]
+              - generic [ref=e501]: Semanais
+            - link "Diárias" [ref=e502] [cursor=pointer]:
+              - /url: /metas/diaria
+              - img [ref=e504]
+              - generic [ref=e507]: Diárias
+        - generic [ref=e508]:
+          - button "Agenda" [ref=e509] [cursor=pointer]:
+            - img [ref=e511]
+            - generic [ref=e513]: Agenda
+            - img [ref=e514]
+          - generic [ref=e516]:
+            - link "Hoje" [ref=e517] [cursor=pointer]:
+              - /url: /agenda/hoje
+              - img [ref=e519]
+              - generic [ref=e525]: Hoje
+            - link "Semana" [ref=e526] [cursor=pointer]:
+              - /url: /agenda/semana
+              - img [ref=e528]
+              - generic [ref=e530]: Semana
+        - link "Templates" [ref=e531] [cursor=pointer]:
+          - /url: /templates
+          - img [ref=e533]
+          - generic [ref=e535]: Templates
+        - generic [ref=e536]:
+          - button "Revisões" [ref=e537] [cursor=pointer]:
+            - img [ref=e539]
+            - generic [ref=e543]: Revisões
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - link "Semanal" [ref=e547] [cursor=pointer]:
+              - /url: /revisoes/semanal
+              - generic [ref=e548]: Semanal
+            - link "Mensal" [ref=e549] [cursor=pointer]:
+              - /url: /revisoes/mensal
+              - generic [ref=e550]: Mensal
+        - link "Conquistas" [ref=e551] [cursor=pointer]:
+          - /url: /conquistas
+          - img [ref=e553]
+          - generic [ref=e559]: Conquistas
+        - link "Configurações" [ref=e560] [cursor=pointer]:
+          - /url: /configuracoes
+          - img [ref=e562]
+          - generic [ref=e565]: Configurações
+      - generic [ref=e567]:
+        - generic [ref=e568]: H
+        - generic [ref=e569]:
+          - generic [ref=e570]: Henrique Silva
+          - generic [ref=e571]: henriqsillva@gmail.com
+        - button "Sair" [ref=e572] [cursor=pointer]:
+          - img [ref=e573]
+  - generic [ref=e325]:
+    - banner [ref=e326]:
+      - button [ref=e327] [cursor=pointer]:
+        - img [ref=e328]
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - img [ref=e331]
+          - generic [ref=e333]: 14 dias seguidos
+        - generic [ref=e334]:
+          - img [ref=e335]
+          - generic [ref=e338]: Hoje, 28 Mar 2026
+    - main [ref=e339]:
+      - generic [ref=e576]:
+        - generic [ref=e577]:
+          - generic [ref=e578]:
+            - heading "Áreas de Vida" [level=1] [ref=e579]
+            - paragraph [ref=e580]: Organize suas metas pelas principais dimensões da sua vida.
+          - link "Nova Área" [ref=e581] [cursor=pointer]:
+            - /url: /areas/criar
+            - img [ref=e582]
+            - text: Nova Área
+        - generic [ref=e583]:
+          - heading "Progresso Geral" [level=3] [ref=e584]
+          - generic [ref=e585]:
+            - 'generic "undefined: undefined%" [ref=e586]'
+            - 'generic "undefined: undefined%" [ref=e587]'
+            - 'generic "undefined: undefined%" [ref=e588]'
+            - 'generic "undefined: undefined%" [ref=e589]'
+            - 'generic "undefined: undefined%" [ref=e590]'
+            - 'generic "undefined: undefined%" [ref=e591]'
+            - 'generic "undefined: undefined%" [ref=e592]'
+            - 'generic "undefined: undefined%" [ref=e593]'
+            - 'generic "undefined: undefined%" [ref=e594]'
+            - 'generic "undefined: undefined%" [ref=e595]'
+        - generic [ref=e617]:
+          - link "metas Progresso %" [ref=e618] [cursor=pointer]:
+            - /url: /areas/3c10f56f-57b4-4899-84bc-b9d07d665ab8
+            - generic [ref=e621]:
+              - generic [ref=e622]: metas
+              - img [ref=e623]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e626]:
+              - generic [ref=e627]: Progresso
+              - generic [ref=e628]: "%"
+          - link "metas Progresso %" [ref=e631] [cursor=pointer]:
+            - /url: /areas/f19b552e-1447-42a9-a88b-6bd020b0b4ca
+            - generic [ref=e634]:
+              - generic [ref=e635]: metas
+              - img [ref=e636]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e639]:
+              - generic [ref=e640]: Progresso
+              - generic [ref=e641]: "%"
+          - link "metas Progresso %" [ref=e644] [cursor=pointer]:
+            - /url: /areas/cbd36444-437c-42e1-b364-f573bf5362a2
+            - generic [ref=e647]:
+              - generic [ref=e648]: metas
+              - img [ref=e649]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e652]:
+              - generic [ref=e653]: Progresso
+              - generic [ref=e654]: "%"
+          - link "metas Progresso %" [ref=e657] [cursor=pointer]:
+            - /url: /areas/238a7fc9-26f6-4cb6-9e46-8c559fa9040c
+            - generic [ref=e660]:
+              - generic [ref=e661]: metas
+              - img [ref=e662]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e665]:
+              - generic [ref=e666]: Progresso
+              - generic [ref=e667]: "%"
+          - link "metas Progresso %" [ref=e670] [cursor=pointer]:
+            - /url: /areas/fe9ccd34-3cfb-4da8-81d2-c43221e6c7a3
+            - generic [ref=e673]:
+              - generic [ref=e674]: metas
+              - img [ref=e675]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e678]:
+              - generic [ref=e679]: Progresso
+              - generic [ref=e680]: "%"
+          - link "metas Progresso %" [ref=e683] [cursor=pointer]:
+            - /url: /areas/b5fb0df2-9a55-4976-b56e-ec61ad1ed5cd
+            - generic [ref=e686]:
+              - generic [ref=e687]: metas
+              - img [ref=e688]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e691]:
+              - generic [ref=e692]: Progresso
+              - generic [ref=e693]: "%"
+          - link "metas Progresso %" [ref=e696] [cursor=pointer]:
+            - /url: /areas/0055a166-229d-44b5-87f2-1fa028003acd
+            - generic [ref=e699]:
+              - generic [ref=e700]: metas
+              - img [ref=e701]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e704]:
+              - generic [ref=e705]: Progresso
+              - generic [ref=e706]: "%"
+          - link "metas Progresso %" [ref=e709] [cursor=pointer]:
+            - /url: /areas/f9465ef5-a2e1-4ded-b045-baa948dcdfc8
+            - generic [ref=e712]:
+              - generic [ref=e713]: metas
+              - img [ref=e714]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e717]:
+              - generic [ref=e718]: Progresso
+              - generic [ref=e719]: "%"
+          - link "metas Progresso %" [ref=e722] [cursor=pointer]:
+            - /url: /areas/9b6e3a73-042d-4a2d-b905-23f2a49c9942
+            - generic [ref=e725]:
+              - generic [ref=e726]: metas
+              - img [ref=e727]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e730]:
+              - generic [ref=e731]: Progresso
+              - generic [ref=e732]: "%"
+          - link "metas Progresso %" [ref=e735] [cursor=pointer]:
+            - /url: /areas/0fb2b3c3-2c4d-483a-94c8-283ede758d9a
+            - generic [ref=e738]:
+              - generic [ref=e739]: metas
+              - img [ref=e740]
+            - heading [level=3]
+            - paragraph
+            - generic [ref=e743]:
+              - generic [ref=e744]: Progresso
+              - generic [ref=e745]: "%"
+        - link "Adicionar nova área" [ref=e748] [cursor=pointer]:
+          - /url: /areas/criar
+          - img [ref=e749]
+          - generic [ref=e750]: Adicionar nova área

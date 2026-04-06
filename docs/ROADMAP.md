@@ -230,14 +230,35 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 - [x] Atualizar AppContext para usar dados reais do Supabase
 - [x] Implementar autenticação (login/register/logout via Supabase Auth)
 
-**Sprint 2: Fluxos de Criação e Edição** ✅ CONCLUÍDO
+**Sprint 2: Fluxos de Criação e Edição** 🚧 EM ANDAMENTO
 - [x] Criar páginas de **detalhe** (`/areas/:id`) e **edição** (`/areas/:id/edit`) para Áreas
 - [x] Implementar formulários com validação (Zod + React Hook Form)
 - [x] Criar componentes de seleção (EmojiPicker, ColorPicker)
 - [x] Criar página de **criação** para Áreas (`/areas/criar`)
-- [x] Implementar páginas de detalhe/edição/criação para **Metas** (todas as hierarquias)
 - [x] Implementar Empty States para todas as entidades
 - [x] Implementar criação de **Tarefas** vinculada a Metas
+
+**Sprint 2.1: CRUD Áreas de Vida** ✅ CONCLUÍDO
+- [x] Create, Read, Update, Delete de Áreas
+
+**Sprint 2.2: CRUD Grandes Metas (G)** 🚧 EM TESTE
+- [ ] Criar Grandes Metas
+- [ ] Listar Grandes Metas
+- [ ] Detalhar Grandes Metas
+- [ ] Editar Grandes Metas
+- [ ] Excluir Grandes Metas
+
+**Sprint 2.3: CRUD Metas Anuais (A)**
+- [ ] Create, Read, Update, Delete de Metas Anuais
+
+**Sprint 2.4: CRUD Metas Mensais (M)**
+- [ ] Create, Read, Update, Delete de Metas Mensais
+
+**Sprint 2.5: CRUD Metas Semanais (S)**
+- [ ] Create, Read, Update, Delete de Metas Semanais
+
+**Sprint 2.6: CRUD Metas Diárias (D)**
+- [ ] Create, Read, Update, Delete de Metas Diárias
 
 ---
 

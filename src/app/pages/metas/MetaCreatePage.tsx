@@ -58,8 +58,9 @@ export default function MetaCreatePage() {
       });
       
       await loadMetas();
-      // Navigate to the list page, we can navigate to detail after we create it
-      navigate(`/metas/${nivel}`);
+      // Navigate to the list page - converter 'grande' -> 'grandes' para a rota correta
+      const nivelUrl = nivel === 'grande' ? 'grandes' : nivel;
+      navigate(`/metas/${nivelUrl}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error('Erro ao criar meta:', message);

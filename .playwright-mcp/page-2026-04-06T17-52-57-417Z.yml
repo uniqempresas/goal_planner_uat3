@@ -1,0 +1,146 @@
+- generic [ref=e185]:
+  - complementary [ref=e186]:
+    - generic [ref=e951]:
+      - generic [ref=e952]:
+        - img [ref=e954]
+        - generic [ref=e958]:
+          - generic [ref=e959]: Goal Planner
+          - generic [ref=e960]: A Única Coisa
+      - generic [ref=e961]:
+        - generic [ref=e962]:
+          - img [ref=e963]
+          - generic [ref=e965]: ONE Thing Hoje
+        - paragraph [ref=e966]: Escrever artigo sobre React Server Components
+      - navigation [ref=e967]:
+        - link "Dashboard" [ref=e968] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e970]
+          - generic [ref=e975]: Dashboard
+        - link "Áreas de Vida" [ref=e976] [cursor=pointer]:
+          - /url: /areas
+          - img [ref=e978]
+          - generic [ref=e982]: Áreas de Vida
+        - generic [ref=e983]:
+          - button "Metas" [ref=e984] [cursor=pointer]:
+            - img [ref=e986]
+            - generic [ref=e990]: Metas
+            - img [ref=e991]
+          - generic [ref=e993]:
+            - link "Grandes (3 anos)" [ref=e994] [cursor=pointer]:
+              - /url: /metas/grandes
+              - img [ref=e996]
+              - generic [ref=e998]: Grandes (3 anos)
+            - link "Anuais" [ref=e999] [cursor=pointer]:
+              - /url: /metas/anual
+              - img [ref=e1001]
+              - generic [ref=e1003]: Anuais
+            - link "Mensais" [ref=e1004] [cursor=pointer]:
+              - /url: /metas/mensal
+              - img [ref=e1006]
+              - generic [ref=e1009]: Mensais
+            - link "Semanais" [ref=e1010] [cursor=pointer]:
+              - /url: /metas/semanal
+              - img [ref=e1012]
+              - generic [ref=e1014]: Semanais
+            - link "Diárias" [ref=e1015] [cursor=pointer]:
+              - /url: /metas/diaria
+              - img [ref=e1017]
+              - generic [ref=e1020]: Diárias
+        - generic [ref=e1021]:
+          - button "Agenda" [ref=e1022] [cursor=pointer]:
+            - img [ref=e1024]
+            - generic [ref=e1026]: Agenda
+            - img [ref=e1027]
+          - generic [ref=e1029]:
+            - link "Hoje" [ref=e1030] [cursor=pointer]:
+              - /url: /agenda/hoje
+              - img [ref=e1032]
+              - generic [ref=e1038]: Hoje
+            - link "Semana" [ref=e1039] [cursor=pointer]:
+              - /url: /agenda/semana
+              - img [ref=e1041]
+              - generic [ref=e1043]: Semana
+        - link "Templates" [ref=e1044] [cursor=pointer]:
+          - /url: /templates
+          - img [ref=e1046]
+          - generic [ref=e1048]: Templates
+        - generic [ref=e1049]:
+          - button "Revisões" [ref=e1050] [cursor=pointer]:
+            - img [ref=e1052]
+            - generic [ref=e1056]: Revisões
+            - img [ref=e1057]
+          - generic [ref=e1059]:
+            - link "Semanal" [ref=e1060] [cursor=pointer]:
+              - /url: /revisoes/semanal
+              - generic [ref=e1061]: Semanal
+            - link "Mensal" [ref=e1062] [cursor=pointer]:
+              - /url: /revisoes/mensal
+              - generic [ref=e1063]: Mensal
+        - link "Conquistas" [ref=e1064] [cursor=pointer]:
+          - /url: /conquistas
+          - img [ref=e1066]
+          - generic [ref=e1072]: Conquistas
+        - link "Configurações" [ref=e1073] [cursor=pointer]:
+          - /url: /configuracoes
+          - img [ref=e1075]
+          - generic [ref=e1078]: Configurações
+      - generic [ref=e1080]:
+        - generic [ref=e1081]: H
+        - generic [ref=e1082]:
+          - generic [ref=e1083]: Henrique Silva
+          - generic [ref=e1084]: henriqsillva@gmail.com
+        - button "Sair" [ref=e1085] [cursor=pointer]:
+          - img [ref=e1086]
+  - generic [ref=e325]:
+    - banner [ref=e326]:
+      - button [ref=e327] [cursor=pointer]:
+        - img [ref=e328]
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - img [ref=e331]
+          - generic [ref=e333]: 14 dias seguidos
+        - generic [ref=e334]:
+          - img [ref=e335]
+          - generic [ref=e338]: Hoje, 28 Mar 2026
+    - main [ref=e339]:
+      - generic [ref=e1089]:
+        - generic [ref=e1090]:
+          - link "Áreas" [ref=e1091] [cursor=pointer]:
+            - /url: /areas
+          - generic [ref=e1092]: /
+        - generic [ref=e1093]:
+          - generic [ref=e1094]: 🎯
+          - generic [ref=e1095]:
+            - generic [ref=e1096]:
+              - heading [level=1]
+              - link "Editar" [ref=e1097] [cursor=pointer]:
+                - /url: /areas/03b153a8-5b09-401f-96a6-505b94601a9d/edit
+                - button "Editar" [ref=e1098]:
+                  - img
+                  - text: Editar
+            - button "Voltar para Áreas" [ref=e1099]:
+              - img
+              - text: Voltar para Áreas
+        - generic [ref=e1100]:
+          - generic [ref=e1101]:
+            - heading "Total de Metas" [level=4] [ref=e1103]
+            - generic [ref=e1105]: "0"
+          - generic [ref=e1106]:
+            - heading "Metas Ativas" [level=4] [ref=e1108]
+            - generic [ref=e1110]: "0"
+          - generic [ref=e1111]:
+            - heading "Metas Concluídas" [level=4] [ref=e1113]
+            - generic [ref=e1115]: "0"
+        - generic [ref=e1116]:
+          - heading "Progresso Geral" [level=4] [ref=e1118]
+          - generic [ref=e1120]:
+            - progressbar [ref=e1121]
+            - generic [ref=e1123]: 0%
+        - generic [ref=e1124]:
+          - heading "Grandes Metas" [level=2] [ref=e1125]
+          - generic [ref=e1127]:
+            - img [ref=e1128]
+            - paragraph [ref=e1132]: Nenhuma grande meta vinculada a esta área ainda.
+            - link "Criar Grande Meta" [ref=e1133] [cursor=pointer]:
+              - /url: /metas/grandes/criar
+              - button "Criar Grande Meta" [ref=e1134]

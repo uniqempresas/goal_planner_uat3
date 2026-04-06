@@ -1,0 +1,31 @@
+- generic [ref=e149]:
+  - banner [ref=e150]:
+    - link "Goal Planner" [ref=e151] [cursor=pointer]:
+      - /url: /
+      - img [ref=e153]
+      - generic [ref=e157]: Goal Planner
+  - main [ref=e158]:
+    - generic [ref=e160]:
+      - generic [ref=e161]:
+        - heading "Bem-vindo de volta" [level=1] [ref=e162]
+        - paragraph [ref=e163]: Entre para continuar sua jornada
+      - generic [ref=e165]:
+        - generic [ref=e166]:
+          - generic [ref=e167]: E-mail
+          - textbox "seu@email.com" [ref=e168]: joao@email.com
+        - generic [ref=e169]:
+          - generic [ref=e170]: Senha
+          - generic [ref=e171]:
+            - textbox "••••••••" [ref=e172]: senha123
+            - button [ref=e173] [cursor=pointer]:
+              - img [ref=e174]
+        - link "Esqueceu a senha?" [ref=e178] [cursor=pointer]:
+          - /url: /forgot-password
+        - button "Entrar" [ref=e179] [cursor=pointer]
+      - paragraph [ref=e180]:
+        - text: Não tem uma conta?
+        - link "Criar conta grátis" [ref=e181] [cursor=pointer]:
+          - /url: /register
+  - contentinfo [ref=e182]:
+    - paragraph [ref=e183]: "\"Você não pode realizar o extraordinário sem foco extraordinário.\""
+    - paragraph [ref=e184]: — Gary Keller, A Única Coisa

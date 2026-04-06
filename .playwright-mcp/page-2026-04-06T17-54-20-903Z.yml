@@ -1,0 +1,111 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e12]:
+          - generic [ref=e13]: Goal Planner
+          - generic [ref=e14]: A Única Coisa
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - generic [ref=e19]: ONE Thing Hoje
+        - paragraph [ref=e20]: Escrever artigo sobre React Server Components
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Áreas de Vida" [ref=e30] [cursor=pointer]:
+          - /url: /areas
+          - img [ref=e32]
+          - generic [ref=e36]: Áreas de Vida
+        - generic [ref=e37]:
+          - button "Metas" [ref=e38] [cursor=pointer]:
+            - img [ref=e40]
+            - generic [ref=e44]: Metas
+            - img [ref=e45]
+          - generic [ref=e47]:
+            - link "Grandes (3 anos)" [ref=e48] [cursor=pointer]:
+              - /url: /metas/grandes
+              - img [ref=e50]
+              - generic [ref=e52]: Grandes (3 anos)
+            - link "Anuais" [ref=e53] [cursor=pointer]:
+              - /url: /metas/anual
+              - img [ref=e55]
+              - generic [ref=e57]: Anuais
+            - link "Mensais" [ref=e58] [cursor=pointer]:
+              - /url: /metas/mensal
+              - img [ref=e60]
+              - generic [ref=e63]: Mensais
+            - link "Semanais" [ref=e64] [cursor=pointer]:
+              - /url: /metas/semanal
+              - img [ref=e66]
+              - generic [ref=e68]: Semanais
+            - link "Diárias" [ref=e69] [cursor=pointer]:
+              - /url: /metas/diaria
+              - img [ref=e71]
+              - generic [ref=e74]: Diárias
+        - generic [ref=e75]:
+          - button "Agenda" [ref=e76] [cursor=pointer]:
+            - img [ref=e78]
+            - generic [ref=e80]: Agenda
+            - img [ref=e81]
+          - generic [ref=e83]:
+            - link "Hoje" [ref=e84] [cursor=pointer]:
+              - /url: /agenda/hoje
+              - img [ref=e86]
+              - generic [ref=e92]: Hoje
+            - link "Semana" [ref=e93] [cursor=pointer]:
+              - /url: /agenda/semana
+              - img [ref=e95]
+              - generic [ref=e97]: Semana
+        - link "Templates" [ref=e98] [cursor=pointer]:
+          - /url: /templates
+          - img [ref=e100]
+          - generic [ref=e102]: Templates
+        - generic [ref=e103]:
+          - button "Revisões" [ref=e104] [cursor=pointer]:
+            - img [ref=e106]
+            - generic [ref=e110]: Revisões
+            - img [ref=e111]
+          - generic [ref=e113]:
+            - link "Semanal" [ref=e114] [cursor=pointer]:
+              - /url: /revisoes/semanal
+              - generic [ref=e115]: Semanal
+            - link "Mensal" [ref=e116] [cursor=pointer]:
+              - /url: /revisoes/mensal
+              - generic [ref=e117]: Mensal
+        - link "Conquistas" [ref=e118] [cursor=pointer]:
+          - /url: /conquistas
+          - img [ref=e120]
+          - generic [ref=e126]: Conquistas
+        - link "Configurações" [ref=e127] [cursor=pointer]:
+          - /url: /configuracoes
+          - img [ref=e129]
+          - generic [ref=e132]: Configurações
+      - generic [ref=e134]:
+        - generic [ref=e135]: H
+        - generic [ref=e136]:
+          - generic [ref=e137]: Henrique Silva
+          - generic [ref=e138]: henriqsillva@gmail.com
+        - button "Sair" [ref=e139] [cursor=pointer]:
+          - img [ref=e140]
+  - generic [ref=e143]:
+    - banner [ref=e144]:
+      - button [ref=e145] [cursor=pointer]:
+        - img [ref=e146]
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - img [ref=e149]
+          - generic [ref=e151]: 14 dias seguidos
+        - generic [ref=e152]:
+          - img [ref=e153]
+          - generic [ref=e156]: Hoje, 28 Mar 2026
+    - main [ref=e157]:
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - button [ref=e160]:
+            - img
+          - heading "Área não encontrada" [level=1] [ref=e161]
+        - generic [ref=e163]: A área que você está editando não existe ou foi removida.

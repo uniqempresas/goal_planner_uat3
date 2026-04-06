@@ -24,21 +24,19 @@ interface MetasListPageProps {
 
 function MetaRow({ meta, level }: { meta: Meta; level: MetaLevel }) {
   const { areas, getMetaById } = useApp();
-  const area = areas.find(a => a.id === meta.areaId);
-  const parent = meta.parentId ? getMetaById(meta.parentId) : undefined;
+  const area = areas.find(a => a.id === meta.area_id);
+  const parent = meta.parent_id ? getMetaById(meta.parent_id) : undefined;
   const cfg = levelConfig[level];
 
-  const statusColors = {
-    active: 'bg-emerald-100 text-emerald-700',
-    completed: 'bg-blue-100 text-blue-700',
-    paused: 'bg-amber-100 text-amber-700',
-    not_started: 'bg-slate-100 text-slate-600',
+  const statusColors: Record<string, string> = {
+    ativa: 'bg-emerald-100 text-emerald-700',
+    concluida: 'bg-blue-100 text-blue-700',
+    arquivada: 'bg-slate-100 text-slate-600',
   };
-  const statusLabels = {
-    active: 'Ativa',
-    completed: 'Concluída',
-    paused: 'Pausada',
-    not_started: 'Não iniciada',
+  const statusLabels: Record<string, string> = {
+    ativa: 'Ativa',
+    concluida: 'Concluída',
+    arquivada: 'Arquivada',
   };
 
   const detailPath = `/${level === 'A' ? 'anual' : level === 'M' ? 'mensal' : level === 'S' ? 'semanal' : 'diaria'}/${meta.id}`;

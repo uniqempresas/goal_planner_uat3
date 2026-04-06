@@ -8,14 +8,18 @@ import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
 import { type Meta, levelConfig } from '../../data/mockData';
 
-function StatusBadge({ status }: { status: Meta['status'] }) {
-  const map = {
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; color: string }> = {
+    ativa: { label: 'Ativa', color: 'bg-emerald-100 text-emerald-700' },
+    concluida: { label: 'Concluída', color: 'bg-blue-100 text-blue-700' },
+    arquivada: { label: 'Arquivada', color: 'bg-slate-100 text-slate-600' },
+    // Legacy mock format support
     active: { label: 'Ativa', color: 'bg-emerald-100 text-emerald-700' },
     completed: { label: 'Concluída', color: 'bg-blue-100 text-blue-700' },
     paused: { label: 'Pausada', color: 'bg-amber-100 text-amber-700' },
     not_started: { label: 'Não iniciada', color: 'bg-slate-100 text-slate-600' },
   };
-  const s = map[status];
+  const s = map[status] || { label: status, color: 'bg-slate-100 text-slate-600' };
   return (
     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.color}`}>{s.label}</span>
   );
@@ -51,8 +55,23 @@ function SmartProgress({ meta }: { meta: Meta }) {
 function MetaCard({ meta }: { meta: Meta }) {
   const { areas, metasAnuais } = useApp();
   const [expanded, setExpanded] = useState(false);
-  const area = areas.find(a => a.id === meta.areaId);
-  const children = metasAnuais.filter(m => m.parentId === meta.id);
+  
+  // Handle both mock data and real database data
+  const metaAny = meta as unknown;
+  const areaId = (metaAny as { area_id?: string })?.area_id || meta.areaId;
+  const parentId = (metaAny as { parent_id?: string })?.parent_id || meta.parentId;
+  
+  // Map database field names to mock format for display
+  const title = (metaAny as { titulo?: string })?.titulo || meta.title;
+  const description = (metaAny as { descricao?: string })?.descricao || meta.description;
+  const focusingQuestion = (metaAny as { focusing_question?: string })?.focusing_question || meta.focusingQuestion;
+  const isOneThing = (metaAny as { one_thing?: boolean })?.one_thing || meta.isOneThing;
+  const status = (metaAny as { status?: string })?.status || meta.status;
+  const prazo = (metaAny as { prazo?: string })?.prazo || meta.prazo;
+  const smart = (metaAny as { smart?: unknown })?.smart || meta.smart;
+  
+  const area = areas.find(a => a.id === areaId);
+  const children = metasAnuais.filter(m => ((m as unknown as { parent_id?: string })?.parent_id === meta.id) || m.parentId === meta.id);
   const cfg = levelConfig.G;
 
   return (
@@ -68,12 +87,12 @@ function MetaCard({ meta }: { meta: Meta }) {
                 cx={26} cy={26} r={22}
                 fill="none" stroke={cfg.color} strokeWidth={4}
                 strokeDasharray={2 * Math.PI * 22}
-                strokeDashoffset={2 * Math.PI * 22 * (1 - meta.progress / 100)}
+                strokeDashoffset={2 * Math.PI * 22 * (1 - (meta.progress || 0) / 100)}
                 strokeLinecap="round"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-slate-700">{meta.progress}%</span>
+              <span className="text-xs font-bold text-slate-700">{meta.progress || 0}%</span>
             </div>
           </div>
 
@@ -82,15 +101,15 @@ function MetaCard({ meta }: { meta: Meta }) {
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: cfg.bgColor, color: cfg.textColor }}>G</span>
-                  {meta.isOneThing && (
+                  {isOneThing && (
                     <span className="flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
                       <Star size={10} className="fill-amber-500 text-amber-500" />
                       ONE Thing
                     </span>
                   )}
-                  <StatusBadge status={meta.status} />
+                  <StatusBadge status={status} />
                 </div>
-                <h3 className="text-slate-800 font-medium leading-snug">{meta.title}</h3>
+                <h3 className="text-slate-800 font-medium leading-snug">{title}</h3>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Link
@@ -103,18 +122,18 @@ function MetaCard({ meta }: { meta: Meta }) {
               </div>
             </div>
 
-            <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">{meta.description}</p>
+            <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">{description}</p>
 
             <div className="flex flex-wrap items-center gap-3">
               {area && (
-                <span className="flex items-center gap-1.5 text-xs" style={{ color: area.color }}>
-                  <span>{area.emoji}</span>
-                  <span>{area.name}</span>
+                <span className="flex items-center gap-1.5 text-xs" style={{ color: area.cor || area.color }}>
+                  <span>{area.icone || area.emoji}</span>
+                  <span>{area.nome || area.name}</span>
                 </span>
               )}
               <span className="flex items-center gap-1.5 text-xs text-slate-400">
                 <Calendar size={11} />
-                Prazo: {new Date(meta.prazo).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short' })}
+                Prazo: {new Date(prazo).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short' })}
               </span>
               {children.length > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -127,20 +146,20 @@ function MetaCard({ meta }: { meta: Meta }) {
         </div>
 
         {/* Metrics */}
-        {meta.smart?.measurable && (
+        {smart && (smart as { measurable?: unknown })?.measurable && (
           <div className="mt-4 pt-4 border-t border-slate-100">
             <SmartProgress meta={meta} />
           </div>
         )}
 
         {/* Focusing Question */}
-        {meta.focusingQuestion && (
+        {focusingQuestion && (
           <div className="mt-4 bg-indigo-50 rounded-lg p-3.5">
             <div className="flex items-center gap-1.5 mb-1.5">
               <TrendingUp size={12} className="text-indigo-500" />
               <span className="text-indigo-700 text-xs font-medium">Focusing Question</span>
             </div>
-            <p className="text-slate-600 text-xs leading-relaxed italic line-clamp-2">{meta.focusingQuestion}</p>
+            <p className="text-slate-600 text-xs leading-relaxed italic line-clamp-2">{focusingQuestion}</p>
           </div>
         )}
       </div>
