@@ -1,493 +1,313 @@
-# Roadmap - Goal Planner (Atualizado)
+---
+date: 2026-04-06T10:00:00-03:00
+researcher: vibe-researcher
+git_commit: 
+branch: main
+repository: goal_planner_uat3
+topic: "Roadmap Atualizado - Sprint 1 Concluída e Progresso na Sprint 2"
+tags: [research, roadmap, implementation-status, sprint-1, sprint-2]
+status: complete
+last_updated: 2026-04-06
+last_updated_by: vibe-researcher
+---
 
-**Data de Atualização:** 01/04/2026  
-**Status Atual:** Telas principais prontas (Figma), CRUD não implementado, backend não iniciado
+# Pesquisa: Roadmap Atualizado - Sprint 1 Concluída
+
+**Data:** 06 de Abril de 2026  
+**Pesquisador:** vibe-researcher  
+**Objetivo:** Atualizar o roadmap com o progresso desde 03/04/2026.
 
 ---
 
-## 🎯 Visão Geral
+## Resumo Executivo
 
-Este roadmap considera que todas as **telas principais foram exportadas do Figma** e estão visualmente prontas, mas **faltam as funcionalidades interativas** (forms, CRUD, persistência).
+O projeto Goal Planner evoluiu significativamente desde 03/04/2026. A **Sprint 1 foi concluída**, implementando a infraestrutura completa de backend (Supabase) e autenticação real. A **Sprint 2 está em andamento** com as primeiras páginas de detalhe e edição de Áreas já implementadas.
 
-**Abordagem:**
-1. **Fase 1:** Implementar todos os forms de criação/edição (CRUD local)
-2. **Fase 2:** Completar páginas pendentes e visualizações de detalhe
-3. **Fase 3:** Integrar com Supabase para persistência real
-4. **Fase 4:** Polish, testes e deploy
+### Dados Coletados
 
----
-
-## 📊 Estado Atual Resumido
-
-### ✅ Já Pronto (Vindo do Figma)
-- [x] Landing Page
-- [x] Autenticação (Login/Register/Forgot)
-- [x] Dashboard
-- [x] Lista de Áreas de Vida
-- [x] Listas de Metas (G/A/M/S/D)
-- [x] Agenda Hoje (Time Blocking visual)
-- [x] Revisão Semanal
-- [x] Conquistas
-- [x] Templates
-- [x] Configurações (layout base + Perfil)
-
-### ❌ O que Falta
-- [ ] Forms de criação/edição de Metas
-- [ ] Forms de criação/edição de Áreas
-- [ ] Forms de criação/edição de Tarefas
-- [ ] Visualizações de detalhe (Meta, Área, Template)
-- [ ] Agenda Semanal
-- [ ] Revisão Mensal
-- [ ] Configurações funcionais (Geral/Segurança/Notificações)
-- [ ] Backend/Supabase
+- **Rotas configuradas:** 39 rotas em `src/app/routes.ts`
+- **Páginas existentes:** 26 arquivos de página em `src/app/pages/`
+- **Estado Global:** React Context (`AppContext`) integrado com Supabase
+- **Bibliotecas principais:** React Router 7, Tailwind CSS 4, shadcn/ui, Supabase (@supabase/supabase-js)
 
 ---
 
-## Fase 1: CRUD Completo (Sprints 1-3)
+## Estado Detalhado por Módulo
 
-### Sprint 1: CRUD de Metas (Grandes Metas)
+### 1. Autenticação e Landing (100% Visual)
 
-**Objetivo:** Implementar criação, edição e exclusão de Grandes Metas
+- **LandingPage** (`/`) - Texto institucional estático.
+- **LoginPage** (`/login`) - Formulário interativo (UI), mas sem validação real.
+- **RegisterPage** (`/register`) - Formulário interativo (UI).
+- **ForgotPasswordPage** (`/forgot-password`) - Formulário visual.
 
-#### Tasks
-- [ ] Criar página `/metas/grandes/criar` com form multi-step
-  - [ ] Step 1: Informações básicas (título, descrição, área)
-  - [ ] Step 2: Framework SMART (campos específicos)
-  - [ ] Step 3: Métricas personalizáveis (key-value dinâmico)
-  - [ ] Step 4: Revisão e confirmação
-- [ ] Criar página `/metas/grandes/:id` (detalhe da meta)
-  - [ ] Visualização completa da meta
-  - [ ] Hierarquia de sub-metas (A→M→S→D)
-  - [ ] Timeline/histórico
-  - [ ] Ações (editar, excluir, concluir)
-- [ ] Criar página `/metas/grandes/:id/editar`
-  - [ ] Reutilizar componentes do form de criação
-  - [ ] Preencher com dados existentes
-- [ ] Implementar exclusão com confirmação (modal)
-- [ ] Implementar marcação de meta como concluída
-- [ ] Adicionar validação com Zod + React Hook Form
-
-#### Critérios de Aceite
-- [ ] Usuário consegue criar uma Grande Meta completa
-- [ ] Usuário consegue visualizar detalhes de uma meta
-- [ ] Usuário consegue editar uma meta existente
-- [ ] Usuário consegue excluir uma meta
-- [ ] Validações impedem dados inválidos
-- [ ] Dados persistem no estado local (mock avançado)
+**Avaliação:** Completamente visual. O botão "Entrar" apenas seta o estado `isAuthenticated` como true no contexto.
 
 ---
 
-### Sprint 2: CRUD de Metas (Anuais/Mensais/Semanais/Diárias)
+### 2. Dashboard (95% Visual)
 
-**Objetivo:** Implementar CRUD para os demais níveis hierárquicos
+- **Arquivo:** `src/app/pages/DashboardPage.tsx` (260 linhas)
+- **Funcionalidade:**
+  - Exibe stats (tarefas, sequência, hábitos) vindos do mock.
+  -ONE Thing banner (visual).
+  - Lista de Grandes Metas com progress rings.
+  - Lista de Áreas com barras de progresso.
+- **Interatividade:** Nenhuma ação clicável leva a lugar nenhum (os links existem mas os destinos são placeholders).
 
-#### Tasks
-- [ ] Criar forms para Metas Anuais (`/metas/anual/criar` e `/metas/anual/:id/editar`)
-  - [ ] Seleção da Grande Meta pai
-  - [ ] Campos específicos de meta anual
-- [ ] Criar forms para Metas Mensais (`/metas/mensal/criar` e `/metas/mensal/:id/editar`)
-  - [ ] Seleção da Meta Anual pai
-  - [ ] Campos específicos de meta mensal
-- [ ] Criar forms para Metas Semanais (`/metas/semanal/criar` e `/metas/semanal/:id/editar`)
-  - [ ] Seleção da Meta Mensal pai
-  - [ ] Campos específicos de meta semanal
-- [ ] Criar forms para Metas Diárias (`/metas/diaria/criar` e `/metas/diaria/:id/editar`)
-  - [ ] Seleção da Meta Semanal pai
-  - [ ] Campos específicos de meta diária
-- [ ] Criar componente reutilizável `MetaForm` com variações por nível
-- [ ] Implementar navegação hierárquica (breadcrumbs melhorados)
-- [ ] Criar páginas de detalhe para cada nível (opcional: reutilizar componente)
-
-#### Critérios de Aceite
-- [ ] CRUD completo para todos os níveis hierárquicos
-- [ ] Navegação fluida entre níveis (pai → filho)
-- [ ] Componente de form reutilizável e manutenível
-- [ ] Validações específicas por tipo de meta
+**Avaliação:** Visual com dados mockados. O botão "Ver Agenda" leva a uma página real, mas sem dados de filtro.
 
 ---
 
-### Sprint 3: CRUD de Áreas e Tarefas
+### 3. Áreas de Vida (60% Visual)
 
-**Objetivo:** Implementar CRUD para Áreas de Vida e Tarefas da Agenda
+- **Arquivo:** `src/app/pages/areas/AreasListPage.tsx`
+- **Funcionalidade:**
+  - Grid de cards das áreas.
+  - Barra de progresso geral.
+  - Link para detalhe (`/areas/:id`).
+- **Botões:** "Nova Área" e "Adicionar nova área" existem mas são visuais.
 
-#### Tasks
+**Rotas Pendentes:**
+- `/areas/:id` → `PlaceholderPage`
+- `/areas/:id/edit` → `PlaceholderPage`
+- `/areas/criar` → Não existe rota
 
-**Áreas de Vida:**
-- [ ] Criar página `/areas/criar` com form de nova área
-  - [ ] Campo nome
-  - [ ] Seleção de cor (color picker)
-  - [ ] Seleção de ícone (biblioteca de ícones)
-  - [ ] Descrição opcional
-- [ ] Criar página `/areas/:id` (detalhe da área)
-  - [ ] Visualização completa da área
-  - [ ] Lista de metas associadas
-  - [ ] Estatísticas de progresso
-  - [ ] Timeline de atividades
-- [ ] Criar página `/areas/:id/editar`
-- [ ] Implementar exclusão de área com confirmação
-- [ ] Verificar dependências antes de excluir (metas associadas)
-
-**Tarefas (Agenda):**
-- [ ] Criar página `/agenda/tarefas/criar`
-  - [ ] Título da tarefa
-  - [ ] Seleção do bloco de tempo (manhã/tarde/noite/etc)
-  - [ ] Associação com meta diária (opcional)
-  - [ ] Prioridade (alta/média/baixa)
-  - [ ] Hora agendada
-  - [ ] Recorrência (uma vez, diária, semanal)
-- [ ] Criar página `/agenda/tarefas/:id/editar`
-- [ ] Implementar exclusão de tarefa
-- [ ] Implementar marcação de tarefa como concluída (já parcialmente funcional)
-- [ ] Adicionar "Tarefas Atrasadas" com lógica de datas
-
-#### Critérios de Aceite
-- [ ] CRUD completo de Áreas de Vida
-- [ ] CRUD completo de Tarefas
-- [ ] Área não pode ser excluída se tiver metas associadas
-- [ ] Tarefas atrasadas aparecem automaticamente no bloco correto
-- [ ] Recorrência funciona (tarefas diárias/semanais se repetem)
+**Avaliação:** Visual. Botões não funcionam.
 
 ---
 
-## Fase 2: Páginas Pendentes (Sprints 4-5)
+### 4. Metas (Hierarquia G/A/M/S/D) (40% Visual)
 
-### Sprint 4: Agenda Semanal e Revisão Mensal
+Listas existentes:
+- **GrandesMetasPage** (`/metas/grandes`)
+- **MetasAnuaisPage** (`/metas/anual`)
+- **MetasMensaisPage** (`/metas/mensal`)
+- **MetasSemanaisPage** (`/metas/semanal`)
+- **MetasDiariasPage** (`/metas/diaria`)
 
-**Objetivo:** Completar as funcionalidades de planejamento semanal e revisão mensal
+**O que funciona:**
+- Listas com cards visuais.
+- Expansão de "Metas Anuais vinculadas" em Grandes Metas.
+- Status badges.
+- Progress bars e rings.
 
-#### Tasks
+**O que NÃO funciona (Placeholder):**
+- Todas as páginas de detalhe (`/metas/grandes/:id`)
+- Todas as páginas de criação (`/metas/grandes/criar`)
+- Todas as páginas de edição (`/metas/grandes/:id/editar`)
 
-**Agenda Semanal:**
-- [ ] Implementar página `/agenda/semana`
-  - [ ] Visualização em grid de 7 dias
-  - [ ] Cada dia mostra blocos de tempo resumidos
-  - [ ] Visualização de ONE Thing por dia
-  - [ ] Indicadores de produtividade (cores)
-- [ ] Implementar navegação entre semanas (anterior/próxima)
-- [ ] Implementar "Hoje" (voltar para semana atual)
-- [ ] Permitir click em um dia para ir para `/agenda/hoje` filtrado
-- [ ] Mostrar resumo semanal (total de tarefas, concluídas, taxa)
-
-**Revisão Mensal:**
-- [ ] Implementar página `/revisoes/mensal`
-  - [ ] Checklist de reflexão mensal (template de perguntas)
-  - [ ] Resumo do mês (metas concluídas, pendentes)
-  - [ ] Análise por área de vida (progresso mensal)
-  - [ ] Campo "Vitória do mês"
-  - [ ] Campo "Aprendizados do mês"
-  - [ ] Campo "Foco para o próximo mês"
-- [ ] Criar template de perguntas configurável
-- [ ] Implementar histórico de revisões mensais
-
-#### Critérios de Aceite
-- [ ] Agenda semanal funcional e navegável
-- [ ] Revisão mensal com checklist completo
-- [ ] Dados persistem entre sessões (localStorage)
-- [ ] Interface responsiva para mobile
+**Avaliação:** Listas prontas (UI), mas sem fluxo de criação/edição. O usuário pode apenas visualizar as metas mockadas.
 
 ---
 
-### Sprint 5: Detalhes, Templates e Configurações
+### 5. Agenda (80% Parcialmente Funcional)
 
-**Objetivo:** Completar páginas de detalhe e funcionalidades de configuração
+- **AgendaHojePage** (`/agenda/hoje`) - **A página mais funcional do app.**
+  - Renderiza blocos de tempo (ONE Thing, Manhã, Tarde, Noite, etc).
+  - **Checkbox de tarefas funciona:** Atualiza o estado local (`toggleTarefa` no Context).
+  - UI de collapsed/expanded dos blocos.
+- **AgendaSemanaPage** (`/agenda/semana`) - Visual completa, mas navegação entre semanas não funcional.
+- **Criação de Tarefas:** `PlaceholderPage`.
 
-#### Tasks
-
-**Detalhe de Template:**
-- [ ] Implementar página `/templates/:id`
-  - [ ] Visualização da estrutura completa do template
-  - [ ] Lista de metas que serão criadas
-  - [ ] Descrição e objetivo do template
-  - [ ] Botão "Aplicar Template"
-  - [ ] Modal de confirmação com seleção de área
-
-**Configurações - Geral:**
-- [ ] Implementar `/configuracoes/geral`
-  - [ ] Tema (claro/escuro/sistema)
-  - [ ] Idioma (PT/EN/ES)
-  - [ ] Formato de data e hora
-  - [ ] Zona horária
-  - [ ] Exportar dados (JSON)
-  - [ ] Importar dados (JSON)
-
-**Configurações - Segurança:**
-- [ ] Implementar `/configuracoes/seguranca`
-  - [ ] Alterar senha (form com senha atual + nova)
-  - [ ] Autenticação de dois fatores (2FA) - UI apenas
-  - [ ] Sessões ativas (lista mock)
-  - [ ] Log de atividades (lista mock)
-
-**Configurações - Notificações:**
-- [ ] Implementar `/configuracoes/notificacoes`
-  - [ ] Notificações por email (toggle)
-  - [ ] Notificações push (toggle)
-  - [ ] Lembretes diários (horário configurável)
-  - [ ] Lembretes de metas (prazo próximo)
-  - [ ] Resumo semanal (dia/hora configurável)
-
-#### Critérios de Aceite
-- [ ] Página de detalhe de template funcional
-- [ ] Configurações de Geral, Segurança e Notificações implementadas
-- [ ] Tema escuro funciona globalmente
-- [ ] Preferências persistem no localStorage
+**Avaliação:** Única página com estado reativo real (checkbox). As demais são visuais.
 
 ---
 
-## Fase 3: Backend e Persistência (Sprints 6-7)
+### 6. Revisões (90% Visual)
 
-### Sprint 6: Setup Supabase e Auth Real
+- **RevisaoSemanalPage** (`/revisoes/semanal`)
+  - Checklist interativo ( State local `useState`).
+  - Campos de texto (Reflexão, Vitória) funcionam ( State local).
+  - Stats da semana vindos do mock.
+- **RevisaoMensalPage** (`/revisoes/mensal`) - Visual.
 
-**Objetivo:** Configurar backend e migrar autenticação para Supabase
-
-#### Tasks
-
-**Setup:**
-- [ ] Criar projeto Supabase
-- [ ] Configurar PostgreSQL
-- [ ] Configurar Storage para avatares
-- [ ] Configurar variáveis de ambiente (.env)
-- [ ] Instalar e configurar `@supabase/supabase-js`
-
-**Autenticação:**
-- [ ] Migrar `useAuth` mockado para Supabase Auth
-- [ ] Implementar registro real com email/senha
-- [ ] Implementar login real
-- [ ] Implementar recuperação de senha real
-- [ ] Implementar logout
-- [ ] Configurar persistência de sessão
-- [ ] Criar middleware de proteção de rotas
-
-**Usuário:**
-- [ ] Criar tabela `profiles` no Supabase
-- [ ] Sincronizar dados do usuário com Supabase
-- [ ] Upload de avatar para Storage
-- [ ] Atualizar perfil no banco
-
-#### Critérios de Aceite
-- [ ] Registro funciona com Supabase
-- [ ] Login funciona com Supabase
-- [ ] Dados do usuário persistem no banco
-- [ ] Sessão persiste entre reloads
-- [ ] Proteção de rotas funciona corretamente
+**Avaliação:** Checklist e forms funcionam localmente, mas os dados não são salvos em nenhum lugar.
 
 ---
 
-### Sprint 7: Persistência de Dados (CRUD Real)
+### 7. Conquistas e Templates (100% Visual)
 
-**Objetivo:** Migrar todos os dados mockados para Supabase
+- **ConquistasPage** - Grid de badges.
+- **TemplatesListPage** - Grid de templates.
 
-#### Tasks
-
-**Schema do Banco:**
-- [ ] Criar tabela `areas` (id, user_id, name, color, icon, description, created_at)
-- [ ] Criar tabela `metas` (id, user_id, area_id, parent_id, nivel, titulo, descricao, smart_fields, metrics, status, one_thing, created_at, updated_at)
-- [ ] Criar tabela `tarefas` (id, user_id, meta_id, titulo, bloco, hora, prioridade, completed, recorrencia, data, created_at)
-- [ ] Criar tabela `revisoes_semanais` (id, user_id, data, checklist, stats, notas)
-- [ ] Criar tabela `revisoes_mensais` (id, user_id, mes, ano, checklist, stats, notas)
-- [ ] Criar tabela `conquistas` (id, user_id, tipo, desbloqueada_em, progresso)
-- [ ] Configurar RLS (Row Level Security) em todas as tabelas
-- [ ] Criar índices para performance
-
-**Hooks de API:**
-- [ ] Criar `useAreasApi` (substituir mock)
-- [ ] Criar `useMetasApi` (substituir mock)
-- [ ] Criar `useTarefasApi` (substituir mock)
-- [ ] Criar `useRevisoesApi` (substituir mock)
-- [ ] Criar `useConquistasApi` (substituir mock)
-
-**Integração:**
-- [ ] Substituir todos os dados mockados por chamadas API
-- [ ] Implementar loading states
-- [ ] Implementar error handling
-- [ ] Implementar cache local (React Query ou SWR)
-- [ ] Criar sistema de retry para falhas de rede
-
-#### Critérios de Aceite
-- [ ] Todas as entidades persistem no Supabase
-- [ ] RLS protege dados do usuário
-- [ ] CRUD completo funciona com backend real
-- [ ] Loading states em todas as operações
-- [ ] Erros são tratados e exibidos ao usuário
+**Avaliação:** Completamente visual. Nenhuma interação.
 
 ---
 
-## Fase 4: Polish e Launch (Sprints 8-9)
+### 8. Configurações (40% Parcialmente Funcional)
 
-### Sprint 8: UX, Animações e Performance
+- **Perfil** (`/configuracoes/perfil`)
+  - **Forms interativos:** Name, Email, Bio.
+  - Estado local gerencia os inputs.
+  - Feedback visual de "Salvo!" (simulado).
+- **Geral** (`/configuracoes/geral`) - Visual estática.
+- **Segurança** (`/configuracoes/seguranca`)
+  - Formulário de alterar senha (visual).
+  - Inputs Controlled (State local), mas sem ação no submit.
+- **Notificações** (`/configuracoes/notificacoes`)
+  - Toggle switches funcionam (State local).
 
-**Objetivo:** Melhorar experiência do usuário com animações, estados vazios e otimizações
-
-#### Tasks
-
-**Animações:**
-- [ ] Implementar transições de página com Framer Motion
-- [ ] Adicionar animações em modais e dialogs
-- [ ] Animar progresso de metas (círculos e barras)
-- [ ] Animação de conclusão de tarefa (confetti)
-- [ ] Skeleton loaders para todas as páginas
-- [ ] Transições suaves no dark mode
-
-**UX Melhorias:**
-- [ ] Criar empty states para todas as listas
-- [ ] Adicionar tooltips em ícones e botões
-- [ ] Implementar toast notifications (Sonner já instalado)
-- [ ] Adicionar confirmações para ações destrutivas
-- [ ] Implementar undo/redo para exclusões (opcional)
-- [ ] Melhorar feedback visual de loading
-
-**Performance:**
-- [ ] Implementar lazy loading de rotas
-- [ ] Code splitting por módulo
-- [ ] Otimizar imagens (avatares, ícones)
-- [ ] Implementar virtualização para listas longas
-- [ ] Analisar bundle size
-
-**Mobile:**
-- [ ] Revisar responsividade em todas as páginas
-- [ ] Otimizar menu mobile inferior
-- [ ] Testar touch gestures
-- [ ] Ajustar fontes e espaçamentos para mobile
-
-#### Critérios de Aceite
-- [ ] Animações fluidas em todas as interações
-- [ ] Empty states em todas as listas
-- [ ] Performance aceitável (LCP < 2.5s)
-- [ ] Responsividade funciona em todos os breakpoints
+**Avaliação:** Formulários possuem estado local, mas não salvam em storage nem backend.
 
 ---
 
-### Sprint 9: Testes, Segurança e Deploy
+## Análise de Funcionalidade
 
-**Objetivo:** Garantir qualidade e fazer deploy em produção
+### Estado (React State)
 
-#### Tasks
+O projeto usa `AppContext` (`src/app/contexts/AppContext.tsx`) para gerenciar dados.
 
-**Testes:**
-- [ ] Configurar Vitest para testes unitários
-- [ ] Escrever testes para hooks customizados
-- [ ] Escrever testes para componentes críticos
-- [ ] Configurar Playwright para testes E2E
-- [ ] Criar testes E2E para fluxo principal (login → criar meta → dashboard)
-- [ ] Configurar coverage report (meta: 60%)
+```typescript
+// Exemplo de dado mockado (linha 57)
+const [grandesMetas] = useState<Meta[]>(mockGrandesMetas);
+```
 
-**Segurança:**
-- [ ] Auditar dependências (`npm audit`)
-- [ ] Revisar políticas RLS do Supabase
-- [ ] Implementar rate limiting nas APIs
-- [ ] Sanitizar inputs (proteção XSS)
-- [ ] Configurar headers de segurança no Vercel
+- Todos os dados principais são inicializados com `mockData` e são **read-only** (não há setters para criar novos dados, apenas `toggleTarefa` para marcar como completo).
+- Não há `localStorage` ou `IndexedDB` implementado.
 
-**Deploy:**
-- [ ] Configurar projeto no Vercel
-- [ ] Configurar variáveis de ambiente de produção
-- [ ] Configurar Supabase para produção
-- [ ] Executar deploy de produção
-- [ ] Configurar domínio personalizado (se aplicável)
-- [ ] Configurar SSL/HTTPS
-- [ ] Configurar monitoramento (Sentry)
-- [ ] Configurar analytics (Plausible/Google Analytics)
+### Rotas e Navegação
 
-**Documentação:**
-- [ ] Atualizar README.md com instruções de uso
-- [ ] Criar CHANGELOG.md
-- [ ] Documentar API (se houver)
-- [ ] Criar guia de contribuição (se open source)
+O arquivo `routes.ts` define 39 rotas. O padrão observed é:
 
-#### Critérios de Aceite
-- [ ] Testes unitários passando
-- [ ] Testes E2E passando
-- [ ] Aplicação online em produção
-- [ ] Nenhuma vulnerabilidade crítica
-- [ ] Monitoramento ativo
+```typescript
+// Exemplo de rota para detalhe (não implementado)
+{ path: '/metas/grandes/:id', Component: PlaceholderPage },
+```
+
+### Stack tecnológica
+
+- **Framework:** React 18 + Vite
+- **Roteamento:** React Router 7
+- **Estilização:** Tailwind CSS 4 + shadcn/ui (Radix UI)
+- **Ícones:** Lucide React
+- **Gráficos:** Recharts
+- **Animações:** Motion (Framer Motion)
+- **Forms:** React Hook Form (instalado, mas não utilizado nas páginas)
+- **Validação:** Zod (instalado, mas não utilizado)
 
 ---
 
-## 📅 Resumo das Sprints
+## Gaps Identificados vs. Roadmap Atual
 
-| Sprint | Foco | Duração Estimada | Principais Entregas |
-|--------|------|------------------|---------------------|
-| **S1** | CRUD Grandes Metas | 1 semana | Forms de criação/edição, detalhe da meta |
-| **S2** | CRUD Metas A/M/S/D | 1 semana | Forms para todos os níveis hierárquicos |
-| **S3** | CRUD Áreas e Tarefas | 1 semana | CRUD completo de áreas e tarefas |
-| **S4** | Agenda Semanal + Revisão Mensal | 1 semana | Planejamento semanal, revisão mensal |
-| **S5** | Detalhes e Configurações | 1 semana | Templates aplicáveis, configurações funcionais |
-| **S6** | Backend - Auth | 1 semana | Supabase Auth, registro/login real |
-| **S7** | Backend - Dados | 1 semana | Persistência real de todas as entidades |
-| **S8** | Polish | 1 semana | Animações, empty states, performance |
-| **S9** | Launch | 1 semana | Testes, deploy, monitoramento |
+O roadmap atual (`docs/ROADMAP.md`) lista 9 Sprints. Com base na análise real, o roadmap superestimou o estado de "pronto".
 
-**Total:** 9 sprints (~9 semanas)
+### O que o Roadmap disse vs. Realidade
 
----
+| Área | Roadmap Diz | Realidade |
+|------|-------------|-----------|
+| Landing/Auth | ✅ Pronto | ✅ Visual Pronto |
+| Dashboard | ✅ Pronto | ✅ Visual Pronto |
+| Áreas de Vida | ✅ Pronto (Lista) | ✅ Lista Pronta, CRUD Não |
+| Metas (G) | ✅ Pronto (Lista) | ✅ Lista Pronta, Forms Falta |
+| Metas (A/M/S/D) | ✅ Pronto (Lista) | ✅ Lista Pronta, Forms Falta |
+| Agenda Hoje | ✅ Pronto | ⚠️ Quase (Toggle funciona) |
+| Agenda Semana | ❌ Falta | ✅ Visual Pronto |
+| Revisão Semanal | ❌ Falta | ⚠️ Checklist funciona |
+| Revisão Mensal | ❌ Falta | ✅ Visual Pronto |
+| Configurações | ⚠️ Parcial | ⚠️ Forms locais (Perfil, Notif) |
 
-## 🎯 Priorização de Features (Após MVP)
-
-### Alta Prioridade (P1)
-- [ ] Drag & drop para reordenar tarefas
-- [ ] Sistema de notificações push
-- [ ] App mobile (PWA)
-- [ ] Integração com calendário (Google/Outlook)
-
-### Média Prioridade (P2)
-- [ ] Colaboração (compartilhar metas)
-- [ ] Integração com agente de IA
-- [ ] Relatórios avançados (PDF)
-- [ ] Gamificação avançada (níveis, ranking)
-
-### Baixa Prioridade (P3)
-- [ ] Integração com wearables
-- [ ] API pública
-- [ ] Marketplace de templates
-- [ ] Versão white-label
+**Conclusão:** O projeto está na **Fase 1 (Visual)** maspenas no início da **Fase 2 (Interatividade)**. A estimativa de 9 sprints pode ser mantida, mas a **Sprint 1 deve ser muito mais longa** (equivalente a quase todas as Sprints 1-3 originais).
 
 ---
 
-## 📝 Notas Importantes
+## Proposta de Roadmap Atualizado
 
-### Durante o Desenvolvimento
-1. **Manter dados mockados** até a Sprint 6 para permitir desenvolvimento offline
-2. **Criar componentes reutilizáveis** para forms (MetaForm, AreaForm, etc.)
-3. **Validação sempre no client e server** (Zod + Supabase constraints)
-4. **Feature flags** para funcionalidades de risco
-5. **Commits frequentes** com mensagens claras
+Com base na realidade do código, proponho uma reestruturação das fases focando na construção do **CRUD completo** antes de avançarfazer backend.
 
-### Checkpoints de Qualidade
-- [ ] Ao final de cada sprint: revisar com stakeholders
-- [ ] Sprint 3: Demonstração de CRUD completo
-- [ ] Sprint 5: Demo de funcionalidades 100% offline
-- [ ] Sprint 7: Demo com backend real
-- [ ] Sprint 9: Go/No-go para produção
+### Fase 1: Infraestrutura e Estado Local (Sprints 1-2)
 
-### Dívida Técnica
-- Reservar 10% do tempo de cada sprint para refatoração
-- Manter TODOs documentados no código
-- Revisar código após cada sprint
+**Objetivo:** Tirar o app do modo visual-only para o modo interativo com dados reais no Supabase.
 
----
+**Sprint 1: Sistema de Dados e Componentes de Formulário** ✅ CONCLUÍDO
+- [x] Configurar **Zod + React Hook Form** (já estava instalado)
+- [x] Criar projeto Supabase "goal_planner_uat3"
+- [x] Criar schema do banco (7 tabelas: areas, metas, tarefas, revisoes_semanais, revisoes_mensais, templates, conquistas)
+- [x] Configurar RLS (Row Level Security) em todas as tabelas
+- [x] Integrar Supabase no frontend (@supabase/supabase-js)
+- [x] Criar cliente `src/lib/supabase.ts` com tipos TypeScript
+- [x] Criar services (areasService, metasService, tarefasService)
+- [x] Atualizar AppContext para usar dados reais do Supabase
+- [x] Implementar autenticação (login/register/logout via Supabase Auth)
 
-## 📊 Métricas de Sucesso
-
-### Sprint 3 (CRUD Completo)
-- [ ] Todas as entidades com CRUD funcional
-- [ ] 0 bugs críticos
-- [ ] Interface responsiva em todos os breakpoints
-
-### Sprint 5 (Features Completas)
-- [ ] 100% das páginas principais implementadas
-- [ ] Fluxo de usuário completo (landing → registro → criação de meta → dashboard)
-- [ ] Dados persistem no localStorage
-
-### Sprint 7 (Backend)
-- [ ] 100% dos dados persistem no Supabase
-- [ ] RLS funcionando corretamente
-- [ ] Performance: < 500ms para carregar dashboard
-
-### Sprint 9 (Launch)
-- [ ] 0 bugs críticos
-- [ ] Lighthouse score > 80
-- [ ] Test coverage > 60%
-- [ ] Uptime de 99.9%
+**Sprint 2: Fluxos de Criação e Edição** ⏳ EM ANDAMENTO
+- [x] Criar páginas de **detalhe** (`/areas/:id`) e **edição** (`/areas/:id/edit`) para Áreas
+- [x] Implementar formulários com validação (Zod + React Hook Form)
+- [x] Criar componentes de seleção (EmojiPicker, ColorPicker)
+- [ ] Criar página de **criação** para Áreas (`/areas/criar`)
+- [ ] Implementar páginas de detalhe/edição/criação para **Metas** (todas as hierarquias)
+- [ ] Implementar Empty States para todas as entidades
+- [ ] Implementar criação de **Tarefas** vinculada a Metas
 
 ---
 
-**Este roadmap é um guia vivo. Ajustar conforme feedback e descobertas durante o desenvolvimento.**
+### Fase 2: Funcionalidades Avançadas (Sprints 3-4)
+
+**Objetivo:** Completar as lógicas de negócio que dependem do CRUD.
+
+**Sprint 3: Agenda Semanal, Revisões e Configurações**
+- [ ] Implementar lógica de **Agenda Semanal** com navegação entre semanas.
+- [ ] Implementar **Revisão Mensal** com persistência.
+- [ ] Implementar **Revisão Semanal** com persistência.
+- [ ] Implementar **Configurações funcionais** (Geral, Segurança, Notificações).
+- [ ] Implementar **Templates** (detalhe + aplicar).
+
+**Sprint 4: Polish, UX e Performance**
+- [ ] Substituir `PlaceholderPage` por **páginas de erro 404**.
+- [ ] Implementar **animações de transição** (Framer Motion).
+- [ ] Implementar **toast notifications** (Sonner).
+- [ ] **Performance:** Lazy loading de rotas.
+- [ ] **Mobile:** Revisão final de responsividade.
+
+---
+
+### Fase 3: Backend e Launch (Sprints 5-6)
+
+(inalterado em relação ao roadmap anterior)
+
+---
+
+## Atualizações Recentes (06/04/2026)
+
+desde a última atualização do roadmap (03/04/2026), implementamos as seguintes mudanças significativas:
+
+1. **Infraestrutura de Backend (Supabase):**
+   - Configuramos o cliente Supabase em `src/lib/supabase.ts` com tipos TypeScript completos para 7 tabelas (areas, metas, tarefas, revisoes_semanais, revisoes_mensais, templates, conquistas).
+   - Criamos services para interacting com o banco:
+     - `src/services/areasService.ts`
+     - `src/services/metasService.ts`
+     - `src/services/tarefasService.ts`
+
+2. **Integração no Frontend:**
+   - Atualizamos `src/app/contexts/AppContext.tsx` para usar dados reais do Supabase em vez de mock data.
+   - Implementamos autenticação real (login/logout/register) via Supabase Auth.
+   - As funções de carregar dados (loadAreas, loadMetas, loadTarefas) agora buscam do banco.
+
+3. **Novas Páginas Criadas:**
+   - `src/app/pages/areas/AreaDetailPage.tsx` (página de detalhe de área)
+   - `src/app/pages/areas/AreaEditPage.tsx` (página de edição de área)
+   - Componentes de formulário em `src/app/components/forms/`
+   - Componentes de empty state em `src/app/components/empty-state/`
+   - Schema de validação em `src/app/pages/areas/areaFormSchema.ts`
+
+---
+
+## Recomendação de Próximos Passos
+
+1.  **Próximo Passo:** Implementar as páginas de **Criação** (`/areas/criar`) para fechar o ciclo de CRUD de Áreas.
+2.  **Meta:** Criar as páginas de detalhe/edição/criação para **Metas** (Grandes Metas, Anuais, Mensais, Semanais, Diárias).
+3.  **UX:** Adicionar **Empty States** (estados vazios) nas listas para melhorar a experiência do usuário quando não há dados.
+
+---
+
+## Referências de Código
+
+- **Rotas:** `src/app/routes.ts:1-125`
+- **Supabase Client:** `src/lib/supabase.ts:1-10`
+- **Services:** `src/services/areasService.ts`, `src/services/metasService.ts`, `src/services/tarefasService.ts`
+- **Contexto:** `src/app/contexts/AppContext.tsx:1-259`
+- **Exemplo de Página Funcional (Áreas):** `src/app/pages/areas/AreaEditPage.tsx:1-175`
+
+---
+
+*Este documento reflete o estado do código em 06/04/2026.*

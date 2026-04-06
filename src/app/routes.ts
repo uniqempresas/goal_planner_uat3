@@ -12,27 +12,8 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 import DashboardPage from './pages/DashboardPage';
 import AreasListPage from './pages/areas/AreasListPage';
-
-import GrandesMetasPage from './pages/metas/GrandesMetasPage';
-import MetasAnuaisPage from './pages/metas/MetasAnuaisPage';
-import MetasMensaisPage from './pages/metas/MetasMensaisPage';
-import MetasSemanaisPage from './pages/metas/MetasSemanaisPage';
-import MetasDiariasPage from './pages/metas/MetasDiariasPage';
-
-import AgendaHojePage from './pages/agenda/AgendaHojePage';
-import AgendaSemanaPage from './pages/agenda/AgendaSemanaPage';
-
-import RevisaoSemanalPage from './pages/revisoes/RevisaoSemanalPage';
-import RevisaoMensalPage from './pages/revisoes/RevisaoMensalPage';
-
-import ConquistasPage from './pages/ConquistasPage';
-import TemplatesListPage from './pages/templates/TemplatesListPage';
-
-import ConfiguracoesPage from './pages/configuracoes/ConfiguracoesPage';
-import ConfiguracoesPerfilPage from './pages/configuracoes/ConfiguracoesPerfilPage';
-import ConfiguracoesGeralPage from './pages/configuracoes/ConfiguracoesGeralPage';
-import ConfiguracoesSegurancaPage from './pages/configuracoes/ConfiguracoesSegurancaPage';
-import ConfiguracoesNotificacoesPage from './pages/configuracoes/ConfiguracoesNotificacoesPage';
+import AreaDetailPage from './pages/areas/AreaDetailPage';
+import AreaEditPage from './pages/areas/AreaEditPage';
 
 import PlaceholderPage from './pages/PlaceholderPage';
 
@@ -59,8 +40,8 @@ export const router = createBrowserRouter([
 
       // Áreas
       { path: '/areas', Component: AreasListPage },
-      { path: '/areas/:id', Component: PlaceholderPage },
-      { path: '/areas/:id/edit', Component: PlaceholderPage },
+      { path: '/areas/:id', Component: AreaDetailPage },
+      { path: '/areas/:id/edit', Component: AreaEditPage },
 
       // Metas
       { path: '/metas', loader: () => redirect('/metas/grandes') },

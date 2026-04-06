@@ -1,0 +1,175 @@
+import { useParams, useNavigate, Link } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowLeft } from 'lucide-react';
+import { useApp } from '../../contexts/AppContext';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
+import EmojiPicker from '../../components/forms/EmojiPicker';
+import ColorPicker from '../../components/forms/ColorPicker';
+import { areaFormSchema, type AreaFormSchema } from './areaFormSchema';
+
+export default function AreaEditPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { getAreaById, updateArea } = useApp();
+
+  const area = getAreaById(id || '');
+
+  const form = useForm<AreaFormSchema>({
+    resolver: zodResolver(areaFormSchema),
+    defaultValues: {
+      name: area?.name || '',
+      emoji: area?.emoji || '🎯',
+      color: area?.color || '#6366f1',
+      description: area?.description || '',
+    },
+  });
+
+  if (!area) {
+    return (
+      <div className="p-6 max-w-5xl mx-auto">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/areas')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-xl text-slate-800">Área não encontrada</h1>
+        </div>
+        <Card>
+          <CardContent className="py-10 text-center text-slate-500">
+            A área que você está editando não existe ou foi removida.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const onSubmit = async (values: AreaFormSchema) => {
+    try {
+      await updateArea(id!, values);
+      navigate(`/areas/${id}`);
+    } catch (error) {
+      console.error('Erro ao atualizar área:', error);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <Link to="/areas" className="hover:text-indigo-600">Áreas</Link>
+        <span>/</span>
+        <Link to={`/areas/${id}`} className="hover:text-indigo-600">{area.name}</Link>
+        <span>/</span>
+        <span className="text-slate-800">Editar</span>
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" onClick={() => navigate(`/areas/${id}`)}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-xl text-slate-800">Editar Área</h1>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações da Área</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Nome */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Carreira, Saúde, Família" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Emoji */}
+              <FormField
+                control={form.control}
+                name="emoji"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ícone (Emoji)</FormLabel>
+                    <FormControl>
+                      <EmojiPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Cor */}
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cor</FormLabel>
+                    <FormControl>
+                      <ColorPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Descrição */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Descreva os objetivos desta área de vida..." 
+                        className="resize-none" 
+                        rows={4}
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-3">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => navigate(`/areas/${id}`)}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit">
+              Salvar Alterações
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+}
