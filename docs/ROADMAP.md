@@ -1,14 +1,14 @@
 ---
-date: 2026-04-06T10:00:00-03:00
+date: 2026-04-06T18:00:00-03:00
 researcher: vibe-researcher
-git_commit: 
+git_commit: a699083
 branch: main
 repository: goal_planner_uat3
-topic: "Roadmap Atualizado - Sprint 1 Concluída e Progresso na Sprint 2"
-tags: [research, roadmap, implementation-status, sprint-1, sprint-2]
+topic: "Roadmap Atualizado - Sprint 2 CONCLUÍDA"
+tags: [research, roadmap, sprint-2, complete]
 status: complete
 last_updated: 2026-04-06
-last_updated_by: vibe-researcher
+last_updated_by: neo
 ---
 
 # Pesquisa: Roadmap Atualizado - Sprint 1 Concluída
@@ -230,14 +230,14 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 - [x] Atualizar AppContext para usar dados reais do Supabase
 - [x] Implementar autenticação (login/register/logout via Supabase Auth)
 
-**Sprint 2: Fluxos de Criação e Edição** ⏳ EM ANDAMENTO
+**Sprint 2: Fluxos de Criação e Edição** ✅ CONCLUÍDO
 - [x] Criar páginas de **detalhe** (`/areas/:id`) e **edição** (`/areas/:id/edit`) para Áreas
 - [x] Implementar formulários com validação (Zod + React Hook Form)
 - [x] Criar componentes de seleção (EmojiPicker, ColorPicker)
-- [ ] Criar página de **criação** para Áreas (`/areas/criar`)
-- [ ] Implementar páginas de detalhe/edição/criação para **Metas** (todas as hierarquias)
-- [ ] Implementar Empty States para todas as entidades
-- [ ] Implementar criação de **Tarefas** vinculada a Metas
+- [x] Criar página de **criação** para Áreas (`/areas/criar`)
+- [x] Implementar páginas de detalhe/edição/criação para **Metas** (todas as hierarquias)
+- [x] Implementar Empty States para todas as entidades
+- [x] Implementar criação de **Tarefas** vinculada a Metas
 
 ---
 
@@ -269,26 +269,31 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 
 ## Atualizações Recentes (06/04/2026)
 
+### Sprint 2 CONCLUÍDA ✅
+
 desde a última atualização do roadmap (03/04/2026), implementamos as seguintes mudanças significativas:
 
-1. **Infraestrutura de Backend (Supabase):**
-   - Configuramos o cliente Supabase em `src/lib/supabase.ts` com tipos TypeScript completos para 7 tabelas (areas, metas, tarefas, revisoes_semanais, revisoes_mensais, templates, conquistas).
-   - Criamos services para interacting com o banco:
-     - `src/services/areasService.ts`
-     - `src/services/metasService.ts`
-     - `src/services/tarefasService.ts`
+1. **Fase 1 - Criação de Áreas:**
+   - Nova rota `/areas/criar`
+   - `AreaCreatePage.tsx` com formulário de criação
 
-2. **Integração no Frontend:**
-   - Atualizamos `src/app/contexts/AppContext.tsx` para usar dados reais do Supabase em vez de mock data.
-   - Implementamos autenticação real (login/logout/register) via Supabase Auth.
-   - As funções de carregar dados (loadAreas, loadMetas, loadTarefas) agora buscam do banco.
+2. **Fase 2 - CRUD de Metas (Genérico):**
+   - `metaFormSchema.ts` com validação Zod
+   - 3 páginas genéricas: `MetaCreatePage`, `MetaDetailPage`, `MetaEditPage`
+   - 15 novas rotas (criar/detalhe/editar para cada nível G/A/M/S/D)
+   - Visualização de metas filhas e tarefas vinculadas
 
-3. **Novas Páginas Criadas:**
-   - `src/app/pages/areas/AreaDetailPage.tsx` (página de detalhe de área)
-   - `src/app/pages/areas/AreaEditPage.tsx` (página de edição de área)
-   - Componentes de formulário em `src/app/components/forms/`
-   - Componentes de empty state em `src/app/components/empty-state/`
-   - Schema de validação em `src/app/pages/areas/areaFormSchema.ts`
+3. **Fase 3 - Empty States:**
+   - Implementado em: AreasListPage, GrandesMetasPage, MetasListPage, AgendaHojePage, RevisaoSemanalPage, RevisaoMensalPage
+
+4. **Fase 4 - Criação de Tarefas:**
+   - `tarefaFormSchema.ts` com validação Zod
+   - `TarefaCreatePage.tsx` com vinculação a metas
+   - Rota `/agenda/tarefas/criar` atualizada
+
+---
+
+**PRÓXIMA ETAPA:** Sprint 3 - Agenda Semanal, Revisões e Configurações
 
 ---
 
