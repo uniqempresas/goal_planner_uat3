@@ -13,10 +13,10 @@ export default function AreasListPage() {
           <h1 className="text-slate-800 mb-1">Áreas de Vida</h1>
           <p className="text-slate-500 text-sm">Organize suas metas pelas principais dimensões da sua vida.</p>
         </div>
-        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer">
+        <Link to="/areas/criar" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer">
           <Plus size={15} />
           Nova Área
-        </button>
+        </Link>
       </div>
 
       {/* Overview bar */}
@@ -93,10 +93,10 @@ export default function AreasListPage() {
           </div>
 
           {/* Add area card */}
-          <button className="mt-4 w-full md:w-auto md:min-w-[200px] border-2 border-dashed border-slate-200 hover:border-indigo-300 rounded-xl p-5 flex items-center justify-center gap-3 text-slate-400 hover:text-indigo-500 transition-all cursor-pointer">
+          <Link to="/areas/criar" className="mt-4 w-full md:w-auto md:min-w-[200px] border-2 border-dashed border-slate-200 hover:border-indigo-300 rounded-xl p-5 flex items-center justify-center gap-3 text-slate-400 hover:text-indigo-500 transition-all cursor-pointer">
             <Plus size={20} />
             <span className="text-sm">Adicionar nova área</span>
-          </button>
+          </Link>
         </>
       )}
     </div>
