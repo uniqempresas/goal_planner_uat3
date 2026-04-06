@@ -54,10 +54,14 @@ export const metasService = {
   },
 
   async create(userId: string, meta: Omit<MetaInsert, 'user_id'>): Promise<Meta> {
+    // Normalizar nivel: URL pode ter "grandes" mas banco espera "grande"
+    const nivelNormalizado = meta.nivel?.replace(/s$/, '') as MetaNivel || meta.nivel;
+    
     const { data, error } = await supabase
       .from('metas')
       .insert({ 
         ...meta, 
+        nivel: nivelNormalizado,
         user_id: userId,
         status: meta.status || 'ativa',
         one_thing: meta.one_thing || false,
@@ -73,7 +77,10 @@ export const metasService = {
   async update(id: string, meta: Partial<MetaUpdate>): Promise<Meta> {
     const { data, error } = await supabase
       .from('metas')
-      .update({ ...meta, updated_at: new Date().toISOString() })
+      .update({ 
+        ...meta, 
+        updated_at: meta.updated_at || new Date().toISOString() 
+      })
       .eq('id', id)
       .select()
       .single();

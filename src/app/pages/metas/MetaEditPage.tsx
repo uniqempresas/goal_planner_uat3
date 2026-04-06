@@ -210,7 +210,7 @@ export default function MetaEditPage() {
                       <SelectContent>
                         {areas.map((area) => (
                           <SelectItem key={area.id} value={area.id}>
-                            {area.emoji} {area.name}
+                            {area.icone} {area.nome}
                           </SelectItem>
                         ))}
                       </SelectContent>

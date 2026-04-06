@@ -45,11 +45,13 @@ export default function MetaCreatePage() {
     if (!user) return;
     
     try {
+      const nivelValue = values.nivel || nivel;
+      
       await metasService.create(user.id, {
         titulo: values.titulo,
         descricao: values.descricao || null,
         area_id: values.area_id || null,
-        nivel: values.nivel,
+        nivel: nivelValue,
         one_thing: values.one_thing,
         focusing_question: values.focusing_question || null,
         status: values.status,
@@ -151,7 +153,7 @@ export default function MetaCreatePage() {
                       <SelectContent>
                         {areas.map((area) => (
                           <SelectItem key={area.id} value={area.id}>
-                            {area.emoji} {area.name}
+                            {area.icone} {area.nome}
                           </SelectItem>
                         ))}
                       </SelectContent>
