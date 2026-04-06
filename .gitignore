@@ -32,5 +32,8 @@ logs
 # OpenCode
 .opencode/
 
+# Playwright
+.playwright-mcp/
+
 # Vite
 .vite/
