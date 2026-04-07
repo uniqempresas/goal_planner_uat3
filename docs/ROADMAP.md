@@ -230,7 +230,7 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 - [x] Atualizar AppContext para usar dados reais do Supabase
 - [x] Implementar autenticação (login/register/logout via Supabase Auth)
 
-**Sprint 2: Fluxos de Criação e Edição** 🚧 EM ANDAMENTO
+**Sprint 2: Fluxos de Criação e Edição** ✅ CONCLUÍDO
 - [x] Criar páginas de **detalhe** (`/areas/:id`) e **edição** (`/areas/:id/edit`) para Áreas
 - [x] Implementar formulários com validação (Zod + React Hook Form)
 - [x] Criar componentes de seleção (EmojiPicker, ColorPicker)
@@ -241,24 +241,33 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 **Sprint 2.1: CRUD Áreas de Vida** ✅ CONCLUÍDO
 - [x] Create, Read, Update, Delete de Áreas
 
-**Sprint 2.2: CRUD Grandes Metas (G)** 🚧 EM TESTE
-- [ ] Criar Grandes Metas
-- [ ] Listar Grandes Metas
-- [ ] Detalhar Grandes Metas
-- [ ] Editar Grandes Metas
-- [ ] Excluir Grandes Metas
+**Sprint 2.2: CRUD Grandes Metas (G)** ✅ CONCLUÍDO
+- [x] Criar Grandes Metas
+- [x] Listar Grandes Metas
+- [x] Detalhar Grandes Metas
+- [x] Editar Grandes Metas
+- [x] Excluir Grandes Metas
 
-**Sprint 2.3: CRUD Metas Anuais (A)**
-- [ ] Create, Read, Update, Delete de Metas Anuais
+**Sprint 2.3: CRUD Metas Anuais (A)** ✅ CONCLUÍDO
+- [x] Create, Read, Update, Delete de Metas Anuais
 
-**Sprint 2.4: CRUD Metas Mensais (M)**
-- [ ] Create, Read, Update, Delete de Metas Mensais
+**Sprint 2.4: CRUD Metas Mensais (M)** ✅ CONCLUÍDO
+- [x] Create, Read, Update, Delete de Metas Mensais
 
-**Sprint 2.5: CRUD Metas Semanais (S)**
-- [ ] Create, Read, Update, Delete de Metas Semanais
+**Sprint 2.5: CRUD Metas Semanais (S)** ✅ CONCLUÍDO
+- [x] Create, Read, Update, Delete de Metas Semanais
 
-**Sprint 2.6: CRUD Metas Diárias (D)**
-- [ ] Create, Read, Update, Delete de Metas Diárias
+**Sprint 2.6: CRUD Metas Diárias (D)** ✅ CONCLUÍDO
+- [x] Create, Read, Update, Delete de Metas Diárias
+
+**Sprint 2.7: Sistema de Criação de Metas Moderno** ✅ CONCLUÍDO
+- [x] 5 páginas específicas de criação (G, A, M, S, D)
+- [x] MetaParentSelector - Seleção por cards (sem dropdowns)
+- [x] HierarchyTreePreview - Visualização da hierarquia
+- [x] PrioritySelector - Seletor de prioridade/ONE Thing
+- [x] SmartFields - Campos específicos por nível
+- [x] Fluxo híbrido: criar "filha de" ou no mesmo nível
+- [x] UI moderna e responsiva
 
 ---
 
@@ -266,12 +275,29 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 
 **Objetivo:** Completar as lógicas de negócio que dependem do CRUD.
 
-**Sprint 3: Agenda Semanal, Revisões e Configurações**
-- [ ] Implementar lógica de **Agenda Semanal** com navegação entre semanas.
+**Sprint 3: Agenda Hoje/Semanal, Revisões e Configurações** 🟡 EM ANDAMENTO
+- [x] ~~Implementar lógica de **Agenda Semanal** com navegação entre semanas.~~
+- [ ] **Agenda Hoje com dados reais:**
+  - [ ] Conectar dados do Supabase (corrigir mapeamento de campos)
+  - [ ] Exibir tarefas reais do banco
+  - [ ] Toggle de conclusão funcionando com persistência
+- [ ] **CRUD de Tarefas Diárias:**
+  - [ ] Página de detalhe de tarefa
+  - [ ] Página de edição de tarefa
+  - [ ] Exclusão de tarefa (com confirmação)
+- [ ] **Agenda Semanal com navegação:**
+  - [ ] Navegação entre dias da semana
+  - [ ] Dados reais por dia selecionado
 - [ ] Implementar **Revisão Mensal** com persistência.
 - [ ] Implementar **Revisão Semanal** com persistência.
 - [ ] Implementar **Configurações funcionais** (Geral, Segurança, Notificações).
 - [ ] Implementar **Templates** (detalhe + aplicar).
+
+**Sprint 3.5: Tarefas Recorrentes** 🔵 PENDENTE
+- [ ] Planejar modelo de dados para recorrências
+- [ ] Definir interface de configuração de recorrência
+- [ ] Implementar lógica de geração de tarefas recorrentes
+- [ ] Implementar edição em série (opcional)
 
 **Sprint 4: Polish, UX e Performance**
 - [ ] Substituir `PlaceholderPage` por **páginas de erro 404**.

@@ -25,6 +25,7 @@ import MetasDiariasPage from './pages/metas/MetasDiariasPage';
 import AgendaHojePage from './pages/agenda/AgendaHojePage';
 import AgendaSemanaPage from './pages/agenda/AgendaSemanaPage';
 import TarefaCreatePage from './pages/agenda/TarefaCreatePage';
+import TarefaDetailPage from './pages/agenda/TarefaDetailPage';
 
 import TemplatesListPage from './pages/templates/TemplatesListPage';
 import ConquistasPage from './pages/ConquistasPage';
@@ -107,6 +108,7 @@ export const router = createBrowserRouter([
       { path: '/agenda/hoje', Component: AgendaHojePage },
       { path: '/agenda/semana', Component: AgendaSemanaPage },
       { path: '/agenda/tarefas/criar', Component: TarefaCreatePage },
+      { path: '/agenda/tarefas/:id', Component: TarefaDetailPage },
       { path: '/agenda/tarefas/:id/editar', Component: PlaceholderPage },
 
       // Templates

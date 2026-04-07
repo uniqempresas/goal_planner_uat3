@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
-import { type Tarefa, type TimeBlock, blockConfig } from '../../data/mockData';
+import { blockConfig } from '../../data/mockData';
+import type { TarefaUI, TimeBlock } from '../../../lib/mapeamento';
 
 const blockOrder: TimeBlock[] = ['oneThing', 'atrasadas', 'manha', 'tarde', 'noite', 'habitos', 'recorrentes'];
 
@@ -27,7 +28,7 @@ const priorityColors: Record<string, string> = {
   low: 'bg-slate-300',
 };
 
-function TarefaItem({ tarefa, onToggle }: { tarefa: Tarefa; onToggle: (id: string) => void }) {
+function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: string) => void }) {
   const { getMetaById } = useApp();
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
 
@@ -63,7 +64,7 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: Tarefa; onToggle: (id: strin
           {meta && (
             <span className="text-xs text-indigo-500 flex items-center gap-1">
               <Target size={10} />
-              {meta.title.slice(0, 30)}{meta.title.length > 30 ? '…' : ''}
+              {meta.titulo.slice(0, 30)}{meta.titulo.length > 30 ? '…' : ''}
             </span>
           )}
           {tarefa.notes && (
@@ -77,7 +78,7 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: Tarefa; onToggle: (id: strin
 
 function TimeBlockSection({ block, tarefas, onToggle }: {
   block: TimeBlock;
-  tarefas: Tarefa[];
+  tarefas: TarefaUI[];
   onToggle: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);

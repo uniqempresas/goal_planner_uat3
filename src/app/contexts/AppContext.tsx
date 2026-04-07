@@ -4,6 +4,7 @@ import { areasService } from '../../services/areasService';
 import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
 import type { Database } from '../../lib/supabase';
+import { mapTarefasToUI, type TarefaUI } from '../../lib/mapeamento';
 
 type User = {
   id: string;
@@ -45,7 +46,7 @@ interface AppContextType {
   loadMetas: () => Promise<void>;
   getMetaById: (id: string) => Meta | undefined;
 
-  tarefasHoje: Tarefa[];
+  tarefasHoje: TarefaUI[];
   loadTarefas: (data?: string) => Promise<void>;
   toggleTarefa: (id: string) => Promise<void>;
   createTarefa: (tarefa: Omit<Tarefa, 'id' | 'user_id' | 'created_at'>) => Promise<Tarefa>;
@@ -69,7 +70,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [metasMensais, setMetasMensais] = useState<Meta[]>([]);
   const [metasSemanais, setMetasSemanais] = useState<Meta[]>([]);
   const [metasDiarias, setMetasDiarias] = useState<Meta[]>([]);
-  const [tarefasHoje, setTarefasHoje] = useState<Tarefa[]>([]);
+  const [tarefasHoje, setTarefasHoje] = useState<TarefaUI[]>([]);
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats>({
     tarefasTotal: 0,
     tarefasConcluidas: 0,
@@ -132,7 +133,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const dataParam = data || new Date().toISOString().split('T')[0];
       const tarefas = await tarefasService.getByData(user.id, dataParam);
-      setTarefasHoje(tarefas);
+      const tarefasMapeadas = mapTarefasToUI(tarefas);
+      setTarefasHoje(tarefasMapeadas);
     } catch (error) {
       console.error('Erro ao carregar tarefas:', error);
     }
@@ -141,13 +143,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const createTarefa = useCallback(async (tarefa: Omit<Tarefa, 'id' | 'user_id' | 'created_at'>) => {
     if (!user) throw new Error('Usuário não autenticado');
     const newTarefa = await tarefasService.create(user.id, tarefa);
-    setTarefasHoje(prev => [...prev, newTarefa]);
+    const tarefaMapeada = mapTarefaToUI(newTarefa);
+    setTarefasHoje(prev => [...prev, tarefaMapeada]);
     return newTarefa;
   }, [user]);
 
   const toggleTarefa = useCallback(async (id: string) => {
     const updated = await tarefasService.toggleCompleted(id);
-    setTarefasHoje(prev => prev.map(t => t.id === id ? updated : t));
+    const tarefaMapeada = mapTarefaToUI(updated);
+    setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
