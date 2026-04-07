@@ -1,7 +1,8 @@
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Link, useSearchParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Target, Calendar, Clock, Repeat, Flag } from 'lucide-react';
+import { useEffect } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -19,7 +20,12 @@ import { tarefaFormSchema, type TarefaFormSchema } from './tarefaFormSchema';
 
 export default function TarefaCreatePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { createTarefa, grandesMetas, metasAnuais } = useApp();
+
+  // Get params from URL
+  const dataParam = searchParams.get('data');
+  const blocoParam = searchParams.get('bloco');
 
   // Combine all metas for the select
   const allMetas = [
@@ -32,14 +38,24 @@ export default function TarefaCreatePage() {
     defaultValues: {
       titulo: '',
       descricao: '',
-      data: new Date().toISOString().split('T')[0],
+      data: dataParam || new Date().toISOString().split('T')[0],
       hora: '',
-      bloco: undefined,
+      bloco: blocoParam as 'one-thing' | 'manha' | 'tarde' | 'noite' | undefined,
       prioridade: 'media',
       metaId: undefined,
       recorrencia: 'nenhuma',
     },
   });
+
+  // Update form when params change
+  useEffect(() => {
+    if (dataParam) {
+      form.setValue('data', dataParam);
+    }
+    if (blocoParam) {
+      form.setValue('bloco', blocoParam as any);
+    }
+  }, [dataParam, blocoParam, form]);
 
   const onSubmit = async (values: TarefaFormSchema) => {
     try {

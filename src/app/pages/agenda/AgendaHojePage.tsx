@@ -33,9 +33,9 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: str
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
 
   return (
-    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}`}>
+    <Link to={`/agenda/tarefas/${tarefa.id}`} className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}`}>
       <button
-        onClick={() => onToggle(tarefa.id)}
+        onClick={(e) => { e.preventDefault(); onToggle(tarefa.id); }}
         className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer"
       >
         {tarefa.completed
@@ -72,7 +72,7 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: str
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -88,6 +88,8 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
   const hasItems = tarefas.length > 0;
 
   if (!hasItems && block !== 'oneThing') return null;
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div
@@ -143,10 +145,10 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
               <Star size={28} className="text-amber-300 fill-amber-200 mx-auto mb-3" />
               <p className="text-amber-700 text-sm font-medium mb-1">Nenhuma ONE Thing definida</p>
               <p className="text-amber-600 text-xs mb-4">Defina a única coisa mais importante do seu dia.</p>
-              <button className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm mx-auto transition-colors cursor-pointer">
+              <Link to={`/agenda/tarefas/criar?bloco=one-thing&data=${today}`} className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm mx-auto transition-colors">
                 <Plus size={14} />
                 Definir ONE Thing
-              </button>
+              </Link>
             </div>
           )}
 
@@ -159,10 +161,10 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
           )}
 
           {block !== 'oneThing' && (
-            <button className="flex items-center gap-2 text-slate-400 hover:text-slate-600 text-sm mt-3 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors cursor-pointer w-full">
+            <Link to={`/agenda/tarefas/criar?data=${today}`} className="flex items-center gap-2 text-slate-400 hover:text-slate-600 text-sm mt-3 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors cursor-pointer w-full">
               <Plus size={14} />
               Adicionar tarefa
-            </button>
+            </Link>
           )}
         </div>
       )}
@@ -175,18 +177,20 @@ export default function AgendaHojePage() {
 
   const completed = tarefasHoje.filter(t => t.completed).length;
   const total = tarefasHoje.length;
-  const progressPct = Math.round((completed / total) * 100);
+  const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const habitasBlock = tarefasHoje.filter(t => t.block === 'habitos');
   const habitosCompleted = habitasBlock.filter(t => t.completed).length;
   const habitosProgress = habitasBlock.length > 0 ? Math.round((habitosCompleted / habitasBlock.length) * 100) : 0;
 
-  const today = new Date().toLocaleDateString('pt-BR', {
+  const todayFormatted = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -196,10 +200,10 @@ export default function AgendaHojePage() {
           <h1 className="text-slate-800">Agenda de Hoje</h1>
           <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-1.5">
             <Flame size={14} className="text-orange-500" />
-            <span className="text-orange-700 text-xs font-medium">{weeklyStats.streakDays} dias</span>
+            <span className="text-orange-700 text-xs font-medium">{weeklyStats.sequenciaDias} dias</span>
           </div>
         </div>
-        <p className="text-slate-500 text-sm capitalize">{today}</p>
+        <p className="text-slate-500 text-sm capitalize">{todayFormatted}</p>
       </div>
 
       {/* Day Progress */}
@@ -238,7 +242,7 @@ export default function AgendaHojePage() {
           title="Nenhuma tarefa para hoje"
           description="Adicione tarefas para organizar seu dia e acompanhar seu progresso."
           actionLabel="Criar Primeira Tarefa"
-          actionHref="/agenda/tarefas/criar"
+          actionHref={`/agenda/tarefas/criar?data=${today}`}
         />
       ) : (
         <>
@@ -256,7 +260,7 @@ export default function AgendaHojePage() {
 
           {/* Add task floating */}
           <div className="mt-6 bg-slate-50 rounded-xl border border-dashed border-slate-200 p-4 text-center">
-            <Link to="/agenda/tarefas/criar" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm mx-auto transition-colors">
+            <Link to={`/agenda/tarefas/criar?data=${today}`} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm mx-auto transition-colors">
               <Plus size={16} />
               Adicionar nova tarefa ao dia
             </Link>
