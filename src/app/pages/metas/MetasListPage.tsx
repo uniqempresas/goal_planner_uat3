@@ -24,8 +24,19 @@ interface MetasListPageProps {
 
 function MetaRow({ meta, level }: { meta: Meta; level: MetaLevel }) {
   const { areas, getMetaById } = useApp();
-  const area = areas.find(a => a.id === meta.area_id);
-  const parent = meta.parent_id ? getMetaById(meta.parent_id) : undefined;
+  
+  // Handle both mock data and real database data
+  const metaAny = meta as unknown;
+  const areaId = (metaAny as { area_id?: string })?.area_id || meta.areaId;
+  const parentId = (metaAny as { parent_id?: string })?.parent_id || meta.parentId;
+  const title = (metaAny as { titulo?: string })?.titulo || meta.title;
+  const progress = (metaAny as { progress?: number })?.progress || meta.progress || 0;
+  const isOneThing = (metaAny as { one_thing?: boolean })?.one_thing || meta.isOneThing;
+  const status = (metaAny as { status?: string })?.status || meta.status;
+  const prazo = (metaAny as { prazo?: string })?.prazo || meta.prazo;
+  
+  const area = areas.find(a => a.id === areaId);
+  const parent = parentId ? getMetaById(parentId) : undefined;
   const cfg = levelConfig[level];
 
   const statusColors: Record<string, string> = {
@@ -53,44 +64,44 @@ function MetaRow({ meta, level }: { meta: Meta; level: MetaLevel }) {
             cx={22} cy={22} r={18}
             fill="none" stroke={cfg.color} strokeWidth={4}
             strokeDasharray={2 * Math.PI * 18}
-            strokeDashoffset={2 * Math.PI * 18 * (1 - meta.progress / 100)}
+            strokeDashoffset={2 * Math.PI * 18 * (1 - progress / 100)}
             strokeLinecap="round"
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-bold" style={{ color: cfg.textColor }}>{meta.progress}%</span>
+          <span className="text-xs font-bold" style={{ color: cfg.textColor }}>{progress}%</span>
         </div>
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: cfg.bgColor, color: cfg.textColor }}>{level}</span>
-          {meta.isOneThing && (
+          {isOneThing && (
             <span className="flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
               <Star size={9} className="fill-amber-500 text-amber-500" />
               ONE Thing
             </span>
           )}
-          <span className={`text-xs px-1.5 py-0.5 rounded-full ${statusColors[meta.status]}`}>
-            {statusLabels[meta.status]}
+          <span className={`text-xs px-1.5 py-0.5 rounded-full ${statusColors[status]}`}>
+            {statusLabels[status]}
           </span>
         </div>
-        <p className="text-slate-800 text-sm font-medium group-hover:text-indigo-600 transition-colors truncate mb-1">{meta.title}</p>
+        <p className="text-slate-800 text-sm font-medium group-hover:text-indigo-600 transition-colors truncate mb-1">{title}</p>
         <div className="flex flex-wrap items-center gap-3">
           {area && (
-            <span className="text-xs flex items-center gap-1" style={{ color: area.color }}>
-              {area.emoji} {area.name}
+            <span className="text-xs flex items-center gap-1" style={{ color: area.cor || area.color }}>
+              {area.icone || area.emoji} {area.nome || area.name}
             </span>
           )}
           {parent && (
             <span className="text-xs text-slate-400 flex items-center gap-1">
               <Target size={10} />
-              {parent.title.slice(0, 30)}…
+              {((parent as unknown as { titulo?: string }).titulo || parent.title || '').slice(0, 30)}…
             </span>
           )}
           <span className="text-xs text-slate-400 flex items-center gap-1">
             <Calendar size={10} />
-            {new Date(meta.prazo).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+            {new Date(prazo).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
           </span>
         </div>
       </div>
@@ -145,12 +156,19 @@ export function MetasListPage({ level, metas, createPath, title, subtitle, focus
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
           <div className="text-xl font-bold" style={{ color: cfg.color }}>
-            {metas.length > 0 ? Math.round(metas.reduce((s, m) => s + m.progress, 0) / metas.length) : 0}%
+            {metas.length > 0 ? Math.round(metas.reduce((s, m) => {
+              const mAny = m as unknown;
+              return s + ((mAny as { progress?: number })?.progress || (mAny as { metricas?: unknown })?.metricas ? 0 : m.progress || 0);
+            }, 0) / metas.length) : 0}%
           </div>
           <div className="text-slate-500 text-xs mt-0.5">Progresso médio</div>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
-          <div className="text-xl font-bold text-emerald-600">{metas.filter(m => m.status === 'active').length}</div>
+          <div className="text-xl font-bold text-emerald-600">{metas.filter(m => {
+            const mAny = m as unknown;
+            const status = (mAny as { status?: string })?.status || m.status;
+            return status === 'ativa' || status === 'active';
+          }).length}</div>
           <div className="text-slate-500 text-xs mt-0.5">Ativas</div>
         </div>
       </div>
