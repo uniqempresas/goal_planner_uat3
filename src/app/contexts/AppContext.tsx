@@ -4,7 +4,7 @@ import { areasService } from '../../services/areasService';
 import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
 import type { Database } from '../../lib/supabase';
-import { mapTarefasToUI, type TarefaUI } from '../../lib/mapeamento';
+import { mapTarefasToUI, mapTarefaToUI, type TarefaUI } from '../../lib/mapeamento';
 
 type User = {
   id: string;
@@ -50,6 +50,8 @@ interface AppContextType {
   loadTarefas: (data?: string) => Promise<void>;
   toggleTarefa: (id: string) => Promise<void>;
   createTarefa: (tarefa: Omit<Tarefa, 'id' | 'user_id' | 'created_at'>) => Promise<Tarefa>;
+  updateTarefa: (id: string, tarefa: Partial<Tarefa>) => Promise<Tarefa>;
+  deleteTarefa: (id: string) => Promise<void>;
 
   weeklyStats: WeeklyStats;
   getAreaById: (id: string) => Area | undefined;
@@ -152,6 +154,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const updated = await tarefasService.toggleCompleted(id);
     const tarefaMapeada = mapTarefaToUI(updated);
     setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
+  }, []);
+
+  const updateTarefa = useCallback(async (id: string, tarefa: Partial<Tarefa>) => {
+    const updated = await tarefasService.update(id, tarefa);
+    const tarefaMapeada = mapTarefaToUI(updated);
+    setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
+    return updated;
+  }, []);
+
+  const deleteTarefa = useCallback(async (id: string) => {
+    await tarefasService.delete(id);
+    setTarefasHoje(prev => prev.filter(t => t.id !== id));
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -266,6 +280,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       loadTarefas,
       toggleTarefa,
       createTarefa,
+      updateTarefa,
+      deleteTarefa,
       weeklyStats,
       getAreaById,
       sidebarOpen,

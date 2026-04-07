@@ -26,6 +26,7 @@ import AgendaHojePage from './pages/agenda/AgendaHojePage';
 import AgendaSemanaPage from './pages/agenda/AgendaSemanaPage';
 import TarefaCreatePage from './pages/agenda/TarefaCreatePage';
 import TarefaDetailPage from './pages/agenda/TarefaDetailPage';
+import TarefaEditPage from './pages/agenda/TarefaEditPage';
 
 import TemplatesListPage from './pages/templates/TemplatesListPage';
 import ConquistasPage from './pages/ConquistasPage';
@@ -109,7 +110,7 @@ export const router = createBrowserRouter([
       { path: '/agenda/semana', Component: AgendaSemanaPage },
       { path: '/agenda/tarefas/criar', Component: TarefaCreatePage },
       { path: '/agenda/tarefas/:id', Component: TarefaDetailPage },
-      { path: '/agenda/tarefas/:id/editar', Component: PlaceholderPage },
+      { path: '/agenda/tarefas/:id/editar', Component: TarefaEditPage },
 
       // Templates
       { path: '/templates', Component: TemplatesListPage },
