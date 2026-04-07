@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../../contexts/AppContext';
 import { habitosService } from '../../../services/habitosService';
 import type { Database } from '../../../lib/supabase';
 

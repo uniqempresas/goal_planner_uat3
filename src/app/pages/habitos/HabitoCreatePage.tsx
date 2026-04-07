@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../../contexts/AppContext';
 import { habitosService } from '../../../services/habitosService';
 
 export default function HabitoCreatePage() {
