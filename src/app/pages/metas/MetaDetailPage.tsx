@@ -203,9 +203,9 @@ export default function MetaDetailPage() {
             <Button 
               variant="outline" 
               className="w-full mt-4"
-              onClick={() => navigate(`/metas/${getNextNivel(nivel)}/criar?parent=${meta.id}`)}
+              onClick={() => navigate(`/metas/${getNextNivel(nivel)}/criar?pai=${meta.id}`)}
             >
-              Adicionar Meta Filha
+              Criar Meta Filha
             </Button>
           </CardContent>
         </Card>
