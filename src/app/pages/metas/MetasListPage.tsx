@@ -96,7 +96,7 @@ function MetaRow({ meta, level }: { meta: Meta; level: MetaLevel }) {
           {parent && (
             <span className="text-xs text-slate-400 flex items-center gap-1">
               <Target size={10} />
-              {((parent as unknown as { titulo?: string }).titulo || parent.title || '').slice(0, 30)}…
+              {((parent as unknown as { titulo?: string }).titulo || (parent as unknown as { title?: string }).title || '').slice(0, 30)}…
             </span>
           )}
           <span className="text-xs text-slate-400 flex items-center gap-1">
@@ -111,7 +111,7 @@ function MetaRow({ meta, level }: { meta: Meta; level: MetaLevel }) {
         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
           <div
             className="h-full rounded-full"
-            style={{ width: `${meta.progress}%`, backgroundColor: cfg.color }}
+            style={{ width: `${progress}%`, backgroundColor: cfg.color }}
           />
         </div>
       </div>
