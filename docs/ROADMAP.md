@@ -277,17 +277,25 @@ Com base na realidade do código, proponho uma reestruturação das fases focand
 
 **Sprint 3: Agenda Hoje/Semanal, Revisões e Configurações** 🟡 EM ANDAMENTO
 - [x] ~~Implementar lógica de **Agenda Semanal** com navegação entre semanas.~~
-- [ ] **Agenda Hoje com dados reais:**
-  - [ ] Conectar dados do Supabase (corrigir mapeamento de campos)
-  - [ ] Exibir tarefas reais do banco
-  - [ ] Toggle de conclusão funcionando com persistência
-- [ ] **CRUD de Tarefas Diárias:**
-  - [ ] Página de detalhe de tarefa
-  - [ ] Página de edição de tarefa
-  - [ ] Exclusão de tarefa (com confirmação)
-- [ ] **Agenda Semanal com navegação:**
-  - [ ] Navegação entre dias da semana
-  - [ ] Dados reais por dia selecionado
+- [x] **Agenda Hoje com dados reais:**
+  - [x] Conectar dados do Supabase (corrigir mapeamento de campos)
+  - [x] Exibir tarefas reais do banco
+  - [x] Toggle de conclusão funcionando com persistência
+- [x] **CRUD de Tarefas Diárias:**
+  - [x] Página de detalhe de tarefa
+  - [x] Página de edição de tarefa
+  - [x] Exclusão de tarefa (com confirmação)
+- [x] **Agenda Semanal com navegação:**
+  - [x] Navegação entre dias da semana
+  - [x] Dados reais por dia selecionado
+- [ ] **Sistema de Hábitos (Nova tabela):**
+  - [ ] Criar tabela `habitos` no Supabase
+  - [ ] Campos: data_inicio, data_fim, dias_semana, streak, status
+  - [ ] Página de criação de hábitos
+  - [ ] Listagem de hábitos ativos na Agenda Hoje
+  - [ ] Geração automática de tarefas com base no hábito
+  - [ ] Tracking de streak (dias consecutivos)
+  - [ ] Expiração automática após data_fim
 - [ ] Implementar **Revisão Mensal** com persistência.
 - [ ] Implementar **Revisão Semanal** com persistência.
 - [ ] Implementar **Configurações funcionais** (Geral, Segurança, Notificações).

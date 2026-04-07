@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { areasService } from '../../services/areasService';
 import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
+import { habitosService } from '../../services/habitosService';
 import type { Database } from '../../lib/supabase';
 import { mapTarefasToUI, mapTarefaToUI, type TarefaUI } from '../../lib/mapeamento';
 
@@ -15,6 +16,7 @@ type User = {
 interface Area extends Database['public']['Tables']['areas']['Row'] {}
 interface Meta extends Database['public']['Tables']['metas']['Row'] {}
 interface Tarefa extends Database['public']['Tables']['tarefas']['Row'] {}
+interface Habito extends Database['public']['Tables']['habitos']['Row'] {}
 
 interface WeeklyStats {
   tarefasTotal: number;
@@ -53,6 +55,10 @@ interface AppContextType {
   updateTarefa: (id: string, tarefa: Partial<Tarefa>) => Promise<Tarefa>;
   deleteTarefa: (id: string) => Promise<void>;
 
+  habitosHoje: Habito[];
+  loadHabitos: () => Promise<void>;
+  toggleHabitoStreak: (id: string) => Promise<void>;
+
   weeklyStats: WeeklyStats;
   getAreaById: (id: string) => Area | undefined;
   sidebarOpen: boolean;
@@ -73,6 +79,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [metasSemanais, setMetasSemanais] = useState<Meta[]>([]);
   const [metasDiarias, setMetasDiarias] = useState<Meta[]>([]);
   const [tarefasHoje, setTarefasHoje] = useState<TarefaUI[]>([]);
+  const [habitosHoje, setHabitosHoje] = useState<Habito[]>([]);
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats>({
     tarefasTotal: 0,
     tarefasConcluidas: 0,
@@ -142,6 +149,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
+  const loadHabitos = useCallback(async () => {
+    if (!user) return;
+    try {
+      await habitosService.verificarExpirados(user.id);
+      const habitos = await habitosService.getAtivosHoje(user.id);
+      setHabitosHoje(habitos);
+    } catch (error) {
+      console.error('Erro ao carregar hábitos:', error);
+    }
+  }, [user]);
+
   const createTarefa = useCallback(async (tarefa: Omit<Tarefa, 'id' | 'user_id' | 'created_at'>) => {
     if (!user) throw new Error('Usuário não autenticado');
     const newTarefa = await tarefasService.create(user.id, tarefa);
@@ -155,6 +173,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const tarefaMapeada = mapTarefaToUI(updated);
     setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
   }, []);
+
+  const toggleHabitoStreak = useCallback(async (id: string) => {
+    try {
+      await habitosService.toggleStreak(id);
+      loadHabitos();
+    } catch (error) {
+      console.error('Erro ao atualizar streak:', error);
+    }
+  }, [loadHabitos]);
 
   const updateTarefa = useCallback(async (id: string, tarefa: Partial<Tarefa>) => {
     const updated = await tarefasService.update(id, tarefa);
@@ -193,6 +220,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setMetasSemanais([]);
     setMetasDiarias([]);
     setTarefasHoje([]);
+    setHabitosHoje([]);
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
@@ -249,8 +277,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       loadAreas();
       loadMetas();
       loadTarefas();
+      loadHabitos();
     }
-  }, [user, loadAreas, loadMetas, loadTarefas]);
+  }, [user, loadAreas, loadMetas, loadTarefas, loadHabitos]);
 
   const allMetas = [...grandesMetas, ...metasAnuais, ...metasMensais, ...metasSemanais, ...metasDiarias];
   const getMetaById = (id: string) => allMetas.find(m => m.id === id);
@@ -282,6 +311,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createTarefa,
       updateTarefa,
       deleteTarefa,
+      habitosHoje,
+      loadHabitos,
+      toggleHabitoStreak,
       weeklyStats,
       getAreaById,
       sidebarOpen,

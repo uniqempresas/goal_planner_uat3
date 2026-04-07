@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Database } from './supabase';
+import type { Database } from '../lib/supabase';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type TarefaInsert = Database['public']['Tables']['tarefas']['Insert'];

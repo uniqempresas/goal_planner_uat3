@@ -45,6 +45,7 @@ const navGroups: NavGroup[] = [
     children: [
       { label: 'Hoje', path: '/agenda/hoje', icon: <Sun size={15} /> },
       { label: 'Semana', path: '/agenda/semana', icon: <CalendarRange size={15} /> },
+      { label: 'Hábitos', path: '/habitos', icon: <Star size={15} /> },
     ],
   },
   {

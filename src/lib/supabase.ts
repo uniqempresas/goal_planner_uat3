@@ -111,6 +111,7 @@ export type Database = {
           id: string;
           user_id: string | null;
           meta_id: string | null;
+          habito_id: string | null;
           titulo: string;
           descricao: string | null;
           bloco: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
@@ -125,6 +126,7 @@ export type Database = {
           id?: string;
           user_id?: string;
           meta_id?: string | null;
+          habito_id?: string | null;
           titulo: string;
           descricao?: string | null;
           bloco?: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
@@ -139,6 +141,7 @@ export type Database = {
           id?: string;
           user_id?: string | null;
           meta_id?: string | null;
+          habito_id?: string | null;
           titulo?: string;
           descricao?: string | null;
           bloco?: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
@@ -261,6 +264,62 @@ export type Database = {
           tipo?: string;
           desbloqueada_em?: string;
           progresso?: number;
+        };
+      };
+      habitos: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          titulo: string;
+          descricao: string | null;
+          data_inicio: string;
+          data_fim: string;
+          dias_semana: number[];
+          hora: string | null;
+          bloco: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
+          meta_id: string | null;
+          prioridade: 'alta' | 'media' | 'baixa';
+          status: 'ativa' | 'pausada' | 'concluida' | 'expirada';
+          streak_atual: number;
+          melhor_streak: number;
+          ultima_conclusao: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          titulo: string;
+          descricao?: string | null;
+          data_inicio: string;
+          data_fim: string;
+          dias_semana: number[];
+          hora?: string | null;
+          bloco?: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
+          meta_id?: string | null;
+          prioridade?: 'alta' | 'media' | 'baixa';
+          status?: 'ativa' | 'pausada' | 'concluida' | 'expirada';
+          streak_atual?: number;
+          melhor_streak?: number;
+          ultima_conclusao?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          titulo?: string;
+          descricao?: string | null;
+          data_inicio?: string;
+          data_fim?: string;
+          dias_semana?: number[];
+          hora?: string | null;
+          bloco?: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
+          meta_id?: string | null;
+          prioridade?: 'alta' | 'media' | 'baixa';
+          status?: 'ativa' | 'pausada' | 'concluida' | 'expirada';
+          streak_atual?: number;
+          melhor_streak?: number;
+          ultima_conclusao?: string | null;
+          created_at?: string;
         };
       };
     };

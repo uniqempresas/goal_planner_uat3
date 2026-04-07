@@ -9,6 +9,9 @@ import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
 import { blockConfig } from '../../data/mockData';
 import type { TarefaUI, TimeBlock } from '../../../lib/mapeamento';
+import type { Database } from '../../../lib/supabase';
+
+type Habito = Database['public']['Tables']['habitos']['Row'];
 
 const blockOrder: TimeBlock[] = ['oneThing', 'atrasadas', 'manha', 'tarde', 'noite', 'habitos', 'recorrentes'];
 
@@ -76,18 +79,64 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: str
   );
 }
 
-function TimeBlockSection({ block, tarefas, onToggle }: {
+function HabitoItem({ habito, onToggle }: { habito: Habito; onToggle: (id: string) => void }) {
+  const hoje = new Date().toISOString().split('T')[0];
+  const completadoHoje = habito.ultima_conclusao === hoje;
+
+  return (
+    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${completadoHoje ? 'opacity-60' : 'hover:bg-black/5'}`}>
+      <button
+        onClick={() => onToggle(habito.id)}
+        className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer"
+      >
+        {completadoHoje
+          ? <CheckCircle2 size={20} className="text-emerald-500" />
+          : <Circle size={20} className="text-emerald-400 hover:text-emerald-500" />
+        }
+      </button>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p className={`text-sm leading-relaxed ${completadoHoje ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+            {habito.titulo}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 mt-1">
+          {habito.hora && (
+            <span className="text-xs text-slate-400 flex items-center gap-1">
+              <Clock size={10} />
+              {habito.hora}
+            </span>
+          )}
+          <span className="text-xs text-emerald-600 flex items-center gap-1">
+            <Flame size={10} />
+            {habito.streak_atual} dias
+          </span>
+          {habito.descricao && (
+            <span className="text-xs text-slate-400 italic line-clamp-1">{habito.descricao}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onToggleHabito }: {
   block: TimeBlock;
   tarefas: TarefaUI[];
-  onToggle: (id: string) => void;
+  habitos?: Habito[];
+  onToggleTarefa: (id: string) => void;
+  onToggleHabito?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const cfg = blockConfig[block];
   const completed = tarefas.filter(t => t.completed).length;
   const isOneThing = block === 'oneThing';
-  const hasItems = tarefas.length > 0;
+  const isHabitos = block === 'habitos';
+  const hasItems = tarefas.length > 0 || (habitos && habitos.length > 0);
 
-  if (!hasItems && block !== 'oneThing') return null;
+  if (!hasItems && block !== 'oneThing' && block !== 'habitos') return null;
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -117,13 +166,13 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
                 <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">Prioridade Absoluta</span>
               )}
             </div>
-            {hasItems && (
+            {tarefas.length > 0 && (
               <span className="text-xs text-slate-400">{completed}/{tarefas.length} concluídas</span>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {hasItems && (
+          {tarefas.length > 0 && (
             <div className="hidden sm:flex items-center gap-1">
               {tarefas.map(t => (
                 <div
@@ -152,15 +201,32 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
             </div>
           )}
 
-          {tarefas.length > 0 && (
-            <div className="space-y-1">
-              {tarefas.map(tarefa => (
-                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggle} />
+          {isHabitos && habitos && habitos.length > 0 && (
+            <div className="space-y-1 mb-3">
+              {habitos.map(habito => (
+                <HabitoItem key={habito.id} habito={habito} onToggle={onToggleHabito || (() => {})} />
               ))}
             </div>
           )}
 
-          {block !== 'oneThing' && (
+          {isHabitos && (!habitos || habitos.length === 0) && (
+            <div className="text-center py-4">
+              <p className="text-slate-400 text-sm mb-2">Nenhum hábito para hoje</p>
+              <Link to="/habitos/criar" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                Criar novo hábito
+              </Link>
+            </div>
+          )}
+
+          {tarefas.length > 0 && (
+            <div className="space-y-1">
+              {tarefas.map(tarefa => (
+                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} />
+              ))}
+            </div>
+          )}
+
+          {block !== 'oneThing' && block !== 'habitos' && (
             <Link to={`/agenda/tarefas/criar?data=${today}`} className="flex items-center gap-2 text-slate-400 hover:text-slate-600 text-sm mt-3 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors cursor-pointer w-full">
               <Plus size={14} />
               Adicionar tarefa
@@ -173,15 +239,15 @@ function TimeBlockSection({ block, tarefas, onToggle }: {
 }
 
 export default function AgendaHojePage() {
-  const { tarefasHoje, toggleTarefa, weeklyStats } = useApp();
+  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats } = useApp();
 
   const completed = tarefasHoje.filter(t => t.completed).length;
   const total = tarefasHoje.length;
   const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  const habitasBlock = tarefasHoje.filter(t => t.block === 'habitos');
-  const habitosCompleted = habitasBlock.filter(t => t.completed).length;
-  const habitosProgress = habitasBlock.length > 0 ? Math.round((habitosCompleted / habitasBlock.length) * 100) : 0;
+  const habitosBlock = tarefasHoje.filter(t => t.block === 'habitos');
+  const habitosCompleted = habitosBlock.filter(t => t.completed).length;
+  const habitosProgress = habitosBlock.length > 0 ? Math.round((habitosCompleted / habitosBlock.length) * 100) : 0;
 
   const todayFormatted = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
@@ -236,11 +302,11 @@ export default function AgendaHojePage() {
       </div>
 
       {/* Empty State or Time Blocks */}
-      {tarefasHoje.length === 0 ? (
+      {tarefasHoje.length === 0 && habitosHoje.length === 0 ? (
         <EmptyState
           icon={<Calendar className="w-12 h-12" />}
           title="Nenhuma tarefa para hoje"
-          description="Adicione tarefas para organizar seu dia e acompanhar seu progresso."
+          description="Adicione tarefas ou hábitos para organizar seu dia e acompanhar seu progresso."
           actionLabel="Criar Primeira Tarefa"
           actionHref={`/agenda/tarefas/criar?data=${today}`}
         />
@@ -253,7 +319,9 @@ export default function AgendaHojePage() {
                 key={block}
                 block={block}
                 tarefas={tarefasHoje.filter(t => t.block === block)}
-                onToggle={toggleTarefa}
+                habitos={block === 'habitos' ? habitosHoje : undefined}
+                onToggleTarefa={toggleTarefa}
+                onToggleHabito={block === 'habitos' ? toggleHabitoStreak : undefined}
               />
             ))}
           </div>

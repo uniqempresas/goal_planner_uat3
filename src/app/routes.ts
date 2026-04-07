@@ -50,6 +50,12 @@ import MetaMensalCreatePage from './pages/metas/MetaMensalCreatePage';
 import MetaSemanalCreatePage from './pages/metas/MetaSemanalCreatePage';
 import MetaDiariaCreatePage from './pages/metas/MetaDiariaCreatePage';
 
+// Hábitos
+import HabitosListPage from './pages/habitos/HabitosListPage';
+import HabitoCreatePage from './pages/habitos/HabitoCreatePage';
+import HabitoDetailPage from './pages/habitos/HabitoDetailPage';
+import HabitoEditPage from './pages/habitos/HabitoEditPage';
+
 export const router = createBrowserRouter([
   // Public routes
   {
@@ -111,6 +117,12 @@ export const router = createBrowserRouter([
       { path: '/agenda/tarefas/criar', Component: TarefaCreatePage },
       { path: '/agenda/tarefas/:id', Component: TarefaDetailPage },
       { path: '/agenda/tarefas/:id/editar', Component: TarefaEditPage },
+
+      // Hábitos
+      { path: '/habitos', Component: HabitosListPage },
+      { path: '/habitos/criar', Component: HabitoCreatePage },
+      { path: '/habitos/:id', Component: HabitoDetailPage },
+      { path: '/habitos/:id/editar', Component: HabitoEditPage },
 
       // Templates
       { path: '/templates', Component: TemplatesListPage },
