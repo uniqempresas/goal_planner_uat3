@@ -112,4 +112,35 @@ export const metasService = {
     
     return this.update(id, { one_thing: !meta.one_thing });
   },
+
+  // Novos métodos para o sistema moderno de criação de metas
+  async getMetasByNivel(userId: string, nivel: MetaNivel): Promise<Meta[]> {
+    const { data, error } = await supabase
+      .from('metas')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('nivel', nivel)
+      .eq('status', 'ativa')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getMetaAncestors(metaId: string): Promise<Meta[]> {
+    const ancestors: Meta[] = [];
+    let currentMeta = await this.getById(metaId);
+    
+    while (currentMeta?.parent_id) {
+      const parent = await this.getById(currentMeta.parent_id);
+      if (parent) {
+        ancestors.unshift(parent);
+        currentMeta = parent;
+      } else {
+        break;
+      }
+    }
+    
+    return ancestors;
+  },
 };

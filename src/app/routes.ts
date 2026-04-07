@@ -41,6 +41,13 @@ import MetaCreatePage from './pages/metas/MetaCreatePage';
 import MetaDetailPage from './pages/metas/MetaDetailPage';
 import MetaEditPage from './pages/metas/MetaEditPage';
 
+// Novas páginas de criação
+import GrandeMetaCreatePage from './pages/metas/GrandeMetaCreatePage';
+import MetaAnualCreatePage from './pages/metas/MetaAnualCreatePage';
+import MetaMensalCreatePage from './pages/metas/MetaMensalCreatePage';
+import MetaSemanalCreatePage from './pages/metas/MetaSemanalCreatePage';
+import MetaDiariaCreatePage from './pages/metas/MetaDiariaCreatePage';
+
 export const router = createBrowserRouter([
   // Public routes
   {
@@ -71,27 +78,27 @@ export const router = createBrowserRouter([
       // Metas
       { path: '/metas', loader: () => redirect('/metas/grandes') },
       { path: '/metas/grandes', Component: GrandesMetasPage },
-      { path: '/metas/grandes/criar', Component: MetaCreatePage },
+      { path: '/metas/grandes/criar', Component: GrandeMetaCreatePage },
       { path: '/metas/grandes/:id', Component: MetaDetailPage },
       { path: '/metas/grandes/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/anual', Component: MetasAnuaisPage },
-      { path: '/metas/anual/criar', Component: MetaCreatePage },
+      { path: '/metas/anual/criar', Component: MetaAnualCreatePage },
       { path: '/metas/anual/:id', Component: MetaDetailPage },
       { path: '/metas/anual/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/mensal', Component: MetasMensaisPage },
-      { path: '/metas/mensal/criar', Component: MetaCreatePage },
+      { path: '/metas/mensal/criar', Component: MetaMensalCreatePage },
       { path: '/metas/mensal/:id', Component: MetaDetailPage },
       { path: '/metas/mensal/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/semanal', Component: MetasSemanaisPage },
-      { path: '/metas/semanal/criar', Component: MetaCreatePage },
+      { path: '/metas/semanal/criar', Component: MetaSemanalCreatePage },
       { path: '/metas/semanal/:id', Component: MetaDetailPage },
       { path: '/metas/semanal/:id/editar', Component: MetaEditPage },
 
       { path: '/metas/diaria', Component: MetasDiariasPage },
-      { path: '/metas/diaria/criar', Component: MetaCreatePage },
+      { path: '/metas/diaria/criar', Component: MetaDiariaCreatePage },
       { path: '/metas/diaria/:id', Component: MetaDetailPage },
       { path: '/metas/diaria/:id/editar', Component: MetaEditPage },
 
