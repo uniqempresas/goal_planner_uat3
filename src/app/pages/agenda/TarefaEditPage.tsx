@@ -77,7 +77,7 @@ export default function TarefaEditPage() {
           bloco: t.bloco as 'one-thing' | 'manha' | 'tarde' | 'noite' | undefined,
           prioridade: t.prioridade,
           metaId: t.meta_id || undefined,
-          recurrencia: t.recorrencia,
+          recorrencia: t.recorrencia,
         });
       }
     }).catch(console.error)
@@ -96,7 +96,7 @@ export default function TarefaEditPage() {
         bloco: values.bloco || null,
         prioridade: values.prioridade,
         meta_id: values.metaId || null,
-        recurrencia: values.recurrencia,
+        recorrencia: values.recorrencia,
       });
       navigate(`/agenda/tarefas/${id}`);
     } catch (error) {
