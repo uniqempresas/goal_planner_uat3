@@ -185,13 +185,13 @@ export default function MetaDetailPage() {
                 {submetas.map((sub) => (
                   <li key={sub.id}>
                     <Link 
-                      to={`/metas/${getNextNivel(nivel)}/${sub.id}`}
+                      to={`/metas/${getNextNivel(meta.nivel || nivel)}/${sub.id}`}
                       className="flex items-center gap-2 p-2 rounded hover:bg-slate-50"
                     >
                       <Target className="w-4 h-4 text-slate-400" />
                       <span className="flex-1">{sub.titulo}</span>
                       <Badge variant="outline" className="text-xs">
-                        {getNextNivelLabel(nivel)}
+                        {getNextNivelLabel(meta.nivel || nivel)}
                       </Badge>
                     </Link>
                   </li>
@@ -203,7 +203,10 @@ export default function MetaDetailPage() {
             <Button 
               variant="outline" 
               className="w-full mt-4"
-              onClick={() => navigate(`/metas/${getNextNivel(nivel)}/criar?pai=${meta.id}`)}
+              onClick={() => {
+                const nivelParaNavegar = meta.nivel || nivel;
+                navigate(`/metas/${getNextNivel(nivelParaNavegar)}/criar?pai=${meta.id}`);
+              }}
             >
               Criar Meta Filha
             </Button>
