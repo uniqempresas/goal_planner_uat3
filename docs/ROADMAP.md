@@ -32,34 +32,110 @@ O projeto Goal Planner completou a **Sprint 4** com sucesso! O bug crítico de r
 
 ---
 
-## 🆕 Sprint 4 - Correções Finais (COMPLETA)
+## 🆕 Sprint 4 - Correções Finais (COMPLETA - 08/04/2026)
 
-### Bug Crítico Corrigido: Redirecionamento ao Criar Meta Filha
+### Resumo das Correções
+
+| Commit | Data | Correção |
+|--------|------|----------|
+| `e8cbae4` | 08/04 | **Navegação Grandes Metas** - Corrigido plural "grandes" vs singular "grande" |
+| `bfc8fe1` | 08/04 | **Bug de Prazo** - Adicionado campo 'prazo' em MetaAnualCreatePage e MetaMensalCreatePage |
+| `dc8a930` | 08/04 | **Typo** - Corrigido 'recurrencia' → 'recorrencia' em TarefaEditPage.tsx |
+
+### 1. Bug Crítico Corrigido: Navegação para Grandes Metas
 
 **Problema Identificado:**
-Ao clicar em "Criar Meta Filha" em uma Meta Anual, o sistema redirecionava para URL incorreta.
+O sistema usava "grande" (singular) mas a rota era "/metas/grandes" (plural), causando erros de navegação.
 
-**Antes (Bug):**
-- ❌ URL: `/metas/anual/criar?pai={id}`
+**Arquivo:** `src/app/pages/metas/MetaDetailPage.tsx`
 
-**Depois (Corrigido):**
-- ✅ URL: `/metas/mensal/criar?pai={id}`
+**Correções em 4 lugares:**
+- Breadcrumb navigation (linha ~107)
+- Link "Voltar para lista" (linha ~174)  
+- Botão "Criar Meta Filha" (linha ~210)
+- Botão "Editar" (linha ~222)
 
-**Causa:**
-O código usava `params.nivel` (da URL) ao invés de `meta.nivel` (do banco de dados).
+**Antes:**
+```tsx
+to={`/metas/grande`}  // ❌ Errado
+```
 
-**Solução:**
-Alterado `MetaDetailPage.tsx` para usar `meta.nivel || params.nivel`, garantindo que o nível correto seja sempre utilizado.
+**Depois:**
+```tsx
+to={`/metas/grandes`}  // ✅ Correto
+```
 
-**Arquivo Modificado:**
-- `src/app/pages/metas/MetaDetailPage.tsx` - Botão "Criar Meta Filha" corrigido
+---
 
-**Teste Realizado:**
-✅ Testado via Chrome DevTools - Redirecionamento funcionando corretamente para todas as hierarquias:
-- Grande Meta → Meta Anual ✅
-- Meta Anual → Meta Mensal ✅
-- Meta Mensal → Meta Semanal ✅
-- Meta Semanal → Meta Diária ✅
+### 2. Bug Corrigido: Campo Prazo nas Criações de Metas
+
+**Problema Identificado:**
+As páginas MetaAnualCreatePage.tsx e MetaMensalCreatePage.tsx não estavam enviando o campo 'prazo' para o backend, causando exibição de "Sem prazo" na listagem.
+
+**Arquivos Modificados:**
+- `src/app/pages/metas/MetaAnualCreatePage.tsx` - Adicionado `prazo: data.prazo` no onSubmit
+- `src/app/pages/metas/MetaMensalCreatePage.tsx` - Adicionado `prazo: data.prazo` no onSubmit
+
+**Antes:**
+```tsx
+await metasService.create({
+  ...data,
+  nivel: 'anual',
+  user_id: user.id,
+  // prazo estava faltando!
+});
+```
+
+**Depois:**
+```tsx
+await metasService.create({
+  ...data,
+  nivel: 'anual',
+  user_id: user.id,
+  prazo: data.prazo,  // ✅ Adicionado
+});
+```
+
+---
+
+### 3. Bug Corrigido: Typo em TarefaEditPage.tsx
+
+**Problema:** Typo 'recurrencia' (com 'e') ao invés de 'recorrencia' (com 'o')
+
+**Arquivo:** `src/app/pages/agenda/TarefaEditPage.tsx`
+
+**Linhas corrigidas:** 80 e 99
+
+**Antes:**
+```tsx
+recurrenciaTipo: data.recurrenciaTipo  // ❌ Errado
+```
+
+**Depois:**
+```tsx
+recorrenciaTipo: data.recorrenciaTipo  // ✅ Correto
+```
+
+---
+
+### 4. Melhoria: Botão de Excluir Meta
+
+**Adicionado em:** `src/app/pages/metas/MetaDetailPage.tsx`
+
+Funcionalidade de exclusão com:
+- Confirmação antes de excluir
+- Loading state durante a exclusão
+- Redirecionamento automático após excluir
+
+---
+
+### Commits da Sprint 4
+
+```bash
+dc8a930 fix: Corrige typo recurrencia para recorrencia
+bfc8fe1 fix: Adiciona campo 'prazo' nas páginas de criação de metas  
+e8cbae4 fix: Corrige navegação para Metas Grandes (plural vs singular)
+```
 
 ---
 
@@ -273,13 +349,13 @@ Alterado `MetaDetailPage.tsx` para usar `meta.nivel || params.nivel`, garantindo
 
 ---
 
-## Status do Projeto: ✅ PRONTO
+## Status do Projeto: ✅ SPRINT 4 COMPLETA
 
 **Data de Conclusão:** 08 de Abril de 2026  
-**Último Commit:** `e3e8e2d`  
-**Status:** Todas as funcionalidades da Sprint 3 implementadas e testadas
+**Último Commit:** `dc8a930`  
+**Status:** Todas as correções da Sprint 4 implementadas, testadas e documentadas
 
-O projeto está **pronto para deploy** na Vercel!
+O projeto está **pronto para testes Beta** na Vercel!
 
 ---
 
@@ -296,5 +372,5 @@ O projeto está **pronto para deploy** na Vercel!
 ---
 
 **Última Atualização:** 08/04/2026  
-**Commit:** e3e8e2d  
-**Status:** ✅ SPRINT 3 COMPLETA - SISTEMA PRONTO
+**Commit:** dc8a930  
+**Status:** ✅ SPRINT 4 COMPLETA - BUGS CRÍTICOS CORRIGIDOS
