@@ -86,48 +86,92 @@ export interface WeeklyStats {
 // ============================================================
 
 export const availableEmojis = [
-  // Saúde & Bem-estar
-  '💪', '🏃', '🧘', '🥗', '💊', '🏋️', '🚴', '🏊', '💤', '🩺',
-  // Carreira & Negócios
-  '🚀', '💼', '📈', '🎯', '💻', '⚡', '🏆', '📊', '🔧', '💡',
-  // Finanças
-  '💰', '💵', '💎', '🏦', '📉', '📈', '💸', '🤑', '💳', '🏛️',
-  // Família & Relacionamentos
-  '❤️', '👨‍👩‍👧‍👦', '💑', '🤝', '🗣️', '🏠', '👶', '🎎', '💕', '🌹',
-  // Desenvolvimento Pessoal
-  '📚', '🎓', '✨', '🧠', '🎨', '🎭', '🎪', '🎬', '🎮', '🎯',
-  // Espiritualidade
-  '🧘', '🙏', '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️',
-  // Lazer & Diversão
-  '🎮', '🎬', '🎵', '🎨', '🏖️', '✈️', '🎉', '🎊', '🎁', '🎄',
-  // Social & Comunidade
-  '🤝', '🌍', '👥', '🗳️', '🏛️', '🎗️', '💝', '🌟', '⭐', '🔥',
+  // Saúde & Bem-estar (15)
+  '💪', '🏃', '🧘', '🥗', '💊', '🏋️', '🚴', '🏊', '💤', '🩺', '🌱', '🍎', '🥑', '🥤', '🧃',
+  // Carreira & Negócios (20)
+  '🚀', '💼', '📈', '🎯', '💻', '⚡', '🏆', '📊', '🔧', '💡', '📱', '🎓', '👔', '💼', '🏢', '📅', '📋', '✅', '📌', '🔖',
+  // Finanças (15)
+  '💰', '💵', '💎', '🏦', '📉', '📈', '💸', '🤑', '💳', '🏛️', '💲', '💱', '💹', '🏧', '💲',
+  // Família & Relacionamentos (20)
+  '❤️', '👨‍👩‍👧‍👦', '💑', '🤝', '🗣️', '🏠', '👶', '🎎', '💕', '🌹', '💌', '💒', '🧑‍🤝‍🧑', '👨‍👩‍👧', '👨‍👩‍👧‍👦', '👨‍👩‍👦‍👦', '👩‍👩‍👧', '👩‍👩‍👦', '🎁', '🎀',
+  // Desenvolvimento Pessoal (20)
+  '📚', '🎓', '✨', '🧠', '🎨', '🎭', '🎪', '🎬', '🎮', '🎯', '📝', '📖', '🔍', '💭', '🤔', '💡', '🧩', '🎲', '🧮', '📐',
+  // Espiritualidade (20)
+  '🧘', '🙏', '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️', '🕊️', '🌟', '✨', '💫', '🔮', '📿', '🏛️', '⛪', '🕌', '🕍',
+  // Lazer & Diversão (20)
+  '🎮', '🎬', '🎵', '🎨', '🏖️', '✈️', '🎉', '🎊', '🎁', '🎄', '🎆', '🎇', '🧸', '🎈', '🎠', '🎡', '🎢', '🏰', '🏯', '🌅',
+  // Social & Comunidade (15)
+  '🤝', '🌍', '👥', '🗳️', '🏛️', '🎗️', '💝', '🌟', '⭐', '🔥', '🌈', '☀️', '🌙', '⭐', '✨',
+  // Esportes & Atividades (20)
+  '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '⛳', '🏹', '🎣', '🥊',
+  // Natureza & Animais (20)
+  '🌳', '🌲', '🌴', '🌵', '🌷', '🌸', '🌹', '🌺', '🌻', '🌼', '🌿', '☘️', '🍀', '🍁', '🍂', '🍃', '🐶', '🐱', '🐭', '🐹',
+  // Comida & Bebida (20)
+  '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🍍', '🥝', '🍅', '🍆', '🥑', '🍳', '🥐', '🍞',
+  // Viagem & Lugares (20)
+  '🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🛵', '🏍️', '🛺', '🚲', '🛴', '🚂', '✈️',
+  // Objetos & Ferramentas (20)
+  '⌚', '📱', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '🖲️', '🕹️', '🗜️', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽️',
+  // Símbolos & Sinais (20)
+  '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️',
 ];
 
 export const availableColors = [
-  // Verdes
+  // Verdes (8)
   { name: 'Esmeralda', value: '#10B981', bgColor: '#ECFDF5' },
   { name: 'Verde', value: '#22C55E', bgColor: '#DCFCE7' },
   { name: 'Lima', value: '#84CC16', bgColor: '#F7FEE7' },
   { name: 'Verde Escuro', value: '#15803D', bgColor: '#DCFCE7' },
-  // Azuis
+  { name: 'Teal', value: '#14B8A6', bgColor: '#F0FDFA' },
+  { name: 'Turquesa', value: '#2DD4BF', bgColor: '#CCFBF1' },
+  { name: 'Verde Menta', value: '#6EE7B7', bgColor: '#D1FAE5' },
+  { name: 'Verde Musgo', value: '#65A30D', bgColor: '#ECFCCB' },
+  // Azuis (10)
   { name: 'Azul', value: '#3B82F6', bgColor: '#EFF6FF' },
   { name: 'Índigo', value: '#6366F1', bgColor: '#EEF2FF' },
   { name: 'Violeta', value: '#8B5CF6', bgColor: '#F5F3FF' },
   { name: 'Roxo', value: '#A855F7', bgColor: '#FAF5FF' },
   { name: 'Ciano', value: '#06B6D4', bgColor: '#ECFEFF' },
   { name: 'Celeste', value: '#0EA5E9', bgColor: '#F0F9FF' },
-  // Vermelhos e Laranjas
+  { name: 'Azul Royal', value: '#4169E1', bgColor: '#E0E7FF' },
+  { name: 'Azul Marinho', value: '#1E40AF', bgColor: '#DBEAFE' },
+  { name: 'Azul Claro', value: '#60A5FA', bgColor: '#EFF6FF' },
+  { name: 'Azul Bebê', value: '#93C5FD', bgColor: '#DBEAFE' },
+  // Vermelhos e Laranjas (12)
   { name: 'Vermelho', value: '#EF4444', bgColor: '#FEF2F2' },
   { name: 'Rosa', value: '#EC4899', bgColor: '#FDF2F8' },
   { name: 'Laranja', value: '#F97316', bgColor: '#FFF7ED' },
   { name: 'Âmbar', value: '#F59E0B', bgColor: '#FFFBEB' },
   { name: 'Amarelo', value: '#EAB308', bgColor: '#FEFCE8' },
-  // Neutros
+  { name: 'Coral', value: '#FF6B6B', bgColor: '#FFE4E6' },
+  { name: 'Salmão', value: '#FA8072', bgColor: '#FFE4E1' },
+  { name: 'Tomate', value: '#FF6347', bgColor: '#FFE4E1' },
+  { name: 'Laranja Escuro', value: '#EA580C', bgColor: '#FFF7ED' },
+  { name: 'Dourado', value: '#FBBF24', bgColor: '#FEF3C7' },
+  { name: 'Mostarda', value: '#CA8A04', bgColor: '#FEF9C3' },
+  { name: 'Marrom', value: '#92400E', bgColor: '#FFFBEB' },
+  // Neutros (10)
   { name: 'Slate', value: '#64748B', bgColor: '#F8FAFC' },
   { name: 'Zinc', value: '#71717A', bgColor: '#FAFAFA' },
   { name: 'Stone', value: '#78716C', bgColor: '#FAFAF9' },
-  { name: 'Marrom', value: '#92400E', bgColor: '#FFFBEB' },
+  { name: 'Cinza', value: '#6B7280', bgColor: '#F3F4F6' },
+  { name: 'Grafite', value: '#374151', bgColor: '#F9FAFB' },
+  { name: 'Preto', value: '#111827', bgColor: '#F3F4F6' },
+  { name: 'Branco', value: '#F9FAFB', bgColor: '#FFFFFF' },
+  { name: 'Creme', value: '#FEF3C7', bgColor: '#FFFBEB' },
+  { name: 'Bege', value: '#D4C4B0', bgColor: '#FAF7F2' },
+  { name: 'Cáqui', value: '#C3B091', bgColor: '#F5F5DC' },
+  // Cores Especiais (10)
+  { name: 'Roxo Escuro', value: '#581C87', bgColor: '#F3E8FF' },
+  { name: 'Magenta', value: '#C026D3', bgColor: '#FAE8FF' },
+  { name: 'Fúcsia', value: '#D946EF', bgColor: '#FAE8FF' },
+  { name: 'Rosa Claro', value: '#F9A8D4', bgColor: '#FDF2F8' },
+  { name: 'Lavanda', value: '#A78BFA', bgColor: '#EDE9FE' },
+  { name: 'Ameixa', value: '#9333EA', bgColor: '#F3E8FF' },
+  { name: 'Vinho', value: '#991B1B', bgColor: '#FEF2F2' },
+  { name: 'Bordô', value: '#7F1D1D', bgColor: '#FEF2F2' },
+  { name: 'Menta', value: '#6EE7B7', bgColor: '#D1FAE5' },
+  { name: 'Oliva', value: '#65A30D', bgColor: '#ECFCCB' },
 ];
 
 // ============================================================

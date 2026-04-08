@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Edit, CheckCircle, Calendar, Target, Star } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, Calendar, Target, Star, Trash2 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { metasService, type MetaNivel } from '../../../services/metasService';
 import { tarefasService } from '../../../services/tarefasService';
@@ -78,6 +78,23 @@ export default function MetaDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!meta) return;
+    
+    if (!confirm('Tem certeza que deseja excluir esta meta?\n\nIsso também excluirá todas as metas filhas vinculadas. Esta ação não pode ser desfeita.')) {
+      return;
+    }
+    
+    try {
+      await metasService.delete(meta.id);
+      await loadMetas();
+      navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`);
+    } catch (err) {
+      console.error('Erro ao excluir meta:', err);
+      alert('Erro ao excluir meta. Tente novamente.');
+    }
+  };
+
   const area = meta?.area_id ? getAreaById(meta.area_id) : null;
 
   if (loading) {
@@ -88,7 +105,7 @@ export default function MetaDetailPage() {
     return (
       <div className="p-6">
         <p className="text-red-500">{error || 'Meta não encontrada'}</p>
-        <Button onClick={() => navigate(`/metas/${nivel}`)} className="mt-4">
+        <Button onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`)} className="mt-4">
           Voltar
         </Button>
       </div>
@@ -99,7 +116,7 @@ export default function MetaDetailPage() {
     <div className="p-6 max-w-5xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link to={`/metas/${nivel}`} className="hover:text-indigo-600">
+        <Link to={`/metas/${nivel === 'grande' ? 'grandes' : nivel}`} className="hover:text-indigo-600">
           {nivelLabels[nivel]}
         </Link>
         <span>/</span>
@@ -109,7 +126,7 @@ export default function MetaDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(`/metas/${nivel}`)}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -133,9 +150,13 @@ export default function MetaDetailPage() {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(`/metas/${nivel}/${meta.id}/editar`)}>
+          <Button variant="outline" onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}/${meta.id}/editar`)}>
             <Edit className="w-4 h-4 mr-2" />
             Editar
+          </Button>
+          <Button variant="outline" className="text-red-600 hover:bg-red-50" onClick={handleDelete}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Excluir
           </Button>
           <Button variant={meta.status === 'ativa' ? 'default' : 'outline'} onClick={handleToggleStatus}>
             <CheckCircle className="w-4 h-4 mr-2" />
