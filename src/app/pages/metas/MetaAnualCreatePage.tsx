@@ -79,6 +79,7 @@ export default function MetaAnualCreatePage() {
         area_id: values.area_id || null,
         nivel: 'anual',
         parent_id: values.parent_id || null,
+        prazo: values.prazo || null,
         focusing_question: values.focusing_question || null,
         one_thing: values.prioridade === 'one_thing',
         smart_objetivo: values.smart_objetivo || null,
