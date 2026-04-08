@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import {
   Star, AlertTriangle, Sun, Cloud, Moon, RefreshCw, Calendar,
   CheckCircle2, Circle, ChevronDown, ChevronUp, Plus, Clock,
-  Target, Flame,
+  Target, Flame, Pencil, Trash2,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
@@ -31,12 +31,12 @@ const priorityColors: Record<string, string> = {
   low: 'bg-slate-300',
 };
 
-function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: string) => void }) {
+function TarefaItem({ tarefa, onToggle, onDelete }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void }) {
   const { getMetaById } = useApp();
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
 
   return (
-    <Link to={`/agenda/tarefas/${tarefa.id}`} className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}`}>
+    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}`}>
       <button
         onClick={(e) => { e.preventDefault(); onToggle(tarefa.id); }}
         className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer"
@@ -47,7 +47,7 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: str
         }
       </button>
 
-      <div className="flex-1 min-w-0">
+      <Link to={`/agenda/tarefas/${tarefa.id}`} className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className={`text-sm leading-relaxed ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'} ${tarefa.isOneThing ? 'font-medium' : ''}`}>
             {tarefa.title}
@@ -74,8 +74,26 @@ function TarefaItem({ tarefa, onToggle }: { tarefa: TarefaUI; onToggle: (id: str
             <span className="text-xs text-slate-400 italic line-clamp-1">{tarefa.notes}</span>
           )}
         </div>
+      </Link>
+
+      {/* Action Buttons */}
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Link
+          to={`/agenda/tarefas/${tarefa.id}/editar`}
+          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+          title="Editar tarefa"
+        >
+          <Pencil size={16} />
+        </Link>
+        <button
+          onClick={() => onDelete(tarefa.id)}
+          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          title="Excluir tarefa"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -122,11 +140,12 @@ function HabitoItem({ habito, onToggle }: { habito: Habito; onToggle: (id: strin
   );
 }
 
-function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onToggleHabito }: {
+function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTarefa, onToggleHabito }: {
   block: TimeBlock;
   tarefas: TarefaUI[];
   habitos?: Habito[];
   onToggleTarefa: (id: string) => void;
+  onDeleteTarefa: (id: string) => void;
   onToggleHabito?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -221,7 +240,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onToggleHab
           {tarefas.length > 0 && (
             <div className="space-y-1">
               {tarefas.map(tarefa => (
-                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} />
+                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} />
               ))}
             </div>
           )}
@@ -239,7 +258,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onToggleHab
 }
 
 export default function AgendaHojePage() {
-  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats } = useApp();
+  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas } = useApp();
 
   const completed = tarefasHoje.filter(t => t.completed).length;
   const total = tarefasHoje.length;
@@ -257,6 +276,13 @@ export default function AgendaHojePage() {
   });
 
   const today = new Date().toISOString().split('T')[0];
+
+  const handleDeleteTarefa = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
+      await deleteTarefa(id);
+      await loadTarefas();
+    }
+  };
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -321,6 +347,7 @@ export default function AgendaHojePage() {
                 tarefas={tarefasHoje.filter(t => t.block === block)}
                 habitos={block === 'habitos' ? habitosHoje : undefined}
                 onToggleTarefa={toggleTarefa}
+                onDeleteTarefa={handleDeleteTarefa}
                 onToggleHabito={block === 'habitos' ? toggleHabitoStreak : undefined}
               />
             ))}

@@ -1,5 +1,5 @@
 // ============================================================
-// Goal Planner - Mock Data
+// Goal Planner - Mock Data e Configurações
 // ============================================================
 
 export interface Area {
@@ -80,6 +80,55 @@ export interface WeeklyStats {
   streakDays: number;
   focusHours: number;
 }
+
+// ============================================================
+// Configurações de Emojis e Cores para Áreas
+// ============================================================
+
+export const availableEmojis = [
+  // Saúde & Bem-estar
+  '💪', '🏃', '🧘', '🥗', '💊', '🏋️', '🚴', '🏊', '💤', '🩺',
+  // Carreira & Negócios
+  '🚀', '💼', '📈', '🎯', '💻', '⚡', '🏆', '📊', '🔧', '💡',
+  // Finanças
+  '💰', '💵', '💎', '🏦', '📉', '📈', '💸', '🤑', '💳', '🏛️',
+  // Família & Relacionamentos
+  '❤️', '👨‍👩‍👧‍👦', '💑', '🤝', '🗣️', '🏠', '👶', '🎎', '💕', '🌹',
+  // Desenvolvimento Pessoal
+  '📚', '🎓', '✨', '🧠', '🎨', '🎭', '🎪', '🎬', '🎮', '🎯',
+  // Espiritualidade
+  '🧘', '🙏', '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️',
+  // Lazer & Diversão
+  '🎮', '🎬', '🎵', '🎨', '🏖️', '✈️', '🎉', '🎊', '🎁', '🎄',
+  // Social & Comunidade
+  '🤝', '🌍', '👥', '🗳️', '🏛️', '🎗️', '💝', '🌟', '⭐', '🔥',
+];
+
+export const availableColors = [
+  // Verdes
+  { name: 'Esmeralda', value: '#10B981', bgColor: '#ECFDF5' },
+  { name: 'Verde', value: '#22C55E', bgColor: '#DCFCE7' },
+  { name: 'Lima', value: '#84CC16', bgColor: '#F7FEE7' },
+  { name: 'Verde Escuro', value: '#15803D', bgColor: '#DCFCE7' },
+  // Azuis
+  { name: 'Azul', value: '#3B82F6', bgColor: '#EFF6FF' },
+  { name: 'Índigo', value: '#6366F1', bgColor: '#EEF2FF' },
+  { name: 'Violeta', value: '#8B5CF6', bgColor: '#F5F3FF' },
+  { name: 'Roxo', value: '#A855F7', bgColor: '#FAF5FF' },
+  { name: 'Ciano', value: '#06B6D4', bgColor: '#ECFEFF' },
+  { name: 'Celeste', value: '#0EA5E9', bgColor: '#F0F9FF' },
+  // Vermelhos e Laranjas
+  { name: 'Vermelho', value: '#EF4444', bgColor: '#FEF2F2' },
+  { name: 'Rosa', value: '#EC4899', bgColor: '#FDF2F8' },
+  { name: 'Laranja', value: '#F97316', bgColor: '#FFF7ED' },
+  { name: 'Âmbar', value: '#F59E0B', bgColor: '#FFFBEB' },
+  { name: 'Amarelo', value: '#EAB308', bgColor: '#FEFCE8' },
+  // Neutros
+  { name: 'Slate', value: '#64748B', bgColor: '#F8FAFC' },
+  { name: 'Zinc', value: '#71717A', bgColor: '#FAFAFA' },
+  { name: 'Stone', value: '#78716C', bgColor: '#FAFAF9' },
+  { name: 'Marrom', value: '#92400E', bgColor: '#FFFBEB' },
+];
 
 // ============================================================
 // Mock Data
@@ -481,6 +530,7 @@ export const mockTarefasHoje: Tarefa[] = [
     id: 't2',
     title: 'Revisar pull request do projeto open source',
     block: 'atrasadas',
+    metaId: 'ag3',
     completed: false,
     date: '2025-03-25',
     priority: 'low',

@@ -30,7 +30,16 @@ export default function DashboardPage() {
   const oneThing = tarefasHoje.find(t => t.block === 'oneThing');
   const completedToday = tarefasHoje.filter(t => t.completed).length;
   const totalToday = tarefasHoje.length;
-  const progressPercent = Math.round((completedToday / totalToday) * 100);
+  const progressPercent = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
+
+  // Data atual formatada
+  const today = new Date();
+  const todayFormatted = today.toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
   const stats = [
     {
@@ -42,24 +51,24 @@ export default function DashboardPage() {
     },
     {
       label: 'Sequência',
-      value: `${weeklyStats.streakDays} dias`,
+      value: `${weeklyStats?.sequenciaDias || 0} dias`,
       icon: <Flame size={18} className="text-orange-500" />,
       color: 'text-orange-600',
       sub: 'Melhor sequência',
     },
     {
       label: 'Foco esta semana',
-      value: `${weeklyStats.focusHours}h`,
+      value: `${weeklyStats?.produtividade || 0}%`,
       icon: <Zap size={18} className="text-indigo-500" />,
       color: 'text-indigo-600',
-      sub: `${weeklyStats.completedTasks}/${weeklyStats.totalTasks} tarefas`,
+      sub: `${weeklyStats?.tarefasConcluidas || 0}/${weeklyStats?.tarefasTotal || 0} tarefas`,
     },
     {
-      label: 'Hábitos',
-      value: `${weeklyStats.completedHabits}/${weeklyStats.totalHabits}`,
+      label: 'Metas',
+      value: `${weeklyStats?.metasConcluidas || 0}`,
       icon: <BarChart2 size={18} className="text-purple-500" />,
       color: 'text-purple-600',
-      sub: 'Esta semana',
+      sub: 'Concluídas',
     },
   ];
 
@@ -69,7 +78,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-slate-800 mb-0.5">Olá, {user.name.split(' ')[0]} 👋</h1>
-          <p className="text-slate-500 text-sm">Sexta-feira, 28 de Março de 2026</p>
+          <p className="text-slate-500 text-sm">{todayFormatted}</p>
         </div>
         <div className="flex gap-2">
           <Link to="/agenda/hoje" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
@@ -91,9 +100,9 @@ export default function DashboardPage() {
                 <span className="text-amber-700 text-xs font-semibold uppercase tracking-wide">⭐ ONE Thing do Dia</span>
                 <span className="bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">Prioridade Máxima</span>
               </div>
-              <p className="text-slate-800 font-medium mb-1">{oneThing.title}</p>
-              {oneThing.notes && (
-                <p className="text-slate-500 text-sm">{oneThing.notes}</p>
+              <p className="text-slate-800 font-medium mb-1">{oneThing.titulo}</p>
+              {oneThing.descricao && (
+                <p className="text-slate-500 text-sm">{oneThing.descricao}</p>
               )}
             </div>
             <Link
@@ -138,33 +147,34 @@ export default function DashboardPage() {
 
           <div className="space-y-4">
             {grandesMetas.map(meta => {
-              const area = areas.find(a => a.id === meta.areaId);
+              const area = areas.find(a => a.id === meta.area_id);
               const cfg = levelConfig.G;
+              const progress = meta.progress || 0;
               return (
                 <Link key={meta.id} to={`/metas/grandes/${meta.id}`} className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group">
                   <div className="relative shrink-0">
-                    <ProgressRing progress={meta.progress} size={52} stroke={4} color={cfg.color} />
+                    <ProgressRing progress={progress} size={52} stroke={4} color={cfg.color} />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-slate-700">{meta.progress}%</span>
+                      <span className="text-xs font-semibold text-slate-700">{progress}%</span>
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      {meta.isOneThing && <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />}
-                      <p className="text-slate-800 text-sm font-medium truncate group-hover:text-indigo-600 transition-colors">{meta.title}</p>
+                      {meta.one_thing && <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />}
+                      <p className="text-slate-800 text-sm font-medium truncate group-hover:text-indigo-600 transition-colors">{meta.titulo}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {area && (
-                        <span className="text-xs" style={{ color: area.color }}>
-                          {area.emoji} {area.name}
+                        <span className="text-xs" style={{ color: area.cor }}>
+                          {area.icone} {area.nome}
                         </span>
                       )}
-                      <span className="text-slate-400 text-xs">· {new Date(meta.prazo).getFullYear()}</span>
+                      <span className="text-slate-400 text-xs">· {new Date(meta.created_at).getFullYear()}</span>
                     </div>
                     <div className="mt-1.5 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
-                        style={{ width: `${meta.progress}%`, backgroundColor: cfg.color }}
+                        style={{ width: `${progress}%`, backgroundColor: cfg.color }}
                       />
                     </div>
                   </div>
@@ -190,15 +200,14 @@ export default function DashboardPage() {
                 <div key={area.id}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm text-slate-600 flex items-center gap-1.5">
-                      <span>{area.emoji}</span>
-                      <span>{area.name}</span>
+                      <span>{area.icone}</span>
+                      <span>{area.nome}</span>
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">{area.progress}%</span>
                   </div>
                   <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
-                      style={{ width: `${area.progress}%`, backgroundColor: area.color }}
+                      style={{ width: '0%', backgroundColor: area.cor }}
                     />
                   </div>
                 </div>
@@ -218,25 +227,28 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="space-y-3">
-              {metasAnuais.slice(0, 3).map(meta => (
-                <div key={meta.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: levelConfig.A.bgColor }}>
-                    <span className="text-xs font-bold" style={{ color: levelConfig.A.textColor }}>A</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-slate-700 text-sm truncate">{meta.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${meta.progress}%`, backgroundColor: levelConfig.A.color }}
-                        />
+              {metasAnuais.slice(0, 3).map(meta => {
+                const progress = meta.progress || 0;
+                return (
+                  <div key={meta.id} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: levelConfig.A.bgColor }}>
+                      <span className="text-xs font-bold" style={{ color: levelConfig.A.textColor }}>A</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-slate-700 text-sm truncate">{meta.titulo}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${progress}%`, backgroundColor: levelConfig.A.color }}
+                          />
+                        </div>
+                        <span className="text-xs text-slate-400 shrink-0">{progress}%</span>
                       </div>
-                      <span className="text-xs text-slate-400 shrink-0">{meta.progress}%</span>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

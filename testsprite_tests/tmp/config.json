@@ -3,5 +3,15 @@
   "scope": "codebase",
   "type": "frontend",
   "localEndpoint": "http://localhost:5173/",
-  "serverPort": 64099
+  "serverPort": 61031,
+  "executionArgs": {
+    "projectName": "goal_planner_uat3",
+    "projectPath": "C:\\Users\\henri\\.gemini\\antigravity\\playground\\vector-perseverance\\goal_planner_uat3",
+    "testIds": [],
+    "additionalInstruction": "Verify TypeScript compilation and run basic smoke tests",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-7CUsbHiAyvcZM_u-F3w7NtbxBcwsKziNHSm4VT4NbuCMitMqsYNuLX5kvZGpfZZIGVpY1oCuYGQnbSl_a-F1LILi_BWEVoR-cNV8ZBgSiloLGLt87xKhnnHIaK6bjeAa2oM"
+    }
+  }
 }

@@ -13,10 +13,10 @@ type User = {
   name: string;
 } | null;
 
-interface Area extends Database['public']['Tables']['areas']['Row'] {}
-interface Meta extends Database['public']['Tables']['metas']['Row'] {}
-interface Tarefa extends Database['public']['Tables']['tarefas']['Row'] {}
-interface Habito extends Database['public']['Tables']['habitos']['Row'] {}
+type Area = Database['public']['Tables']['areas']['Row'];
+type Meta = Database['public']['Tables']['metas']['Row'];
+type Tarefa = Database['public']['Tables']['tarefas']['Row'];
+type Habito = Database['public']['Tables']['habitos']['Row'];
 
 interface WeeklyStats {
   tarefasTotal: number;
