@@ -183,7 +183,7 @@ export default function AreaDetailPage() {
         ) : (
           <div className="space-y-3">
             {metasDaArea.map((meta) => {
-              const metaProgress = meta.progress || 0;
+              const metaProgress = 0;
               return (
                 <Card key={meta.id} className="hover:border-slate-300 transition-colors">
                   <CardContent className="p-4 flex items-center justify-between">

@@ -43,7 +43,7 @@ function MetaRow({ meta, level, onDelete }: { meta: Meta; level: MetaLevel; onDe
   const areaId = (metaAny as { area_id?: string })?.area_id || meta.areaId;
   const parentId = (metaAny as { parent_id?: string })?.parent_id || meta.parentId;
   const title = (metaAny as { titulo?: string })?.titulo || meta.title;
-  const progress = (metaAny as { progress?: number })?.progress || meta.progress || 0;
+  const progress = 0;
   const isOneThing = (metaAny as { one_thing?: boolean })?.one_thing || meta.isOneThing;
   const status = (metaAny as { status?: string })?.status || meta.status;
   const prazo = (metaAny as { prazo?: string })?.prazo || meta.prazo;
@@ -220,10 +220,7 @@ export function MetasListPage({ level, metas, createPath, title, subtitle, focus
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
           <div className="text-xl font-bold" style={{ color: cfg.color }}>
-            {metasList.length > 0 ? Math.round(metasList.reduce((s, m) => {
-              const mAny = m as unknown;
-              return s + ((mAny as { progress?: number })?.progress || (mAny as { metricas?: unknown })?.metricas ? 0 : m.progress || 0);
-            }, 0) / metasList.length) : 0}%
+            {metasList.length > 0 ? Math.round(metasList.reduce((s, m) => s + 0, 0) / metasList.length) : 0}%
           </div>
           <div className="text-slate-500 text-xs mt-0.5">Progresso médio</div>
         </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
-import type { Database } from '../../lib/supabase';
+import type { Database } from '../../../lib/supabase';
+import { tarefasService } from '../../../services/tarefasService';
 import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Flag } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -58,7 +59,7 @@ export default function TarefaEditPage() {
       bloco: undefined,
       prioridade: 'media',
       metaId: undefined,
-      recurrencia: 'nenhuma',
+      recorrencia: 'nenhuma',
     },
   });
 

@@ -77,7 +77,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-slate-800 mb-0.5">Olá, {user.name.split(' ')[0]} 👋</h1>
+          <h1 className="text-slate-800 mb-0.5">Olá, {user?.name?.split(' ')[0] ?? 'Visitante'} 👋</h1>
           <p className="text-slate-500 text-sm">{todayFormatted}</p>
         </div>
         <div className="flex gap-2">
@@ -149,7 +149,7 @@ export default function DashboardPage() {
             {grandesMetas.map(meta => {
               const area = areas.find(a => a.id === meta.area_id);
               const cfg = levelConfig.G;
-              const progress = meta.progress || 0;
+              const progress = 0;
               return (
                 <Link key={meta.id} to={`/metas/grandes/${meta.id}`} className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group">
                   <div className="relative shrink-0">
@@ -228,7 +228,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-3">
               {metasAnuais.slice(0, 3).map(meta => {
-                const progress = meta.progress || 0;
+                const progress = 0;
                 return (
                   <div key={meta.id} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: levelConfig.A.bgColor }}>

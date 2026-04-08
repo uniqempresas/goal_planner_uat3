@@ -87,12 +87,12 @@ function MetaCard({ meta }: { meta: Meta }) {
                 cx={26} cy={26} r={22}
                 fill="none" stroke={cfg.color} strokeWidth={4}
                 strokeDasharray={2 * Math.PI * 22}
-                strokeDashoffset={2 * Math.PI * 22 * (1 - (meta.progress || 0) / 100)}
+                strokeDashoffset={2 * Math.PI * 22 * (1 - 0 / 100)}
                 strokeLinecap="round"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-slate-700">{meta.progress || 0}%</span>
+              <span className="text-xs font-bold text-slate-700">0%</span>
             </div>
           </div>
 
@@ -195,10 +195,10 @@ function MetaCard({ meta }: { meta: Meta }) {
                       <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full"
-                          style={{ width: `${child.progress}%`, backgroundColor: levelConfig.A.color }}
+                          style={{ width: '0%', backgroundColor: levelConfig.A.color }}
                         />
                       </div>
-                      <span className="text-xs text-slate-400">{child.progress}%</span>
+                      <span className="text-xs text-slate-400">0%</span>
                     </div>
                   </div>
                   <ArrowRight size={12} className="text-slate-300 group-hover:text-indigo-400 transition-colors shrink-0" />
@@ -215,7 +215,7 @@ function MetaCard({ meta }: { meta: Meta }) {
 export default function GrandesMetasPage() {
   const { grandesMetas, areas } = useApp();
 
-  const avgProgress = Math.round(grandesMetas.reduce((s, m) => s + m.progress, 0) / grandesMetas.length);
+  const avgProgress = 0;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
