@@ -143,6 +143,14 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const collapsed = !sidebarOpen;
 
+  // Data dinâmica formatada
+  const today = new Date();
+  const dateFormatted = today.toLocaleDateString('pt-BR', { 
+    day: 'numeric', 
+    month: 'short', 
+    year: 'numeric' 
+  });
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate('/login', { replace: true });
@@ -298,7 +306,7 @@ export function AppLayout() {
             </div>
             <div className="flex items-center gap-2 text-slate-600 text-sm">
               <TrendingUp size={15} className="text-indigo-500" />
-              <span className="hidden sm:inline text-slate-500 text-xs">Hoje, 28 Mar 2026</span>
+              <span className="hidden sm:inline text-slate-500 text-xs">{dateFormatted}</span>
             </div>
           </div>
         </header>

@@ -89,6 +89,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Calcular weeklyStats dinamicamente baseado nas tarefasHoje
+  useEffect(() => {
+    const total = tarefasHoje.length;
+    const concluidas = tarefasHoje.filter(t => t.completed).length;
+    const produtividade = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+    
+    // Para sequenciaDias, usar um valor baseado no histórico ou mock por enquanto
+    // TODO: Implementar cálculo real de sequência baseado no histórico de tarefas
+    const sequenciaDias = concluidas > 0 ? Math.floor(Math.random() * 5) + 1 : 0; // Mock temporário
+    
+    setWeeklyStats({
+      tarefasTotal: total,
+      tarefasConcluidas: concluidas,
+      metasConcluidas: 0, // TODO: calcular metas concluídas
+      sequenciaDias,
+      produtividade,
+    });
+  }, [tarefasHoje]);
+
   const loadAreas = useCallback(async () => {
     if (!user) return;
     try {
