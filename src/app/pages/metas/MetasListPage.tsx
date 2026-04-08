@@ -134,7 +134,7 @@ function MetaRow({ meta, level, onDelete }: { meta: Meta; level: MetaLevel; onDe
             )}
             <span className="text-xs text-slate-400 flex items-center gap-1">
               <Calendar size={10} />
-              {new Date(prazo).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+              {prazo ? new Date(prazo).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sem prazo'}
             </span>
           </div>
         </div>

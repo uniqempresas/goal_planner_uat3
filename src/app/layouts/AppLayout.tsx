@@ -138,7 +138,7 @@ function NavItem({ group, collapsed }: { group: NavGroup; collapsed: boolean }) 
 }
 
 export function AppLayout() {
-  const { user, logout, sidebarOpen, setSidebarOpen, loading, isAuthenticated } = useApp();
+  const { user, logout, sidebarOpen, setSidebarOpen, loading, isAuthenticated, weeklyStats } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const collapsed = !sidebarOpen;
@@ -302,7 +302,7 @@ export function AppLayout() {
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
               <Star size={13} className="text-amber-500 fill-amber-500" />
-              <span className="text-amber-700 text-xs font-medium">14 dias seguidos</span>
+              <span className="text-amber-700 text-xs font-medium">{weeklyStats?.sequenciaDias || 0} dias seguidos</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600 text-sm">
               <TrendingUp size={15} className="text-indigo-500" />

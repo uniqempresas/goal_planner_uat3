@@ -41,6 +41,9 @@ export default function MetaCreatePage() {
     },
   });
 
+  // Helper para obter o caminho correto da lista (grande -> grandes)
+  const getListPath = (n: MetaNivel) => n === 'grande' ? 'grandes' : n;
+
   const onSubmit = async (values: MetaFormSchema) => {
     if (!user) return;
     
@@ -58,9 +61,8 @@ export default function MetaCreatePage() {
       });
       
       await loadMetas();
-      // Navigate to the list page - converter 'grande' -> 'grandes' para a rota correta
-      const nivelUrl = nivel === 'grande' ? 'grandes' : nivel;
-      navigate(`/metas/${nivelUrl}`);
+      // Navigate to the list page
+      navigate(`/metas/${getListPath(nivelValue)}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error('Erro ao criar meta:', message);
@@ -75,7 +77,7 @@ export default function MetaCreatePage() {
     <div className="p-6 max-w-5xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link to={`/metas/${nivel}`} className="hover:text-indigo-600">
+        <Link to={`/metas/${getListPath(nivel)}`} className="hover:text-indigo-600">
           {nivelLabels[nivel]}
         </Link>
         <span>/</span>
@@ -84,7 +86,7 @@ export default function MetaCreatePage() {
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate(`/metas/${nivel}`)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(`/metas/${getListPath(nivel)}`)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-xl text-slate-800">Criar Nova Meta</h1>
@@ -234,7 +236,7 @@ export default function MetaCreatePage() {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => navigate(`/metas/${nivel}`)}
+              onClick={() => navigate(`/metas/${getListPath(nivel)}`)}
             >
               Cancelar
             </Button>
