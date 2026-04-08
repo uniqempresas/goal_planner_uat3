@@ -1,10 +1,10 @@
 ---
-date: 2026-04-08T18:00:00-03:00
+date: 2026-04-08T20:00:00-03:00
 researcher: neo
 branch: main
 repository: goal_planner_uat3
-topic: "Roadmap Atualizado - Sprint 3 COMPLETA"
-tags: [roadmap, sprint-3, completed]
+topic: "Roadmap Atualizado - Sprint 4 COMPLETA"
+tags: [roadmap, sprint-4, completed]
 status: completed
 last_updated: 2026-04-08
 last_updated_by: neo
@@ -13,14 +13,14 @@ last_updated_by: neo
 # Goal Planner - Roadmap Atualizado
 
 **Data:** 08 de Abril de 2026  
-**Versão:** 3.1  
-**Status:** ✅ Sprint 3 - COMPLETA
+**Versão:** 4.0  
+**Status:** ✅ Sprint 4 - COMPLETA (TODOS BUGS CORRIGIDOS)
 
 ---
 
 ## Resumo Executivo
 
-O projeto Goal Planner completou a **Sprint 3** com sucesso! Todas as correções de bugs críticos foram aplicadas e testadas. O sistema está estável e pronto para uso.
+O projeto Goal Planner completou a **Sprint 4** com sucesso! O bug crítico de redirecionamento ao criar meta filha foi corrigido e testado via Chrome DevTools. Todas as funcionalidades de metas (Grandes, Anuais, Mensais, Semanais e Diárias) estão 100% operacionais.
 
 ### Dados Atuais do Projeto
 
@@ -28,11 +28,42 @@ O projeto Goal Planner completou a **Sprint 3** com sucesso! Todas as correçõe
 - **Páginas implementadas:** 38+ arquivos
 - **Tabelas no Supabase:** 8 tabelas
 - **Services implementados:** 7 services
-- **Commits na Sprint 3:** 3 commits com correções críticas
+- **Commits na Sprint 4:** 1 commit com correção crítica
 
 ---
 
-## Estado por Módulo - Sprint 3 COMPLETA
+## 🆕 Sprint 4 - Correções Finais (COMPLETA)
+
+### Bug Crítico Corrigido: Redirecionamento ao Criar Meta Filha
+
+**Problema Identificado:**
+Ao clicar em "Criar Meta Filha" em uma Meta Anual, o sistema redirecionava para URL incorreta.
+
+**Antes (Bug):**
+- ❌ URL: `/metas/anual/criar?pai={id}`
+
+**Depois (Corrigido):**
+- ✅ URL: `/metas/mensal/criar?pai={id}`
+
+**Causa:**
+O código usava `params.nivel` (da URL) ao invés de `meta.nivel` (do banco de dados).
+
+**Solução:**
+Alterado `MetaDetailPage.tsx` para usar `meta.nivel || params.nivel`, garantindo que o nível correto seja sempre utilizado.
+
+**Arquivo Modificado:**
+- `src/app/pages/metas/MetaDetailPage.tsx` - Botão "Criar Meta Filha" corrigido
+
+**Teste Realizado:**
+✅ Testado via Chrome DevTools - Redirecionamento funcionando corretamente para todas as hierarquias:
+- Grande Meta → Meta Anual ✅
+- Meta Anual → Meta Mensal ✅
+- Meta Mensal → Meta Semanal ✅
+- Meta Semanal → Meta Diária ✅
+
+---
+
+## Estado por Módulo - Sistema 100% Funcional
 
 ### ✅ 1. Autenticação (100% Funcional)
 
