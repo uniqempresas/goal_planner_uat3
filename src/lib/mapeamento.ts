@@ -2,7 +2,7 @@
  * Utility functions for mapping between database types and UI types
  */
 
-import type { Database } from './supabase';
+import type { Database, RecorrenciaConfig } from './supabase';
 
 type TarefaDB = Database['public']['Tables']['tarefas']['Row'];
 
@@ -22,6 +22,11 @@ export interface TarefaUI {
   data: string;
   isOneThing: boolean;
   notes?: string;
+  // Campos para recorrência
+  isRecorrente?: boolean;
+  isInstancia?: boolean;
+  parentId?: string;
+  recorrenciaConfig?: RecorrenciaConfig | null;
 }
 
 /**
@@ -67,6 +72,11 @@ export function mapTarefaToUI(tarefa: TarefaDB): TarefaUI {
     data: tarefa.data,
     isOneThing: tarefa.bloco === 'one-thing',
     notes: tarefa.descricao || undefined,
+    // Mapear campos de recorrência
+    isRecorrente: tarefa.is_template || false,
+    isInstancia: !!tarefa.parent_id,
+    parentId: tarefa.parent_id || undefined,
+    recorrenciaConfig: tarefa.recorrencia_config,
   };
 }
 

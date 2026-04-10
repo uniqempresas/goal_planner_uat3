@@ -9,6 +9,56 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// ============================================
+// TIPOS DE RECORRÊNCIA
+// ============================================
+
+export type TipoRecorrencia = 'unica' | 'diaria' | 'semanal' | 'mensal' | 'anual' | 'intervalo_dias';
+
+export interface RecorrenciaConfig {
+  /** Tipo de recorrência */
+  tipo: TipoRecorrencia;
+  /** Para recorrência semanal: dias específicos [0-6] onde 0=Seg, 6=Dom */
+  dias_semana?: number[];
+  /** Para recorrência mensal: dia do mês (1-31) */
+  dia_mes?: number;
+  /** Para recorrência anual: mês (0-11) */
+  mes_ano?: number;
+  /** Para recorrência anual: dia do mês */
+  dia_ano?: number;
+  /** Para intervalo personalizado: a cada X dias */
+  intervalo_dias?: number;
+  /** Data de início da recorrência (padrão: data da tarefa) */
+  data_inicio?: string; // YYYY-MM-DD
+  /** Data de término (opcional) */
+  data_fim?: string; // YYYY-MM-DD
+  /** Número máximo de ocorrências (opcional) */
+  max_ocorrencias?: number;
+}
+
+export const DIAS_SEMANA = [
+  { value: 0, label: 'Segunda', short: 'Seg' },
+  { value: 1, label: 'Terça', short: 'Ter' },
+  { value: 2, label: 'Quarta', short: 'Qua' },
+  { value: 3, label: 'Quinta', short: 'Qui' },
+  { value: 4, label: 'Sexta', short: 'Sex' },
+  { value: 5, label: 'Sábado', short: 'Sab' },
+  { value: 6, label: 'Domingo', short: 'Dom' },
+] as const;
+
+export const TIPOS_RECORRENCIA: { value: TipoRecorrencia; label: string }[] = [
+  { value: 'unica', label: 'Não repetir' },
+  { value: 'diaria', label: 'Todo dia' },
+  { value: 'semanal', label: 'Toda semana' },
+  { value: 'mensal', label: 'Todo mês' },
+  { value: 'anual', label: 'Todo ano' },
+  { value: 'intervalo_dias', label: 'A cada X dias' },
+];
+
+// ============================================
+// DATABASE TYPES
+// ============================================
+
 export type Database = {
   public: {
     Tables: {
@@ -120,6 +170,11 @@ export type Database = {
           completed: boolean;
           data: string;
           recorrencia: 'nenhuma' | 'diaria' | 'semanal';
+          // Novos campos para tarefas recorrentes
+          recorrencia_config: RecorrenciaConfig | null;
+          parent_id: string | null;
+          is_template: boolean;
+          data_fim_recorrencia: string | null;
           created_at: string;
         };
         Insert: {
@@ -135,6 +190,11 @@ export type Database = {
           completed?: boolean;
           data: string;
           recorrencia?: 'nenhuma' | 'diaria' | 'semanal';
+          // Novos campos
+          recorrencia_config?: RecorrenciaConfig | null;
+          parent_id?: string | null;
+          is_template?: boolean;
+          data_fim_recorrencia?: string | null;
           created_at?: string;
         };
         Update: {
@@ -150,6 +210,11 @@ export type Database = {
           completed?: boolean;
           data?: string;
           recorrencia?: 'nenhuma' | 'diaria' | 'semanal';
+          // Novos campos
+          recorrencia_config?: RecorrenciaConfig | null;
+          parent_id?: string | null;
+          is_template?: boolean;
+          data_fim_recorrencia?: string | null;
           created_at?: string;
         };
       };
@@ -232,7 +297,7 @@ export type Database = {
           id?: string;
           nome: string;
           descricao?: string | null;
-          estrutura: unknown;
+          estrutura?: unknown;
           created_at?: string;
         };
         Update: {

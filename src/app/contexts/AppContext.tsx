@@ -4,6 +4,7 @@ import { areasService } from '../../services/areasService';
 import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
 import { habitosService } from '../../services/habitosService';
+import { recorrenciaService } from '../../services/recorrenciaService';
 import type { Database } from '../../lib/supabase';
 import { mapTarefasToUI, mapTarefaToUI, type TarefaUI } from '../../lib/mapeamento';
 
@@ -160,9 +161,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
     try {
       const dataParam = data || new Date().toISOString().split('T')[0];
-      const tarefas = await tarefasService.getByData(user.id, dataParam);
-      const tarefasMapeadas = mapTarefasToUI(tarefas);
+      
+      // Carregar tarefas normais
+      const tarefasNormais = await tarefasService.getByData(user.id, dataParam);
+      
+      // Carregar instâncias de recorrentes
+      const instanciasRecorrentes = await tarefasService.getInstanciasRecorrentesDoDia(user.id, dataParam);
+      
+      // Combinar tarefas
+      const todasTarefas = [...tarefasNormais, ...instanciasRecorrentes];
+      
+      // Mapear para UI
+      const tarefasMapeadas = mapTarefasToUI(todasTarefas);
       setTarefasHoje(tarefasMapeadas);
+      
+      // Lazy loading: verificar se precisa gerar mais instâncias
+      const templates = await tarefasService.getTemplatesAtivos(user.id);
+      for (const template of templates) {
+        try {
+          await recorrenciaService.verificarEGerarNovasInstancias(template.id);
+        } catch (err) {
+          console.error(`[AppContext] Erro ao verificar instâncias do template ${template.id}:`, err);
+        }
+      }
     } catch (error) {
       console.error('Erro ao carregar tarefas:', error);
     }

@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import type { Database } from '../../../lib/supabase';
 import { tarefasService } from '../../../services/tarefasService';
-import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Flag } from 'lucide-react';
+import { recorrenciaService } from '../../../services/recorrenciaService';
+import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Flag, Repeat } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
@@ -19,6 +20,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { RecorrenciaEditModal } from '../../components/recorrencia/RecorrenciaEditModal';
+import { formatarRecorrencia } from '../../../services/recorrenciaService';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 
@@ -38,11 +41,17 @@ type TarefaEditForm = z.infer<typeof tarefaEditSchema>;
 export default function TarefaEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, grandesMetas, metasAnuais } = useApp();
+  const { user, grandesMetas, metasAnuais, loadTarefas } = useApp();
   const [tarefa, setTarefa] = useState<Tarefa | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Estados para recorrência
+  const [isInstanciaRecorrente, setIsInstanciaRecorrente] = useState(false);
+  const [tarefaMae, setTarefaMae] = useState<Tarefa | null>(null);
+  const [showRecorrenciaModal, setShowRecorrenciaModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'edit' | 'delete'>('edit');
 
   const allMetas = [
     ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
@@ -66,25 +75,43 @@ export default function TarefaEditPage() {
   useEffect(() => {
     if (!id || !user) return;
     
-    tarefasService.getById(id).then(t => {
-      setTarefa(t);
-      if (t) {
-        form.reset({
-          titulo: t.titulo,
-          descricao: t.descricao || '',
-          data: t.data,
-          hora: t.hora || '',
-          bloco: t.bloco as 'one-thing' | 'manha' | 'tarde' | 'noite' | undefined,
-          prioridade: t.prioridade,
-          metaId: t.meta_id || undefined,
-          recorrencia: t.recorrencia,
-        });
+    const carregarTarefa = async () => {
+      try {
+        const t = await tarefasService.getById(id);
+        setTarefa(t);
+        
+        if (t) {
+          form.reset({
+            titulo: t.titulo,
+            descricao: t.descricao || '',
+            data: t.data,
+            hora: t.hora || '',
+            bloco: t.bloco as 'one-thing' | 'manha' | 'tarde' | 'noite' | undefined,
+            prioridade: t.prioridade,
+            metaId: t.meta_id || undefined,
+            recorrencia: t.recorrencia,
+          });
+
+          // Verificar se é instância de recorrente
+          const isInstancia = await tarefasService.isInstanciaRecorrente(id);
+          setIsInstanciaRecorrente(isInstancia);
+
+          if (isInstancia) {
+            const parent = await tarefasService.getParentPorInstancia(id);
+            setTarefaMae(parent);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar tarefa:', error);
+      } finally {
+        setLoading(false);
       }
-    }).catch(console.error)
-      .finally(() => setLoading(false));
+    };
+
+    carregarTarefa();
   }, [id, user, form]);
 
-  const onSubmit = async (values: TarefaEditForm) => {
+  const handleSubmitNormal = async (values: TarefaEditForm) => {
     if (!id) return;
     setSaving(true);
     try {
@@ -106,9 +133,98 @@ export default function TarefaEditPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const onSubmit = async (values: TarefaEditForm) => {
+    // Se é instância de recorrente, mostrar modal
+    if (isInstanciaRecorrente) {
+      setModalMode('edit');
+      setShowRecorrenciaModal(true);
+      return;
+    }
+
+    // Edição normal
+    await handleSubmitNormal(values);
+  };
+
+  const handleDeleteClick = () => {
+    if (isInstanciaRecorrente) {
+      setModalMode('delete');
+      setShowRecorrenciaModal(true);
+      return;
+    }
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteNormal = async () => {
     if (!id) return;
     await tarefasService.delete(id);
+    navigate('/agenda/hoje');
+  };
+
+  // Handlers para recorrência
+  const handleEditEsta = async () => {
+    if (!id) return;
+    const values = form.getValues();
+    await tarefasService.update(id, {
+      titulo: values.titulo,
+      descricao: values.descricao || null,
+      data: values.data,
+      hora: values.hora || null,
+      bloco: values.bloco || null,
+      prioridade: values.prioridade,
+      meta_id: values.metaId || null,
+    });
+    await loadTarefas();
+    navigate(`/agenda/tarefas/${id}`);
+  };
+
+  const handleEditFuturas = async () => {
+    if (!tarefaMae?.id) return;
+    const values = form.getValues();
+    await recorrenciaService.editarTodasFuturas(tarefaMae.id, {
+      titulo: values.titulo,
+      descricao: values.descricao || null,
+      hora: values.hora || null,
+      bloco: values.bloco || null,
+      prioridade: values.prioridade,
+      meta_id: values.metaId || null,
+    });
+    await loadTarefas();
+    navigate(`/agenda/tarefas/${id}`);
+  };
+
+  const handleEditTodas = async () => {
+    if (!tarefaMae?.id) return;
+    const values = form.getValues();
+    await recorrenciaService.editarTodas(tarefaMae.id, {
+      titulo: values.titulo,
+      descricao: values.descricao || null,
+      hora: values.hora || null,
+      bloco: values.bloco || null,
+      prioridade: values.prioridade,
+      meta_id: values.metaId || null,
+    });
+    await loadTarefas();
+    navigate(`/agenda/tarefas/${id}`);
+  };
+
+  const handleDeleteEsta = async () => {
+    if (!id) return;
+    await recorrenciaService.excluirApenasEsta(id);
+    await loadTarefas();
+    navigate('/agenda/hoje');
+  };
+
+  const handleDeleteFuturas = async () => {
+    if (!tarefaMae?.id || !tarefa) return;
+    await recorrenciaService.excluirTodasFuturas(tarefaMae.id, tarefa.data);
+    await loadTarefas();
+    navigate('/agenda/hoje');
+  };
+
+  const handleDeleteTodas = async () => {
+    if (!tarefaMae?.id) return;
+    await recorrenciaService.excluirTodas(tarefaMae.id);
+    await loadTarefas();
     navigate('/agenda/hoje');
   };
 
@@ -155,6 +271,16 @@ export default function TarefaEditPage() {
         </Button>
         <h1 className="text-xl text-slate-800">Editar Tarefa</h1>
       </div>
+
+      {/* Badge de recorrência */}
+      {isInstanciaRecorrente && tarefaMae?.recorrencia_config && (
+        <div className="mb-6 flex items-center gap-2 p-3 bg-purple-50 border border-purple-100 rounded-lg">
+          <Repeat className="w-4 h-4 text-purple-600" />
+          <span className="text-sm text-purple-700">
+            Tarefa recorrente: {formatarRecorrencia(tarefaMae.recorrencia_config)}
+          </span>
+        </div>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -333,30 +459,6 @@ export default function TarefaEditPage() {
                   </FormItem>
                 )}
               />
-
-              {/* Recorrência */}
-              <FormField
-                control={form.control}
-                name="recorrencia"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Repetição</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a recorrência" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="nenhuma">Não repetir</SelectItem>
-                        <SelectItem value="diaria">Todo dia</SelectItem>
-                        <SelectItem value="semanal">Toda semana</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
           </Card>
 
@@ -364,7 +466,7 @@ export default function TarefaEditPage() {
             <Button 
               type="button" 
               variant="destructive"
-              onClick={() => setShowDeleteConfirm(true)}
+              onClick={handleDeleteClick}
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
@@ -385,7 +487,7 @@ export default function TarefaEditPage() {
         </form>
       </Form>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal (para tarefas normais) */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
@@ -401,7 +503,7 @@ export default function TarefaEditPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleDelete}
+                onClick={handleDeleteNormal}
                 className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
               >
                 Excluir
@@ -410,6 +512,20 @@ export default function TarefaEditPage() {
           </div>
         </div>
       )}
+
+      {/* Modal de Recorrência */}
+      <RecorrenciaEditModal
+        isOpen={showRecorrenciaModal}
+        onClose={() => setShowRecorrenciaModal(false)}
+        onEditEsta={handleEditEsta}
+        onEditFuturas={handleEditFuturas}
+        onEditTodas={handleEditTodas}
+        onDeleteEsta={handleDeleteEsta}
+        onDeleteFuturas={handleDeleteFuturas}
+        onDeleteTodas={handleDeleteTodas}
+        tarefaTitulo={tarefa?.titulo || ''}
+        mode={modalMode}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Target, Calendar, Clock, Repeat, Flag } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -17,6 +17,9 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import { tarefaFormSchema, type TarefaFormSchema } from './tarefaFormSchema';
+import { RecorrenciaConfigPanel } from '../../components/recorrencia/RecorrenciaConfigPanel';
+import type { RecorrenciaConfig } from '../../../lib/supabase';
+import { recorrenciaService } from '../../../services/recorrenciaService';
 
 export default function TarefaCreatePage() {
   const navigate = useNavigate();
@@ -26,6 +29,10 @@ export default function TarefaCreatePage() {
   // Get params from URL
   const dataParam = searchParams.get('data');
   const blocoParam = searchParams.get('bloco');
+
+  // Estado para configuração de recorrência
+  const [recorrenciaConfig, setRecorrenciaConfig] = useState<RecorrenciaConfig | null>(null);
+  const [isGerando, setIsGerando] = useState(false);
 
   // Combine all metas for the select
   const allMetas = [
@@ -59,20 +66,71 @@ export default function TarefaCreatePage() {
 
   const onSubmit = async (values: TarefaFormSchema) => {
     try {
-      await createTarefa({
-        titulo: values.titulo,
-        descricao: values.descricao,
-        data: values.data,
-        hora: values.hora || null,
-        bloco: values.bloco || null,
-        prioridade: values.prioridade,
-        meta_id: values.metaId || null,
-        recorrencia: values.recorrencia,
-        completed: false,
-      });
-      navigate('/agenda/hoje');
+      setIsGerando(true);
+
+      // Verificar se é recorrente
+      const isRecorrente = recorrenciaConfig && recorrenciaConfig.tipo !== 'unica';
+
+      if (isRecorrente) {
+        console.log('[TarefaCreatePage] Criando tarefa recorrente:', recorrenciaConfig);
+
+        // Validar configuração
+        const validacao = recorrenciaService.validarConfiguracao(recorrenciaConfig!);
+        if (!validacao.valido) {
+          alert(validacao.erro || 'Configuração de recorrência inválida');
+          setIsGerando(false);
+          return;
+        }
+
+        // Criar tarefa mãe (template)
+        const tarefaMae = await createTarefa({
+          titulo: values.titulo,
+          descricao: values.descricao,
+          data: values.data,
+          hora: values.hora || null,
+          bloco: values.bloco || null,
+          prioridade: values.prioridade,
+          meta_id: values.metaId || null,
+          recorrencia: 'nenhuma',
+          completed: false,
+          is_template: true,
+          recorrencia_config: recorrenciaConfig,
+          data_fim_recorrencia: recorrenciaConfig?.data_fim || null,
+        });
+
+        console.log('[TarefaCreatePage] Tarefa mãe criada:', tarefaMae);
+
+        // Gerar instâncias
+        if (tarefaMae) {
+          await recorrenciaService.gerarInstancias(tarefaMae, 30);
+        }
+
+        navigate('/agenda/hoje');
+      } else {
+        // Tarefa normal (não recorrente)
+        await createTarefa({
+          titulo: values.titulo,
+          descricao: values.descricao,
+          data: values.data,
+          hora: values.hora || null,
+          bloco: values.bloco || null,
+          prioridade: values.prioridade,
+          meta_id: values.metaId || null,
+          recorrencia: 'nenhuma',
+          completed: false,
+          is_template: false,
+          recorrencia_config: null,
+          parent_id: null,
+          data_fim_recorrencia: null,
+        });
+
+        navigate('/agenda/hoje');
+      }
     } catch (error) {
       console.error('Erro ao criar tarefa:', error);
+      alert('Erro ao criar tarefa. Tente novamente.');
+    } finally {
+      setIsGerando(false);
     }
   };
 
@@ -271,29 +329,19 @@ export default function TarefaCreatePage() {
                 )}
               />
 
-              {/* Recorrência */}
-              <FormField
-                control={form.control}
-                name="recorrencia"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Repetição</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a recorrência" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="nenhuma">Não repetir</SelectItem>
-                        <SelectItem value="diaria">Todo dia</SelectItem>
-                        <SelectItem value="semanal">Toda semana</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Recorrência - Nova implementação */}
+              <div className="border-t border-slate-200 pt-6">
+                <h3 className="text-sm font-medium text-slate-800 mb-4 flex items-center gap-2">
+                  <Repeat className="w-4 h-4" />
+                  Repetição
+                </h3>
+                <RecorrenciaConfigPanel
+                  config={recorrenciaConfig || { tipo: 'unica' }}
+                  dataInicio={form.watch('data')}
+                  onChange={setRecorrenciaConfig}
+                  disabled={isGerando}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -302,11 +350,12 @@ export default function TarefaCreatePage() {
               type="button" 
               variant="outline" 
               onClick={() => navigate('/agenda/hoje')}
+              disabled={isGerando}
             >
               Cancelar
             </Button>
-            <Button type="submit">
-              Criar Tarefa
+            <Button type="submit" disabled={isGerando}>
+              {isGerando ? 'Criando...' : 'Criar Tarefa'}
             </Button>
           </div>
         </form>
