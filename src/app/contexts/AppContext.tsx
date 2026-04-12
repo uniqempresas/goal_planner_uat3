@@ -168,8 +168,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // Carregar instâncias de recorrentes
       const instanciasRecorrentes = await tarefasService.getInstanciasRecorrentesDoDia(user.id, dataParam);
       
-      // Combinar tarefas
-      const todasTarefas = [...tarefasNormais, ...instanciasRecorrentes];
+      // Combinar tarefas removendo duplicatas (baseado no ID)
+      const tarefasMap = new Map<string, Tarefa>();
+      [...tarefasNormais, ...instanciasRecorrentes].forEach(tarefa => {
+        tarefasMap.set(tarefa.id, tarefa);
+      });
+      const todasTarefas = Array.from(tarefasMap.values());
       
       // Mapear para UI
       const tarefasMapeadas = mapTarefasToUI(todasTarefas);
