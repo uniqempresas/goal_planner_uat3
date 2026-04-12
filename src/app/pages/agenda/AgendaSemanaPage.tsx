@@ -5,19 +5,20 @@ import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
 import type { TarefaUI } from '../../../lib/mapeamento';
 
-const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-const diasCompletos = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
+const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const diasCompletos = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
 export default function AgendaSemanaPage() {
+  const { user } = useApp();
   const [selectedDay, setSelectedDay] = useState(0);
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    const diff = -dayOfWeek; // Volta para o domingo
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() + diff);
+    sunday.setHours(0, 0, 0, 0);
+    return sunday;
   });
   
   const [tasksByDay, setTasksByDay] = useState<Record<number, TarefaUI[]>>({});
@@ -33,6 +34,8 @@ export default function AgendaSemanaPage() {
 
   useEffect(() => {
     async function loadWeekTasks() {
+      if (!user) return;
+      
       setLoading(true);
       const tasks: Record<number, TarefaUI[]> = {};
       
@@ -42,9 +45,21 @@ export default function AgendaSemanaPage() {
         const dateStr = date.toISOString().split('T')[0];
         
         try {
-          const dayTasks = await tarefasService.getByData('current-user', dateStr);
+          // Carregar tarefas normais
+          const tarefasNormais = await tarefasService.getTarefasDoDia(user.id, dateStr);
+          
+          // Carregar instâncias de recorrentes
+          const instanciasRecorrentes = await tarefasService.getInstanciasRecorrentesDoDia(user.id, dateStr);
+          
+          // Combinar e remover duplicatas
+          const tarefasMap = new Map<string, any>();
+          [...tarefasNormais, ...instanciasRecorrentes].forEach(tarefa => {
+            tarefasMap.set(tarefa.id, tarefa);
+          });
+          const todasTarefas = Array.from(tarefasMap.values());
+          
           // Map to UI format
-          tasks[i] = dayTasks.map(t => ({
+          tasks[i] = todasTarefas.map(t => ({
             id: t.id,
             metaId: t.meta_id || undefined,
             title: t.titulo,
@@ -67,7 +82,7 @@ export default function AgendaSemanaPage() {
     }
     
     loadWeekTasks();
-  }, [currentWeekStart]);
+  }, [currentWeekStart, user]);
 
   const goToPrevWeek = () => {
     const newStart = new Date(currentWeekStart);
@@ -83,13 +98,13 @@ export default function AgendaSemanaPage() {
 
   const goToCurrentWeek = () => {
     const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    setCurrentWeekStart(monday);
-    setSelectedDay(today.getDay() === 0 ? 6 : today.getDay() - 1);
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    const diff = -dayOfWeek; // Volta para o domingo
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() + diff);
+    sunday.setHours(0, 0, 0, 0);
+    setCurrentWeekStart(sunday);
+    setSelectedDay(dayOfWeek);
   };
 
   const formatWeekRange = () => {
@@ -251,7 +266,7 @@ export default function AgendaSemanaPage() {
                 }
               </p>
               <Link 
-                to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`}
+                to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
                 className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm"
               >
                 <Plus size={16} />

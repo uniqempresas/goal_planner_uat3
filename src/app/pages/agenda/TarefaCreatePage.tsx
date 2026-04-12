@@ -24,21 +24,25 @@ import { recorrenciaService } from '../../../services/recorrenciaService';
 export default function TarefaCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { createTarefa, grandesMetas, metasAnuais } = useApp();
+  const { createTarefa, grandesMetas, metasAnuais, metasMensais } = useApp();
 
   // Get params from URL
   const dataParam = searchParams.get('data');
   const blocoParam = searchParams.get('bloco');
+  const origemParam = searchParams.get('origem'); // 'semana' ou undefined
 
   // Estado para configuração de recorrência
   const [recorrenciaConfig, setRecorrenciaConfig] = useState<RecorrenciaConfig | null>(null);
   const [isGerando, setIsGerando] = useState(false);
 
-  // Combine all metas for the select
-  const allMetas = [
-    ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
-    ...metasAnuais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Anual' })),
-  ];
+  // Se vier da agenda semanal, mostrar apenas metas mensais
+  // Caso contrário, mostrar grandes metas e anuais
+  const allMetas = origemParam === 'semana' 
+    ? metasMensais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Mensal' }))
+    : [
+        ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
+        ...metasAnuais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Anual' })),
+      ];
 
   const form = useForm<TarefaFormSchema>({
     resolver: zodResolver(tarefaFormSchema),
