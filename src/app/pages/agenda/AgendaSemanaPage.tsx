@@ -256,6 +256,14 @@ export default function AgendaSemanaPage() {
                   </span>
                 </Link>
               ))}
+              {/* Botão para adicionar mais tarefas */}
+              <Link 
+                to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
+                className="flex items-center gap-2 p-2.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-all text-sm mt-4"
+              >
+                <Plus size={16} />
+                Adicionar nova tarefa
+              </Link>
             </div>
           ) : (
             <div className="text-center py-10">
