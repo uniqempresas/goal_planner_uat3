@@ -31,7 +31,7 @@ function getWeekNumber(date: Date): number {
 
 function getWeekDates(year: number, week: number): { start: Date; end: Date } {
   const januaryFirst = new Date(year, 0, 1);
-  const daysToAdd = (week - 1) * 7 - januaryFirst.getDay() + 1;
+  const daysToAdd = (week - 1) * 7 - januaryFirst.getDay();
   const start = new Date(year, 0, daysToAdd + 1);
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
