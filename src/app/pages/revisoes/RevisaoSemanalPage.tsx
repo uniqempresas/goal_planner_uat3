@@ -22,19 +22,32 @@ const categoryConfig = {
 };
 
 function getWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const dayOfWeek = d.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  const diff = -dayOfWeek; // Volta para o domingo
+  const sunday = new Date(d);
+  sunday.setDate(d.getDate() + diff);
+  const yearStart = new Date(sunday.getFullYear(), 0, 1);
+  const weekNumber = Math.ceil((((sunday.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return weekNumber;
 }
 
 function getWeekDates(year: number, week: number): { start: Date; end: Date } {
+  // Encontrar o primeiro domingo do ano ou o domingo da semana especificada
   const januaryFirst = new Date(year, 0, 1);
-  const daysToAdd = (week - 1) * 7 - januaryFirst.getDay();
-  const start = new Date(year, 0, daysToAdd + 1);
+  const dayOfWeek = januaryFirst.getDay(); // 0 = Domingo
+  
+  // Calcular o domingo da primeira semana
+  const firstSunday = new Date(year, 0, 1 - dayOfWeek);
+  
+  // Calcular o domingo da semana desejada
+  const start = new Date(firstSunday);
+  start.setDate(firstSunday.getDate() + (week - 1) * 7);
+  
   const end = new Date(start);
-  end.setDate(end.getDate() + 6);
+  end.setDate(start.getDate() + 6); // Sábado
+  
   return { start, end };
 }
 
