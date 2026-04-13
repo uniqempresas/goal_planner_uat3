@@ -1,20 +1,36 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star, CheckCircle2, Circle, Plus, Loader2 } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus, 
+  Loader2,
+  CheckCircle2,
+  Target,
+  Flame,
+  Sparkles 
+} from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
 import type { TarefaUI } from '../../../lib/mapeamento';
+import { WeekDayCard } from '../../components/agenda/WeekDayCard';
+import { TaskItemModern } from '../../components/agenda/TaskItemModern';
+import { WeekStatsCard } from '../../components/agenda/WeekStatsCard';
+import { EmptyStateAgenda } from '../../components/agenda/EmptyStateAgenda';
+import { pageTransition, fadeInUp, staggerContainer } from '../../components/metas/animations';
 
 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const diasCompletos = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
 export default function AgendaSemanaPage() {
-  const { user } = useApp();
+  const navigate = useNavigate();
+  const { user, weeklyStats } = useApp();
   const [selectedDay, setSelectedDay] = useState(0);
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-    const diff = -dayOfWeek; // Volta para o domingo
+    const dayOfWeek = today.getDay();
+    const diff = -dayOfWeek;
     const sunday = new Date(today);
     sunday.setDate(today.getDate() + diff);
     sunday.setHours(0, 0, 0, 0);
@@ -28,11 +44,12 @@ export default function AgendaSemanaPage() {
   const selectedDate = new Date(currentWeekStart);
   selectedDate.setDate(currentWeekStart.getDate() + selectedDay);
 
-  const isToday = () => {
+  const isTodayDate = () => {
     const today = new Date();
     return selectedDate.toDateString() === today.toDateString();
   };
 
+  // Load week tasks
   useEffect(() => {
     async function loadWeekTasks() {
       if (!user) return;
@@ -46,20 +63,15 @@ export default function AgendaSemanaPage() {
         const dateStr = date.toISOString().split('T')[0];
         
         try {
-          // Carregar tarefas normais
           const tarefasNormais = await tarefasService.getTarefasDoDia(user.id, dateStr);
-          
-          // Carregar instâncias de recorrentes
           const instanciasRecorrentes = await tarefasService.getInstanciasRecorrentesDoDia(user.id, dateStr);
           
-          // Combinar e remover duplicatas
           const tarefasMap = new Map<string, any>();
           [...tarefasNormais, ...instanciasRecorrentes].forEach(tarefa => {
             tarefasMap.set(tarefa.id, tarefa);
           });
           const todasTarefas = Array.from(tarefasMap.values());
           
-          // Map to UI format
           tasks[i] = todasTarefas.map(t => ({
             id: t.id,
             metaId: t.meta_id || undefined,
@@ -99,8 +111,8 @@ export default function AgendaSemanaPage() {
 
   const goToCurrentWeek = () => {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-    const diff = -dayOfWeek; // Volta para o domingo
+    const dayOfWeek = today.getDay();
+    const diff = -dayOfWeek;
     const sunday = new Date(today);
     sunday.setDate(today.getDate() + diff);
     sunday.setHours(0, 0, 0, 0);
@@ -124,10 +136,7 @@ export default function AgendaSemanaPage() {
     return `${startDay} de ${startMonth} — ${endDay} de ${endMonth} de ${year}`;
   };
 
-  const handleToggleTask = async (taskId: string, dayIndex: number, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handleToggleTask = async (taskId: string) => {
     if (togglingTaskId === taskId) return;
     
     setTogglingTaskId(taskId);
@@ -137,7 +146,7 @@ export default function AgendaSemanaPage() {
       
       setTasksByDay(prev => {
         const newTasksByDay = { ...prev };
-        const dayTasks = [...(newTasksByDay[dayIndex] || [])];
+        const dayTasks = [...(newTasksByDay[selectedDay] || [])];
         const taskIndex = dayTasks.findIndex(t => t.id === taskId);
         
         if (taskIndex !== -1) {
@@ -145,7 +154,7 @@ export default function AgendaSemanaPage() {
             ...dayTasks[taskIndex],
             completed: !dayTasks[taskIndex].completed
           };
-          newTasksByDay[dayIndex] = dayTasks;
+          newTasksByDay[selectedDay] = dayTasks;
         }
         
         return newTasksByDay;
@@ -157,196 +166,280 @@ export default function AgendaSemanaPage() {
     }
   };
 
-  const dayTasks = tasksByDay[selectedDay] || [];
+  const handleNavigateToTask = (taskId: string) => {
+    navigate(`/agenda/tarefas/${taskId}`);
+  };
+
+  // Sort tasks by time (tasks with time first, sorted by time; tasks without time go to end)
+  const dayTasks = (tasksByDay[selectedDay] || [])
+    .sort((a, b) => {
+      if (!a.hora && !b.hora) return 0;
+      if (!a.hora) return 1;
+      if (!b.hora) return -1;
+      return a.hora.localeCompare(b.hora);
+    });
   const completedCount = dayTasks.filter(t => t.completed).length;
   const totalCount = dayTasks.length;
 
+  // Week stats calculation
+  const weekTotalTasks = Object.values(tasksByDay).flat();
+  const weekCompleted = weekTotalTasks.filter(t => t.completed).length;
+  const weekOneThings = weekTotalTasks.filter(t => t.isOneThing).length;
+  const weekProgress = weekTotalTasks.length > 0 
+    ? Math.round((weekCompleted / weekTotalTasks.length) * 100) 
+    : 0;
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-slate-800 mb-1">Agenda Semanal</h1>
-          <p className="text-slate-500 text-sm">{formatWeekRange()}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={goToPrevWeek}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
-          >
-            <ChevronLeft size={16} className="text-slate-500" />
-          </button>
-          <button 
-            onClick={goToCurrentWeek}
-            className="px-3 py-1.5 text-sm text-indigo-600 border border-indigo-200 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
-          >
-            Esta semana
-          </button>
-          <button 
-            onClick={goToNextWeek}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
-          >
-            <ChevronRight size={16} className="text-slate-500" />
-          </button>
-        </div>
-      </div>
-
-      {/* Week Overview */}
-      <div className="grid grid-cols-7 gap-2 mb-6">
-        {diasSemana.map((dia, i) => {
-          const d = new Date(currentWeekStart);
-          d.setDate(currentWeekStart.getDate() + i);
-          const isSelected = i === selectedDay;
-          const today = new Date();
-          const isTodayDate = d.toDateString() === today.toDateString();
-          const dayTasksData = tasksByDay[i] || [];
-          const pct = dayTasksData.length > 0 
-            ? Math.round((dayTasksData.filter(t => t.completed).length / dayTasksData.length) * 100) 
-            : 0;
-
-          return (
-            <button
-              key={i}
-              onClick={() => setSelectedDay(i)}
-              className={`relative flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all cursor-pointer ${
-                isSelected
-                  ? 'border-indigo-500 bg-indigo-50'
-                  : isTodayDate
-                  ? 'border-indigo-200 bg-white'
-                  : 'border-slate-200 bg-white hover:border-slate-300'
-              }`}
-            >
-              <span className={`text-xs ${isSelected ? 'text-indigo-700' : 'text-slate-500'}`}>{dia}</span>
-              <span className={`text-sm font-semibold ${isSelected ? 'text-indigo-800' : isTodayDate ? 'text-indigo-600' : 'text-slate-700'}`}>
-                {d.getDate()}
-              </span>
-              {dayTasksData.some(t => t.isOneThing) && (
-                <Star size={10} className="text-amber-500 fill-amber-400" />
-              )}
-              <div className="w-full">
-                <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-indigo-400 transition-all"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <span className="text-xs text-slate-400 mt-0.5 block">{dayTasksData.filter(t => t.completed).length}/{dayTasksData.length}</span>
+    <motion.div
+      variants={pageTransition}
+      initial="hidden"
+      animate="visible"
+      className="min-h-screen bg-slate-50"
+    >
+      {/* Sticky Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="sticky top-0 z-40 bg-gradient-to-r from-indigo-500 to-violet-600 backdrop-blur-xl border-b border-white/10"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Back + Title */}
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/agenda')}
+                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors"
+              >
+                <ChevronLeft size={20} />
+              </motion.button>
+              
+              <div>
+                <h1 className="text-xl font-bold text-white">Agenda Semanal</h1>
+                <p className="text-white/80 text-sm">{formatWeekRange()}</p>
               </div>
-              {isTodayDate && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-600 rounded-full border-2 border-white" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+            </div>
 
-      {/* Selected Day Detail */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div>
-            <h3 className="text-slate-800">{diasCompletos[selectedDay]}, {selectedDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}</h3>
-            <p className="text-slate-400 text-sm">{completedCount}/{totalCount} tarefas concluídas</p>
+            {/* Right: Navigation */}
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={goToPrevWeek}
+                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={goToCurrentWeek}
+                className="px-3 py-1.5 text-sm text-white font-medium bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                Esta semana
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={goToNextWeek}
+                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors"
+              >
+                <ChevronRight size={16} />
+              </motion.button>
+            </div>
           </div>
-          {dayTasks.find(t => t.isOneThing) && (
-            <div className="hidden sm:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 max-w-xs">
-              <Star size={12} className="text-amber-500 fill-amber-400 shrink-0" />
-              <span className="text-amber-700 text-xs truncate">{dayTasks.find(t => t.isOneThing)?.title}</span>
-            </div>
-          )}
         </div>
+      </motion.header>
 
-        <div className="p-5">
-          {loading ? (
-            <div className="text-center py-10 text-slate-400">
-              <p className="text-sm">Carregando tarefas...</p>
-            </div>
-          ) : dayTasks.length > 0 ? (
-            <div className="space-y-2">
-              {dayTasks.map(task => (
-                <Link
-                  key={task.id}
-                  to={`/agenda/tarefas/${task.id}`}
-                  className={`flex items-start gap-3 p-2.5 rounded-lg transition-all hover:bg-slate-50 block`}
-                >
-                  <button 
-                    onClick={(e) => handleToggleTask(task.id, selectedDay, e)}
-                    disabled={togglingTaskId === task.id}
-                    className="mt-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {togglingTaskId === task.id ? (
-                      <Loader2 size={18} className="text-slate-400 animate-spin" />
-                    ) : task.completed ? (
-                      <CheckCircle2 size={18} className="text-emerald-500" />
-                    ) : (
-                      <Circle size={18} className="text-slate-300" />
-                    )}
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${task.completed ? 'line-through text-slate-400' : 'text-slate-700'} ${task.isOneThing ? 'font-medium' : ''}`}>
-                      {task.isOneThing && <Star size={12} className="inline text-amber-500 fill-amber-400 mr-1" />}
-                      {task.title}
-                    </p>
-                    {task.hora && <span className="text-xs text-slate-400">{task.hora}</span>}
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        {/* Week Navigator Grid */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-7 gap-2 mb-6"
+        >
+          {diasSemana.map((dia, i) => {
+            const d = new Date(currentWeekStart);
+            d.setDate(currentWeekStart.getDate() + i);
+            const isSelected = i === selectedDay;
+            const today = new Date();
+            const isTodayDate = d.toDateString() === today.toDateString();
+            const dayTasksData = tasksByDay[i] || [];
+            
+            return (
+              <WeekDayCard
+                key={i}
+                dayName={dia}
+                dayNumber={d.getDate()}
+                date={d}
+                isSelected={isSelected}
+                isToday={isTodayDate}
+                completedTasks={dayTasksData.filter(t => t.completed).length}
+                totalTasks={dayTasksData.length}
+                hasOneThing={dayTasksData.some(t => t.isOneThing)}
+                onClick={() => setSelectedDay(i)}
+              />
+            );
+          })}
+        </motion.div>
+
+        {/* Day Detail + Stats Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Day Detail Card */}
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="lg:col-span-2"
+          >
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              {/* Day Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    {diasCompletos[selectedDay]}, {selectedDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}
+                  </h3>
+                  <p className="text-slate-500 text-sm">
+                    {completedCount}/{totalCount} tarefas concluídas
+                  </p>
+                </div>
+                {dayTasks.find(t => t.isOneThing) && (
+                  <div className="hidden sm:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 max-w-xs">
+                    <Sparkles size={12} className="text-amber-500 fill-amber-400" />
+                    <span className="text-amber-700 text-xs truncate">
+                      {dayTasks.find(t => t.isOneThing)?.title}
+                    </span>
                   </div>
-                  <span className="text-xs text-slate-400 shrink-0 capitalize">
-                    {task.block === 'oneThing' ? 'ONE Thing' : task.block}
-                  </span>
-                </Link>
-              ))}
-              {/* Botão para adicionar mais tarefas */}
-              <Link 
-                to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
-                className="flex items-center gap-2 p-2.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-all text-sm mt-4"
-              >
-                <Plus size={16} />
-                Adicionar nova tarefa
-              </Link>
-            </div>
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-slate-400 text-sm mb-4">
-                {isToday() 
-                  ? 'Nenhuma tarefa para hoje' 
-                  : `Nenhuma tarefa planejada para ${diasCompletos[selectedDay].toLowerCase()}`
-                }
-              </p>
-              <Link 
-                to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
-                className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm"
-              >
-                <Plus size={16} />
-                Adicionar tarefa
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
+                )}
+              </div>
 
-      {/* Week Stats */}
-      <div className="grid grid-cols-3 gap-4 mt-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-indigo-600">
-            {Object.values(tasksByDay).flat().filter(t => t.completed).length}
-          </div>
-          <div className="text-slate-500 text-xs mt-1">Tarefas concluídas</div>
+              {/* Tasks List */}
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-10">
+                    <Loader2 size={24} className="text-indigo-500 animate-spin mx-auto mb-2" />
+                    <p className="text-slate-400 text-sm">Carregando tarefas...</p>
+                  </div>
+                ) : dayTasks.length > 0 ? (
+                  <AnimatePresence mode="popLayout">
+                    <div className="space-y-1">
+                      {dayTasks.map((task, index) => (
+                        <motion.div
+                          key={task.id}
+                          variants={fadeInUp}
+                          initial="hidden"
+                          animate="visible"
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <TaskItemModern
+                            task={task}
+                            onToggle={handleToggleTask}
+                            isToggling={togglingTaskId === task.id}
+                            onNavigate={handleNavigateToTask}
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </AnimatePresence>
+                ) : (
+                  <EmptyStateAgenda
+                    date={selectedDate}
+                    dayName={diasCompletos[selectedDay]}
+                    onCreateTask={() => navigate(`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`)}
+                  />
+                )}
+                
+                {/* Add Task Button */}
+                <Link 
+                  to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
+                  className="flex items-center gap-2 p-3 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all text-sm mt-3"
+                >
+                  <Plus size={16} />
+                  Adicionar nova tarefa
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Week Stats */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
+            <WeekStatsCard
+              icon={CheckCircle2}
+              value={weekCompleted}
+              label="Tarefas concluídas"
+              type="success"
+              delay={0}
+            />
+            <WeekStatsCard
+              icon={Sparkles}
+              value={weekOneThings}
+              label="ONE Things"
+              type="oneThing"
+              delay={1}
+            />
+            <WeekStatsCard
+              icon={Target}
+              value={`${weekProgress}%`}
+              label="Taxa de conclusão"
+              type="default"
+              delay={2}
+            />
+          </motion.div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-amber-600">
-            {Object.values(tasksByDay).flat().filter(t => t.isOneThing).length}
+
+        {/* Gamification Footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl text-white"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-400" />
+              <span className="text-sm">
+                <span className="font-bold">{weeklyStats.sequenciaDias}</span> dias de sequência
+              </span>
+            </div>
+            <div className="h-4 w-px bg-white/20 hidden sm:block" />
+            <div className="hidden sm:flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-yellow-400" />
+              <span className="text-sm">
+                <span className="font-bold">{weeklyStats.produtividade}</span>% produtividade
+              </span>
+            </div>
           </div>
-          <div className="text-slate-500 text-xs mt-1">ONE Things definidas</div>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-emerald-600">
-            {(() => {
-              const total = Object.values(tasksByDay).flat();
-              const completed = total.filter(t => t.completed).length;
-              return total.length > 0 ? Math.round((completed / total.length) * 100) : 0;
-            })()}%
+          <div className="text-sm text-white/60">
+            Continue focando em suas tarefas ONE Thing!
           </div>
-          <div className="text-slate-500 text-xs mt-1">Taxa de conclusão</div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </main>
+
+      {/* FAB for mobile */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.5, type: 'spring' }}
+        className="fixed bottom-6 right-6 sm:hidden z-50"
+      >
+        <Link
+          to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
+          className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+        >
+          <Plus size={24} />
+        </Link>
+      </motion.div>
+    </motion.div>
   );
 }
