@@ -3,8 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import type { Database } from '../../../lib/supabase';
 import { tarefasService } from '../../../services/tarefasService';
+import { tarefaItensService } from '../../../services/tarefaItensService';
 import { recorrenciaService } from '../../../services/recorrenciaService';
-import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Flag, Repeat } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Flag, Repeat, ListChecks } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
@@ -22,6 +23,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { RecorrenciaEditModal } from '../../components/recorrencia/RecorrenciaEditModal';
 import { formatarRecorrencia } from '../../../services/recorrenciaService';
+import { TarefaItensList } from '../../components/agenda/TarefaItensList';
+import type { TarefaItemUI } from '../../../lib/mapeamento';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 
@@ -52,6 +55,10 @@ export default function TarefaEditPage() {
   const [tarefaMae, setTarefaMae] = useState<Tarefa | null>(null);
   const [showRecorrenciaModal, setShowRecorrenciaModal] = useState(false);
   const [modalMode, setModalMode] = useState<'edit' | 'delete'>('edit');
+
+  // Estados para itens da tarefa
+  const [itens, setItens] = useState<TarefaItemUI[]>([]);
+  const [loadingItens, setLoadingItens] = useState(false);
 
   const allMetas = [
     ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
@@ -92,6 +99,24 @@ export default function TarefaEditPage() {
             recorrencia: t.recorrencia,
           });
 
+          // Carregar itens da tarefa
+          setLoadingItens(true);
+          try {
+            const itensData = await tarefaItensService.getByTarefaId(id);
+            // Mapear para formato UI
+            setItens(itensData.map(i => ({
+              id: i.id,
+              tarefaId: i.tarefa_id,
+              nome: i.nome,
+              ordem: i.ordem,
+              completed: i.completed,
+            })));
+          } catch (err) {
+            console.error('Erro ao carregar itens:', err);
+          } finally {
+            setLoadingItens(false);
+          }
+        
           // Verificar se é instância de recorrente
           const isInstancia = await tarefasService.isInstanciaRecorrente(id);
           setIsInstanciaRecorrente(isInstancia);
@@ -110,6 +135,47 @@ export default function TarefaEditPage() {
 
     carregarTarefa();
   }, [id, user, form]);
+
+  // Handlers para itens
+  const handleToggleItem = async (itemId: string) => {
+    try {
+      await tarefaItensService.toggle(itemId);
+      // Atualizar estado local
+      setItens(prev => prev.map(item => 
+        item.id === itemId ? { ...item, completed: !item.completed } : item
+      ));
+    } catch (err) {
+      console.error('Erro ao toggle item:', err);
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await tarefaItensService.delete(itemId);
+      setItens(prev => prev.filter(item => item.id !== itemId));
+    } catch (err) {
+      console.error('Erro ao excluir item:', err);
+    }
+  };
+
+  const handleAddItem = async (nome: string) => {
+    if (!id) return;
+    try {
+      const novoItem = await tarefaItensService.create({
+        tarefa_id: id,
+        nome,
+      });
+      setItens(prev => [...prev, {
+        id: novoItem.id,
+        tarefaId: novoItem.tarefa_id,
+        nome: novoItem.nome,
+        ordem: novoItem.ordem,
+        completed: novoItem.completed,
+      }]);
+    } catch (err) {
+      console.error('Erro ao adicionar item:', err);
+    }
+  };
 
   const handleSubmitNormal = async (values: TarefaEditForm) => {
     if (!id) return;
@@ -459,6 +525,28 @@ export default function TarefaEditPage() {
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </Card>
+
+          {/* Itens da Tarefa (Checklist) */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ListChecks className="w-4 h-4 text-indigo-500" />
+                Itens da Tarefa
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingItens ? (
+                <div className="text-slate-400 text-sm">Carregando itens...</div>
+              ) : (
+                <TarefaItensList
+                  itens={itens}
+                  onToggle={handleToggleItem}
+                  onDelete={handleDeleteItem}
+                  onAdd={handleAddItem}
+                />
+              )}
             </CardContent>
           </Card>
 

@@ -10,6 +10,15 @@ export type TimeBlock = 'oneThing' | 'atrasadas' | 'manha' | 'tarde' | 'noite' |
 
 export type Priority = 'high' | 'medium' | 'low';
 
+// Interface para item de tarefa (checklist)
+export interface TarefaItemUI {
+  id: string;
+  tarefaId: string;
+  nome: string;
+  ordem: number;
+  completed: boolean;
+}
+
 export interface TarefaUI {
   id: string;
   metaId?: string;
@@ -28,6 +37,10 @@ export interface TarefaUI {
   isInstancia?: boolean;
   parentId?: string;
   recorrenciaConfig?: RecorrenciaConfig | null;
+  // Campos para itens/checklist
+  itens?: TarefaItemUI[];
+  itensCount?: number;
+  itensCompleted?: number;
 }
 
 /**
