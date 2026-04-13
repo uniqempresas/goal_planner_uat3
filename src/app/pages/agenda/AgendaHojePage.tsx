@@ -344,7 +344,15 @@ export default function AgendaHojePage() {
               <TimeBlockSection
                 key={block}
                 block={block}
-                tarefas={tarefasHoje.filter(t => t.block === block)}
+                // No bloco de hábitos, filtrar para NÃO mostrar tarefas que têm habito_id
+                // (são tarefas geradas automaticamente, os hábitos reais vêm de habitosHoje)
+                tarefas={tarefasHoje.filter(t => {
+                  if (block === 'habitos') {
+                    // No bloco de hábitos, mostrar apenas tarefas manuais (sem habito_id)
+                    return t.block === block && !t.habito_id;
+                  }
+                  return t.block === block;
+                })}
                 habitos={block === 'habitos' ? habitosHoje : undefined}
                 onToggleTarefa={toggleTarefa}
                 onDeleteTarefa={handleDeleteTarefa}
