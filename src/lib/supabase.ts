@@ -112,6 +112,7 @@ export type Database = {
           metricas: Record<string, unknown>;
           created_at: string;
           updated_at: string;
+          prazo: string | null;
         };
         Insert: {
           id?: string;
@@ -133,6 +134,7 @@ export type Database = {
           metricas?: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
+          prazo?: string | null;
         };
         Update: {
           id?: string;
@@ -154,6 +156,7 @@ export type Database = {
           metricas?: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
+          prazo?: string | null;
         };
       };
       tarefas: {

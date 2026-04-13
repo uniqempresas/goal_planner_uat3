@@ -8,6 +8,25 @@ type HabitoUpdate = Database['public']['Tables']['habitos']['Update'];
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type TarefaInsert = Database['public']['Tables']['tarefas']['Insert'];
 
+// Tipo auxiliar para criação de hábito (campos que o frontend envia)
+interface HabitoCreateData {
+  titulo: string;
+  descricao?: string | null;
+  data_inicio: string;
+  data_fim: string;
+  dias_semana: number[];
+  hora?: string | null;
+  bloco?: 'one-thing' | 'manha' | 'tarde' | 'noite' | null;
+  meta_id?: string | null;
+  prioridade?: 'alta' | 'media' | 'baixa';
+  status?: 'ativa' | 'pausada' | 'concluida' | 'expirada';
+  streak_atual?: number;
+  melhor_streak?: number;
+  ultima_conclusao?: string | null;
+  frequencia_tipo?: 'diario' | 'semanal' | 'dias_especificos';
+  frequencia_dias?: number;
+}
+
 export const habitosService = {
   async getAll(userId: string): Promise<Habito[]> {
     const { data, error } = await supabase
@@ -31,14 +50,41 @@ export const habitosService = {
     return data;
   },
 
-  async create(userId: string, habito: Omit<HabitoInsert, 'user_id'>): Promise<Habito> {
+  async create(userId: string, habito: HabitoCreateData): Promise<Habito> {
+    // Preparar dados para inserção (mapear campos do frontend para o schema do banco)
+    const insertData: HabitoInsert = {
+      user_id: userId,
+      titulo: habito.titulo,
+      descricao: habito.descricao ?? null,
+      data_inicio: habito.data_inicio,
+      data_fim: habito.data_fim,
+      dias_semana: habito.dias_semana,
+      hora: habito.hora ?? null,
+      horario_preferido: habito.hora ?? null, // Sinônimo para compatibilidade
+      bloco: habito.bloco ?? null,
+      meta_id: habito.meta_id ?? null,
+      prioridade: habito.prioridade ?? 'media',
+      status: (habito.status ?? 'ativa') as any, // 'ativa' | 'pausada' | 'concluida' | 'expirada'
+      streak_atual: habito.streak_atual ?? 0,
+      melhor_streak: habito.melhor_streak ?? 0,
+      streak_maximo: habito.melhor_streak ?? 0, // Sinônimo para compatibilidade
+      ultima_conclusao: habito.ultima_conclusao ?? null,
+      ultima_execucao: habito.ultima_conclusao ?? null, // Sinônimo para compatibilidade
+      frequencia_tipo: habito.frequencia_tipo ?? 'dias_especificos',
+      frequencia_dias: habito.frequencia_dias ?? 1,
+      frequencia_semana_dias: habito.dias_semana, // Mapear dias_semana para frequencia_semana_dias
+    };
+
     const { data, error } = await supabase
       .from('habitos')
-      .insert({ ...habito, user_id: userId })
+      .insert(insertData)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erro ao criar hábito:', error);
+      throw new Error(`Erro ao criar hábito: ${error.message}`);
+    }
     
     // Gerar tarefas automaticamente ao criar hábito
     if (data) {
@@ -48,15 +94,32 @@ export const habitosService = {
     return data;
   },
 
-  async update(id: string, habito: Partial<HabitoUpdate>): Promise<Habito> {
+  async update(id: string, habito: Partial<HabitoUpdate> | Partial<HabitoCreateData>): Promise<Habito> {
+    // Preparar dados para atualização
+    const updateData: Partial<HabitoUpdate> = { ...habito };
+
+    // Sincronizar campos sinônimos se necessário
+    if ('hora' in habito && habito.hora !== undefined) {
+      updateData.horario_preferido = habito.hora;
+    }
+    if ('melhor_streak' in habito && habito.melhor_streak !== undefined) {
+      updateData.streak_maximo = habito.melhor_streak;
+    }
+    if ('ultima_conclusao' in habito && habito.ultima_conclusao !== undefined) {
+      updateData.ultima_execucao = habito.ultima_conclusao;
+    }
+
     const { data, error } = await supabase
       .from('habitos')
-      .update(habito)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erro ao atualizar hábito:', error);
+      throw new Error(`Erro ao atualizar hábito: ${error.message}`);
+    }
     return data;
   },
 
@@ -102,7 +165,7 @@ export const habitosService = {
     if (!habitosAtivos) return [];
 
     // Filtrar pelos dias da semana
-    return habitosAtivos.filter(h => h.dias_semana.includes(mappedDay));
+    return habitosAtivos.filter(h => h.dias_semana?.includes(mappedDay));
   },
 
   async toggleStreak(id: string): Promise<Habito> {
@@ -124,10 +187,10 @@ export const habitosService = {
 
     if (habito.ultima_conclusao === yesterdayStr) {
       // Consecutivo!
-      novoStreak = habito.streak_atual + 1;
+      novoStreak = (habito.streak_atual || 0) + 1;
     }
 
-    const novoMelhor = Math.max(habito.melhor_streak, novoStreak);
+    const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
 
     return this.update(id, {
       streak_atual: novoStreak,
@@ -146,8 +209,8 @@ export const habitosService = {
 
   async gerarTarefas(habito: Habito): Promise<Tarefa[]> {
     const tarefas: Omit<TarefaInsert, 'id' | 'created_at'>[] = [];
-    const current = new Date(habito.data_inicio);
-    const end = new Date(habito.data_fim);
+    const current = new Date(habito.data_inicio || new Date());
+    const end = new Date(habito.data_fim || new Date());
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
@@ -167,7 +230,7 @@ export const habitosService = {
       // Converter para nosso formato: 0=seg, 6=dom
       const mappedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-      if (habito.dias_semana.includes(mappedDay)) {
+      if (habito.dias_semana?.includes(mappedDay)) {
         // Check if task already exists for this habit/date
         const dataStr = current.toISOString().split('T')[0];
         const { data: existingTasks } = await supabase

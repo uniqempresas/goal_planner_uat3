@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star, CheckCircle2, Circle, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, CheckCircle2, Circle, Plus, Loader2 } from 'lucide-react';
 import { Link } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
@@ -23,6 +23,7 @@ export default function AgendaSemanaPage() {
   
   const [tasksByDay, setTasksByDay] = useState<Record<number, TarefaUI[]>>({});
   const [loading, setLoading] = useState(true);
+  const [togglingTaskId, setTogglingTaskId] = useState<string | null>(null);
 
   const selectedDate = new Date(currentWeekStart);
   selectedDate.setDate(currentWeekStart.getDate() + selectedDay);
@@ -121,6 +122,39 @@ export default function AgendaSemanaPage() {
       return `${startDay} — ${endDay} de ${startMonth} de ${year}`;
     }
     return `${startDay} de ${startMonth} — ${endDay} de ${endMonth} de ${year}`;
+  };
+
+  const handleToggleTask = async (taskId: string, dayIndex: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (togglingTaskId === taskId) return;
+    
+    setTogglingTaskId(taskId);
+    
+    try {
+      await tarefasService.toggleCompleted(taskId);
+      
+      setTasksByDay(prev => {
+        const newTasksByDay = { ...prev };
+        const dayTasks = [...(newTasksByDay[dayIndex] || [])];
+        const taskIndex = dayTasks.findIndex(t => t.id === taskId);
+        
+        if (taskIndex !== -1) {
+          dayTasks[taskIndex] = {
+            ...dayTasks[taskIndex],
+            completed: !dayTasks[taskIndex].completed
+          };
+          newTasksByDay[dayIndex] = dayTasks;
+        }
+        
+        return newTasksByDay;
+      });
+    } catch (error) {
+      console.error('Erro ao alternar status da tarefa:', error);
+    } finally {
+      setTogglingTaskId(null);
+    }
   };
 
   const dayTasks = tasksByDay[selectedDay] || [];
@@ -235,14 +269,17 @@ export default function AgendaSemanaPage() {
                   className={`flex items-start gap-3 p-2.5 rounded-lg transition-all hover:bg-slate-50 block`}
                 >
                   <button 
-                    // eslint-disable-next-line no-unused-vars
-                    onClick={(e) => { e.preventDefault(); /* TODO: toggle from detail */ }}
-                    className="mt-0.5 cursor-pointer"
+                    onClick={(e) => handleToggleTask(task.id, selectedDay, e)}
+                    disabled={togglingTaskId === task.id}
+                    className="mt-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {task.completed
-                      ? <CheckCircle2 size={18} className="text-emerald-500" />
-                      : <Circle size={18} className="text-slate-300" />
-                    }
+                    {togglingTaskId === task.id ? (
+                      <Loader2 size={18} className="text-slate-400 animate-spin" />
+                    ) : task.completed ? (
+                      <CheckCircle2 size={18} className="text-emerald-500" />
+                    ) : (
+                      <Circle size={18} className="text-slate-300" />
+                    )}
                   </button>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm ${task.completed ? 'line-through text-slate-400' : 'text-slate-700'} ${task.isOneThing ? 'font-medium' : ''}`}>

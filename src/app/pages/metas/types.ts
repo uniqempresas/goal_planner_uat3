@@ -72,6 +72,7 @@ export type MensalMetaForm = MetaFormBase & {
 
 export type SemanalMetaForm = MetaFormBase & {
   nivel: 'semanal';
+  prazo: string;
   smart_objetivo?: string;
   smart_especifico?: string;
   smart_mensuravel?: string;
@@ -82,6 +83,7 @@ export type SemanalMetaForm = MetaFormBase & {
 
 export type DiariaMetaForm = MetaFormBase & {
   nivel: 'diaria';
+  prazo: string;
   smart_objetivo?: string;
   smart_especifico?: string;
   smart_mensuravel?: string;

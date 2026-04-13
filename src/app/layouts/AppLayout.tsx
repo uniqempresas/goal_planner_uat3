@@ -4,6 +4,7 @@ import {
   Layers, BookOpen, ClipboardCheck, ChevronDown, ChevronRight,
   Star, LogOut, User as UserIcon, Menu, X, Sun, CalendarRange,
   Mountain, CalendarDays, CalendarCheck, CheckSquare, TrendingUp,
+  Eye,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
@@ -47,6 +48,11 @@ const navGroups: NavGroup[] = [
       { label: 'Semana', path: '/agenda/semana', icon: <CalendarRange size={15} /> },
       { label: 'Hábitos', path: '/habitos', icon: <Star size={15} /> },
     ],
+  },
+  {
+    title: 'Visão Holística',
+    icon: <Eye size={18} />,
+    basePath: '/visao-holistica',
   },
   {
     title: 'Templates',

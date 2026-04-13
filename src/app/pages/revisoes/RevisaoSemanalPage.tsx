@@ -34,6 +34,8 @@ function getWeekNumber(date: Date): number {
 }
 
 function getWeekDates(year: number, week: number): { start: Date; end: Date } {
+  console.log('[DEBUG] Calculando semana', week, 'do ano', year);
+  
   // Encontrar o primeiro domingo do ano ou o domingo da semana especificada
   const januaryFirst = new Date(year, 0, 1);
   const dayOfWeek = januaryFirst.getDay(); // 0 = Domingo
@@ -47,6 +49,8 @@ function getWeekDates(year: number, week: number): { start: Date; end: Date } {
   
   const end = new Date(start);
   end.setDate(start.getDate() + 6); // Sábado
+  
+  console.log('[DEBUG] Resultado:', { start: start.toISOString(), end: end.toISOString() });
   
   return { start, end };
 }

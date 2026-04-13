@@ -1,298 +1,352 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import {
-  Plus, Star, Mountain, ArrowRight, Target, ChevronDown, ChevronUp,
-  Calendar, TrendingUp, CheckCircle2, Circle, Pause,
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Plus, 
+  ArrowRight, 
+  Target, 
+  TrendingUp, 
+  CheckCircle2, 
+  Filter,
+  Sparkles,
+  ChevronLeft,
+  LayoutGrid,
+  List,
+  Flame,
+  Mountain,
+  Star
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
-import EmptyState from '../../components/empty-state/EmptyState';
-import { type Meta, levelConfig } from '../../data/mockData';
+import type { Meta } from '../../../services/metasService';
+import { MetaCardModern } from '../../components/metas/MetaCardModern';
+import { StatsCard } from '../../components/metas/StatsCard';
+import { FocusingQuestionCard } from '../../components/metas/FocusingQuestionCard';
+import { EmptyStateModern } from '../../components/metas/EmptyStateModern';
+import { pageTransition, fadeInUp, staggerContainer } from '../../components/metas/animations';
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; color: string }> = {
-    ativa: { label: 'Ativa', color: 'bg-emerald-100 text-emerald-700' },
-    concluida: { label: 'Concluída', color: 'bg-blue-100 text-blue-700' },
-    arquivada: { label: 'Arquivada', color: 'bg-slate-100 text-slate-600' },
-    // Legacy mock format support
-    active: { label: 'Ativa', color: 'bg-emerald-100 text-emerald-700' },
-    completed: { label: 'Concluída', color: 'bg-blue-100 text-blue-700' },
-    paused: { label: 'Pausada', color: 'bg-amber-100 text-amber-700' },
-    not_started: { label: 'Não iniciada', color: 'bg-slate-100 text-slate-600' },
-  };
-  const s = map[status] || { label: status, color: 'bg-slate-100 text-slate-600' };
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.color}`}>{s.label}</span>
-  );
-}
-
-function SmartProgress({ meta }: { meta: Meta }) {
-  if (!meta.smart?.measurable?.length) return null;
-  return (
-    <div className="space-y-2">
-      {meta.smart.measurable.map(metric => {
-        const pct = Math.min(100, Math.round((metric.current / metric.target) * 100));
-        return (
-          <div key={metric.id}>
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-slate-500 capitalize">{metric.key}</span>
-              <span className="text-xs text-slate-600">
-                {metric.current.toLocaleString('pt-BR')} / {metric.target.toLocaleString('pt-BR')} {metric.unit} ({pct}%)
-              </span>
-            </div>
-            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${pct}%`, backgroundColor: levelConfig.G.color }}
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function MetaCard({ meta }: { meta: Meta }) {
-  const { areas, metasAnuais } = useApp();
-  const [expanded, setExpanded] = useState(false);
-  
-  // Handle both mock data and real database data
-  const metaAny = meta as unknown;
-  const areaId = (metaAny as { area_id?: string })?.area_id || meta.areaId;
-  const parentId = (metaAny as { parent_id?: string })?.parent_id || meta.parentId;
-  
-  // Map database field names to mock format for display
-  const title = (metaAny as { titulo?: string })?.titulo || meta.title;
-  const description = (metaAny as { descricao?: string })?.descricao || meta.description;
-  const focusingQuestion = (metaAny as { focusing_question?: string })?.focusing_question || meta.focusingQuestion;
-  const isOneThing = (metaAny as { one_thing?: boolean })?.one_thing || meta.isOneThing;
-  const status = (metaAny as { status?: string })?.status || meta.status;
-  const prazo = (metaAny as { prazo?: string })?.prazo || meta.prazo;
-  const smart = (metaAny as { smart?: unknown })?.smart || meta.smart;
-  
-  const area = areas.find(a => a.id === areaId);
-  const children = metasAnuais.filter(m => ((m as unknown as { parent_id?: string })?.parent_id === meta.id) || m.parentId === meta.id);
-  const cfg = levelConfig.G;
-
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 hover:border-indigo-200 transition-all overflow-hidden">
-      {/* Header */}
-      <div className="p-5">
-        <div className="flex items-start gap-3">
-          {/* Progress Ring */}
-          <div className="relative shrink-0 mt-0.5">
-            <svg width={52} height={52} className="-rotate-90">
-              <circle cx={26} cy={26} r={22} fill="none" stroke="#EEF2FF" strokeWidth={4} />
-              <circle
-                cx={26} cy={26} r={22}
-                fill="none" stroke={cfg.color} strokeWidth={4}
-                strokeDasharray={2 * Math.PI * 22}
-                strokeDashoffset={2 * Math.PI * 22 * (1 - 0 / 100)}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-slate-700">0%</span>
-            </div>
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: cfg.bgColor, color: cfg.textColor }}>G</span>
-                  {isOneThing && (
-                    <span className="flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
-                      <Star size={10} className="fill-amber-500 text-amber-500" />
-                      ONE Thing
-                    </span>
-                  )}
-                  <StatusBadge status={status} />
-                </div>
-                <h3 className="text-slate-800 font-medium leading-snug">{title}</h3>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  to={`/metas/grandes/${meta.id}`}
-                  className="text-indigo-600 hover:text-indigo-800 p-1 rounded transition-colors"
-                  title="Ver detalhes"
-                >
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
-            </div>
-
-            <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">{description}</p>
-
-            <div className="flex flex-wrap items-center gap-3">
-              {area && (
-                <span className="flex items-center gap-1.5 text-xs" style={{ color: area.cor || area.color }}>
-                  <span>{area.icone || area.emoji}</span>
-                  <span>{area.nome || area.name}</span>
-                </span>
-              )}
-              <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                <Calendar size={11} />
-                Prazo: {new Date(prazo).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short' })}
-              </span>
-              {children.length > 0 && (
-                <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <Target size={11} />
-                  {children.length} meta{children.length !== 1 ? 's' : ''} anual
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Metrics */}
-        {smart && (smart as { measurable?: unknown })?.measurable && (
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <SmartProgress meta={meta} />
-          </div>
-        )}
-
-        {/* Focusing Question */}
-        {focusingQuestion && (
-          <div className="mt-4 bg-indigo-50 rounded-lg p-3.5">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <TrendingUp size={12} className="text-indigo-500" />
-              <span className="text-indigo-700 text-xs font-medium">Focusing Question</span>
-            </div>
-            <p className="text-slate-600 text-xs leading-relaxed italic line-clamp-2">{focusingQuestion}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Expandable Children */}
-      {children.length > 0 && (
-        <div className="border-t border-slate-100">
-          <button
-            onClick={() => setExpanded(e => !e)}
-            className="w-full flex items-center justify-between px-5 py-3 text-sm text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
-          >
-            <span className="flex items-center gap-2">
-              <Target size={14} />
-              Metas Anuais vinculadas ({children.length})
-            </span>
-            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-
-          {expanded && (
-            <div className="px-5 pb-4 space-y-2">
-              {children.map(child => (
-                <Link
-                  key={child.id}
-                  to={`/metas/anual/${child.id}`}
-                  className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors group"
-                >
-                  <div className="w-6 h-6 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: levelConfig.A.bgColor }}>
-                    <span className="text-xs font-bold" style={{ color: levelConfig.A.textColor }}>A</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-700 truncate group-hover:text-indigo-700 transition-colors">{child.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: '0%', backgroundColor: levelConfig.A.color }}
-                        />
-                      </div>
-                      <span className="text-xs text-slate-400">0%</span>
-                    </div>
-                  </div>
-                  <ArrowRight size={12} className="text-slate-300 group-hover:text-indigo-400 transition-colors shrink-0" />
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+// Level configuration for Grande Meta
+const levelConfig = { 
+  color: '#4169E1', 
+  bgColor: '#dbeafe', 
+  textColor: '#1e40af', 
+  gradient: 'from-blue-600 to-indigo-700', 
+  label: 'Grande Meta', 
+  icon: '🏔️',
+  description: '3 Anos',
+  levelPath: 'grandes'
+};
 
 export default function GrandesMetasPage() {
-  const { grandesMetas, areas } = useApp();
+  const navigate = useNavigate();
+  const { grandesMetas, weeklyStats } = useApp();
+  const [metasList, setMetasList] = useState<Meta[]>(grandesMetas);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'ativa' | 'concluida'>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [showFilters, setShowFilters] = useState(false);
 
-  const avgProgress = 0;
+  // Update local state when prop changes
+  useEffect(() => {
+    setMetasList(grandesMetas);
+  }, [grandesMetas]);
+
+  // Filter metas
+  const filteredMetas = useMemo(() => {
+    if (filterStatus === 'all') return metasList;
+    return metasList.filter(meta => meta.status === filterStatus);
+  }, [metasList, filterStatus]);
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    const total = metasList.length;
+    const concluidas = metasList.filter(m => m.status === 'concluida').length;
+    const ativas = metasList.filter(m => m.status === 'ativa').length;
+    const oneThings = metasList.filter(m => m.one_thing).length;
+    const progressoMedio = total > 0 
+      ? Math.round(metasList.reduce((acc, m) => acc + (m.status === 'concluida' ? 100 : 35), 0) / total)
+      : 0;
+
+    return { total, concluidas, ativas, oneThings, progressoMedio };
+  }, [metasList]);
+
+  const handleDelete = (id: string) => {
+    setMetasList(prev => prev.filter(m => m.id !== id));
+  };
+
+  const focusingQuestion = "Qual é a ÚNICA coisa que posso fazer nos próximos 3 anos, de tal forma que minha vida se transforme completamente?";
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Mountain size={20} className="text-indigo-600" />
-            <h1 className="text-slate-800">Grandes Metas</h1>
-            <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium">3 Anos</span>
-          </div>
-          <p className="text-slate-500 text-sm">Sua visão de longo prazo. Onde você quer estar em 3 anos?</p>
-        </div>
-        <div className="flex gap-2">
-          <Link
-            to="/metas/grandes/criar"
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <Plus size={15} />
-            Nova Grande Meta
-          </Link>
-        </div>
-      </div>
+    <motion.div
+      variants={pageTransition}
+      initial="hidden"
+      animate="visible"
+      className="min-h-screen bg-slate-50"
+    >
+      {/* Sticky Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Back button + Title */}
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/metas')}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+              >
+                <ChevronLeft size={20} />
+              </motion.button>
+              
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-2">
+                  <Mountain className="w-6 h-6 text-blue-600" />
+                  <h1 className="text-xl font-bold text-slate-800">Grandes Metas</h1>
+                  <span 
+                    className="text-xs px-2 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: levelConfig.bgColor, color: levelConfig.textColor }}
+                  >
+                    {levelConfig.description}
+                  </span>
+                </div>
+                <p className="text-slate-500 text-sm ml-8">Sua visão de longo prazo. Onde você quer estar em 3 anos?</p>
+              </div>
 
-      {/* Summary Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-slate-800">{grandesMetas.length}</div>
-            <div className="text-slate-500 text-xs mt-0.5">Total de Metas</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-emerald-600">{grandesMetas.filter(m => m.status === 'active').length}</div>
-            <div className="text-slate-500 text-xs mt-0.5">Ativas</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-indigo-600">{avgProgress}%</div>
-            <div className="text-slate-500 text-xs mt-0.5">Progresso Médio</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-amber-600">{grandesMetas.filter(m => m.isOneThing).length}</div>
-            <div className="text-slate-500 text-xs mt-0.5">ONE Thing</div>
+              {/* Mobile title */}
+              <div className="sm:hidden">
+                <h1 className="text-lg font-bold text-slate-800">Grandes Metas</h1>
+              </div>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2">
+              {/* View mode toggle */}
+              <div className="hidden sm:flex items-center bg-slate-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500'}`}
+                >
+                  <List size={16} />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500'}`}
+                >
+                  <LayoutGrid size={16} />
+                </button>
+              </div>
+
+              {/* Filter button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-2 rounded-xl transition-colors ${showFilters ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                <Filter size={18} />
+              </motion.button>
+
+              {/* Create button */}
+              <Link
+                to="/metas/grandes/criar"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-lg hover:scale-105"
+                style={{ backgroundColor: levelConfig.color }}
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">Nova Grande Meta</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Focusing Question */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-xl p-5 mb-6 text-white">
-        <p className="text-indigo-200 text-xs font-medium uppercase tracking-wide mb-2">Focusing Question · Grandes Metas</p>
-        <p className="text-white italic leading-relaxed">
-          "Qual é a ÚNICA coisa que posso fazer nos próximos 3 anos, de tal forma que minha vida se transforme completamente?"
-        </p>
-      </div>
+        {/* Filter bar */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="border-t border-slate-100 overflow-hidden"
+            >
+              <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-slate-500 mr-2">Filtrar por:</span>
+                  {(['all', 'ativa', 'concluida'] as const).map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setFilterStatus(status)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        filterStatus === status
+                          ? 'bg-slate-800 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {status === 'all' ? 'Todas' : status === 'ativa' ? 'Ativas' : 'Concluídas'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
 
-      {/* Meta Cards */}
-      <div className="space-y-5">
-        {grandesMetas.length === 0 ? (
-          <EmptyState
-            icon={<Mountain className="w-12 h-12" />}
-            title="Nenhuma Grande Meta criada"
-            description="Crie sua primeira Grande Meta (3 anos) para começar a construir sua visão de longo prazo."
-            actionLabel="Criar Primeira Grande Meta"
-            actionHref="/metas/grandes/criar"
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        {/* Stats Grid */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6"
+        >
+          <StatsCard
+            icon={Target}
+            value={stats.total}
+            label="Total de Metas"
+            color={levelConfig.color}
+            bgColor={levelConfig.bgColor}
+            delay={0}
           />
-        ) : (
-          grandesMetas.map(meta => (
-            <MetaCard key={meta.id} meta={meta} />
-          ))
-        )}
-      </div>
+          <StatsCard
+            icon={TrendingUp}
+            value={`${stats.progressoMedio}%`}
+            label="Progresso Médio"
+            color={levelConfig.color}
+            bgColor={levelConfig.bgColor}
+            delay={0.1}
+          />
+          <StatsCard
+            icon={CheckCircle2}
+            value={stats.ativas}
+            label="Metas Ativas"
+            color="#10b981"
+            bgColor="#d1fae5"
+            delay={0.2}
+          />
+          <StatsCard
+            icon={Star}
+            value={stats.oneThings}
+            label="ONE Things"
+            color="#f59e0b"
+            bgColor="#fef3c7"
+            delay={0.3}
+          />
+        </motion.div>
 
-      {/* Empty hint */}
-      <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
-        <p className="text-slate-400 text-sm">
-          Lembre-se: você não precisa de muitas grandes metas. Foque nas que realmente transformarão sua vida.
-        </p>
-      </div>
-    </div>
+        {/* Focusing Question Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-6"
+        >
+          <FocusingQuestionCard
+            question={focusingQuestion}
+            label={levelConfig.label}
+            gradient={levelConfig.gradient}
+            delay={0}
+          />
+        </motion.div>
+
+        {/* Gamification Footer Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl text-white"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-400" />
+              <span className="text-sm">
+                <span className="font-bold">{weeklyStats.sequenciaDias}</span> dias de sequência
+              </span>
+            </div>
+            <div className="h-4 w-px bg-white/20 hidden sm:block" />
+            <div className="hidden sm:flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-yellow-400" />
+              <span className="text-sm">
+                <span className="font-bold">{weeklyStats.produtividade}%</span> produtividade
+              </span>
+            </div>
+          </div>
+          <div className="text-sm text-white/60">
+            Grandes metas constroem grandes vidas!
+          </div>
+        </motion.div>
+
+        {/* Metas List */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-3'}
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredMetas.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="md:col-span-2"
+              >
+                <EmptyStateModern
+                  title="Nenhuma Grande Meta criada"
+                  description="Crie sua primeira Grande Meta (3 anos) para começar a construir sua visão de longo prazo. Lembre-se da Focusing Question!"
+                  actionLabel="Criar Grande Meta"
+                  actionHref="/metas/grandes/criar"
+                  color={levelConfig.color}
+                  bgColor={levelConfig.bgColor}
+                />
+              </motion.div>
+            ) : (
+              filteredMetas.map((meta, index) => (
+                <MetaCardModern
+                  key={meta.id}
+                  meta={meta}
+                  level="grande"
+                  onDelete={handleDelete}
+                  color={levelConfig.color}
+                  bgColor={levelConfig.bgColor}
+                  textColor={levelConfig.textColor}
+                  levelPath={levelConfig.levelPath}
+                  levelLabel={levelConfig.label}
+                  index={index}
+                />
+              ))
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Empty hint */}
+        <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+          <p className="text-slate-400 text-sm">
+            Lembre-se: você não precisa de muitas grandes metas. Foque nas que realmente transformarão sua vida.
+          </p>
+        </div>
+      </main>
+
+      {/* Floating Action Button (mobile) */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.5, type: 'spring' }}
+        className="fixed bottom-6 right-6 sm:hidden z-50"
+      >
+        <Link
+          to="/metas/grandes/criar"
+          className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+          style={{ backgroundColor: levelConfig.color }}
+        >
+          <Plus size={24} />
+        </Link>
+      </motion.div>
+    </motion.div>
   );
 }

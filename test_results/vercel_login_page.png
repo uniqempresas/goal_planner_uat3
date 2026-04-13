@@ -1,0 +1,22 @@
+uid=26_0 RootWebArea "GOAL PLANNER" url="https://goal-planner-uat3.vercel.app/login"
+  uid=26_1 banner
+    uid=26_2 link "Goal Planner" url="https://goal-planner-uat3.vercel.app/"
+      uid=26_3 StaticText "Goal Planner"
+  uid=26_4 main
+    uid=26_5 heading "Bem-vindo de volta" level="1"
+    uid=26_6 StaticText "Entre para continuar sua jornada"
+    uid=26_7 StaticText "E-mail"
+    uid=26_8 textbox "seu@email.com" required value="joao@email.com"
+    uid=26_9 StaticText "Senha"
+    uid=26_10 textbox "••••••••" required value="••••••••"
+    uid=26_11 button
+    uid=26_12 link "Esqueceu a senha?" url="https://goal-planner-uat3.vercel.app/forgot-password"
+      uid=26_13 StaticText "Esqueceu a senha?"
+    uid=26_14 button "Entrar"
+    uid=26_15 StaticText "Não tem uma conta?"
+    uid=26_16 StaticText " "
+    uid=26_17 link "Criar conta grátis" url="https://goal-planner-uat3.vercel.app/register"
+      uid=26_18 StaticText "Criar conta grátis"
+  uid=26_19 contentinfo
+    uid=26_20 StaticText ""Você não pode realizar o extraordinário sem foco extraordinário.""
+    uid=26_21 StaticText "— Gary Keller, A Única Coisa"

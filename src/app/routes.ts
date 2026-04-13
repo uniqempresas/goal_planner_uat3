@@ -56,6 +56,9 @@ import HabitoCreatePage from './pages/habitos/HabitoCreatePage';
 import HabitoDetailPage from './pages/habitos/HabitoDetailPage';
 import HabitoEditPage from './pages/habitos/HabitoEditPage';
 
+// Visão Holística
+import VisaoHolisticaPage from './pages/visao-holistica/VisaoHolisticaPage';
+
 export const router = createBrowserRouter([
   // Public routes
   {
@@ -135,6 +138,9 @@ export const router = createBrowserRouter([
 
       // Conquistas
       { path: '/conquistas', Component: ConquistasPage },
+
+      // Visão Holística
+      { path: '/visao-holistica', Component: VisaoHolisticaPage },
 
       // Configurações
       {

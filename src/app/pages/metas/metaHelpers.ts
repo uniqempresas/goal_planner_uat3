@@ -14,7 +14,7 @@ export function transformMeta(dbMeta: Database['public']['Tables']['metas']['Row
             dbMeta.status === 'concluida' ? 'completed' : 
             dbMeta.status === 'arquivada' ? 'paused' : 'not_started',
     progress: 0, // Calculate based on children
-    prazo: new Date().toISOString(), // Default
+    prazo: dbMeta.prazo || new Date().toISOString().split('T')[0], // Usar prazo do banco ou data atual
     focusingQuestion: dbMeta.focusing_question || '',
     isOneThing: dbMeta.one_thing,
     smart: undefined, // Not implemented yet
