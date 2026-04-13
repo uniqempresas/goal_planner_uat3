@@ -26,10 +26,13 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
+import { tarefaItensService } from '../../../services/tarefaItensService';
 import { recorrenciaService } from '../../../services/recorrenciaService';
 import { format, addDays, startOfWeek, addWeeks, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { RecorrenciaConfig } from '../../../lib/supabase';
+import { TarefaItensList } from '../../components/agenda/TarefaItensList';
+import type { TarefaItemUI } from '../../../lib/mapeamento';
 
 // ==========================================
 // TIPOS E CONSTANTES
@@ -271,6 +274,9 @@ export default function TarefaCreatePage() {
   // Recorrência
   const [recorrenciaConfig, setRecorrenciaConfig] = useState<RecorrenciaConfig | null>(null);
 
+  // Itens da tarefa (checklist)
+  const [tarefaItens, setTarefaItens] = useState<TarefaItemUI[]>([]);
+
   // Validação em tempo real
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -403,7 +409,7 @@ export default function TarefaCreatePage() {
         }
       } else {
         // Tarefa normal
-        await tarefasService.create(user.id, {
+        const novaTarefa = await tarefasService.create(user.id, {
           titulo,
           descricao: descricao || null,
           data,
@@ -418,6 +424,12 @@ export default function TarefaCreatePage() {
           parent_id: null,
           data_fim_recorrencia: null,
         });
+
+        // Salvar itens da tarefa (se existirem)
+        if (novaTarefa && tarefaItens.length > 0) {
+          const nomes = tarefaItens.map(i => i.nome);
+          await tarefaItensService.createMany(novaTarefa.id, nomes);
+        }
       }
 
       navigate('/agenda/hoje');
@@ -560,6 +572,31 @@ export default function TarefaCreatePage() {
                           className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-colors resize-none"
                           rows={3}
                           placeholder="Detalhes adicionais sobre a tarefa..."
+                        />
+                      </div>
+
+                      {/* Itens da Tarefa (Checklist) */}
+                      <div className="bg-slate-50 rounded-xl p-4">
+                        <TarefaItensList
+                          itens={tarefaItens}
+                          onAdd={(nome) => {
+                            const novoItem: TarefaItemUI = {
+                              id: `temp-${Date.now()}`,
+                              tarefaId: '',
+                              nome,
+                              ordem: tarefaItens.length + 1,
+                              completed: false,
+                            };
+                            setTarefaItens(prev => [...prev, novoItem]);
+                          }}
+                          onDelete={(id) => {
+                            setTarefaItens(prev => prev.filter(item => item.id !== id));
+                          }}
+                          onToggle={(id) => {
+                            setTarefaItens(prev => prev.map(item => 
+                              item.id === id ? { ...item, completed: !item.completed } : item
+                            ));
+                          }}
                         />
                       </div>
                     </motion.div>
