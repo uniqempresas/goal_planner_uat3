@@ -226,7 +226,7 @@ export default function MetaDetailPage() {
               className="w-full mt-4"
               onClick={() => {
                 const nivelParaNavegar = meta.nivel || nivel;
-                navigate(`/metas/${getNextNivel(nivelParaNavegar)}/criar?pai=${meta.id}`);
+                navigate(`/metas/${getNextNivelPath(nivelParaNavegar)}/criar?pai=${meta.id}`);
               }}
             >
               Criar Meta Filha
@@ -276,6 +276,16 @@ function getNextNivel(nivel: MetaNivel): MetaNivel {
     case 'mensal': return 'semanal';
     case 'semanal': return 'diaria';
     case 'diaria': return 'diaria';
+  }
+}
+
+function getNextNivelPath(nivel: MetaNivel): string {
+  switch (nivel) {
+    case 'grande': return 'anuais';
+    case 'anual': return 'mensais';
+    case 'mensal': return 'semanais';
+    case 'semanal': return 'diarias';
+    case 'diaria': return 'diarias';
   }
 }
 

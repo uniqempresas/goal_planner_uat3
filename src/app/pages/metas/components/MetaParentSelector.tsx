@@ -28,6 +28,16 @@ const nivelLabels: Record<MetaNivel, string> = {
   diaria: 'Meta Diária',
 };
 
+function getNivelPath(nivel: MetaNivel): string {
+  switch (nivel) {
+    case 'grande': return 'grandes';
+    case 'anual': return 'anuais';
+    case 'mensal': return 'mensais';
+    case 'semanal': return 'semanais';
+    case 'diaria': return 'diarias';
+  }
+}
+
 export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSelectorProps) {
   const { user } = useApp();
   const [metasPai, setMetasPai] = useState<Awaited<ReturnType<typeof metasService.getMetasByNivel>>>([]);
@@ -99,7 +109,7 @@ export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSe
               Nenhuma {nivelLabels[nivelPai]} disponível.
             </p>
             <Button asChild variant="outline">
-              <Link to={`/metas/${nivelPai}/criar`}>
+              <Link to={`/metas/${getNivelPath(nivelPai)}/criar`}>
                 Criar Nova {nivelLabels[nivelPai]}
               </Link>
             </Button>

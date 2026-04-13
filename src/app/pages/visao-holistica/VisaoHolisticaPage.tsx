@@ -1,13 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Eye, RefreshCw, Keyboard } from 'lucide-react';
+import { Eye, RefreshCw, Keyboard, Target, ListTodo } from 'lucide-react';
 import { ControlBar } from './components/ControlBar';
 import { TreeView } from './components/TreeView';
+import { TasksListView } from './components/TasksListView';
+import { TaskFilters } from './components/TaskFilters';
 import { useMetasHierarchy } from './hooks/useMetasHierarchy';
+import { useTarefasHierarchy } from './hooks/useTarefasHierarchy';
 import { useTreeState } from './hooks/useTreeState';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { filterMetas } from './utils/filters';
 import { groupMetas } from './utils/sorting';
-import type { FilterState, ViewMode, GroupByOption } from './types';
+import type { FilterState, ViewMode, GroupByOption, TaskFilterState } from './types';
 
 export default function VisaoHolisticaPage() {
   const { metas, isLoading, error, refetch } = useMetasHierarchy();
@@ -24,6 +27,15 @@ export default function VisaoHolisticaPage() {
 
   const [groupBy, setGroupBy] = useState<GroupByOption>('nenhum');
   const [showHelp, setShowHelp] = useState(false);
+  const [activeTab, setActiveTab] = useState<'metas' | 'tarefas'>('metas');
+  const [taskFilter, setTaskFilter] = useState<TaskFilterState>({
+    tipo: 'todas',
+    showAtrasadas: true,
+    showAberto: true,
+    showConcluidas: true,
+  });
+
+  const { tarefas, isLoading: isLoadingTarefas, error: errorTarefas, refetch: refetchTarefas } = useTarefasHierarchy();
 
   // Aplicar filtros
   const filteredMetas = useMemo(() => {
@@ -165,10 +177,37 @@ export default function VisaoHolisticaPage() {
             </div>
           </div>
         )}
+
+        {/* Tabs */}
+        <div className="flex items-center gap-1 mt-4">
+          <button
+            onClick={() => setActiveTab('metas')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'metas'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Target size={16} />
+            Metas
+          </button>
+          <button
+            onClick={() => setActiveTab('tarefas')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'tarefas'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <ListTodo size={16} />
+            Tarefas
+          </button>
+        </div>
       </div>
 
-      {/* Control Bar */}
-      <div data-filter-bar>
+      {activeTab === 'tarefas' ? (
+        <TaskFilters filter={taskFilter} onFilterChange={setTaskFilter} />
+      ) : (
         <ControlBar
           filters={filters}
           onFiltersChange={handleFiltersChange}
@@ -177,42 +216,73 @@ export default function VisaoHolisticaPage() {
           groupBy={groupBy}
           onGroupByChange={handleGroupByChange}
         />
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto">
-        {groupBy === 'nenhum' ? (
-          <TreeView
-            metas={filteredMetas}
-            expandedNodes={expandedNodes}
-            onToggleExpand={handleToggleExpand}
-            viewMode={viewMode}
-            focusedNode={focusedNode}
-            onFocusNode={handleFocusNode}
-            isLoading={isLoading}
-          />
-        ) : (
-          <div className="p-4 space-y-6">
-            {Object.entries(groupedMetas).map(([groupName, groupMetas]) => (
-              <div key={groupName}>
-                <h2 className="text-lg font-semibold text-slate-700 mb-3 px-2">{groupName}</h2>
-                <div className="space-y-3">
-                  {groupMetas.map((meta) => (
-                    <TreeView
-                      key={meta.id}
-                      metas={[meta]}
-                      expandedNodes={expandedNodes}
-                      onToggleExpand={handleToggleExpand}
-                      viewMode={viewMode}
-                      focusedNode={focusedNode}
-                      onFocusNode={handleFocusNode}
-                      groupBy={groupBy}
-                    />
-                  ))}
+        {activeTab === 'tarefas' ? (
+          // Tasks tab
+          errorTarefas ? (
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full">
+                <div className="flex items-center gap-3 text-red-600 mb-4">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-lg">⚠️</span>
+                  </div>
+                  <h2 className="font-semibold text-lg">Erro ao carregar tarefas</h2>
                 </div>
+                <p className="text-slate-600 mb-4">{errorTarefas.message}</p>
+                <button
+                  onClick={refetchTarefas}
+                  className="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={18} />
+                  Tentar novamente
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <TasksListView
+              tarefas={tarefas}
+              filtro={taskFilter}
+              isLoading={isLoadingTarefas}
+            />
+          )
+        ) : (
+          // Metas tab
+          groupBy === 'nenhum' ? (
+            <TreeView
+              metas={filteredMetas}
+              expandedNodes={expandedNodes}
+              onToggleExpand={handleToggleExpand}
+              viewMode={viewMode}
+              focusedNode={focusedNode}
+              onFocusNode={handleFocusNode}
+              isLoading={isLoading}
+            />
+          ) : (
+            <div className="p-4 space-y-6">
+              {Object.entries(groupedMetas).map(([groupName, groupMetas]) => (
+                <div key={groupName}>
+                  <h2 className="text-lg font-semibold text-slate-700 mb-3 px-2">{groupName}</h2>
+                  <div className="space-y-3">
+                    {groupMetas.map((meta) => (
+                      <TreeView
+                        key={meta.id}
+                        metas={[meta]}
+                        expandedNodes={expandedNodes}
+                        onToggleExpand={handleToggleExpand}
+                        viewMode={viewMode}
+                        focusedNode={focusedNode}
+                        onFocusNode={handleFocusNode}
+                        groupBy={groupBy}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>
