@@ -795,7 +795,7 @@ export function validarConfiguracao(config: RecorrenciaConfig): { valido: boolea
       break;
 
     case 'mensal':
-      if (!config.dia_mes || config.dia_mes < 1 || config.dia_mes > 31) {
+      if (config.dia_mes === undefined || config.dia_mes === null || config.dia_mes < 1 || config.dia_mes > 31) {
         return { valido: false, erro: 'Dia do mês deve estar entre 1 e 31' };
       }
       break;

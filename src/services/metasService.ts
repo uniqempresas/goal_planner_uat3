@@ -57,6 +57,11 @@ export const metasService = {
     // Normalizar nivel: URL pode ter "grandes" mas banco espera "grande"
     const nivelNormalizado = meta.nivel?.replace(/s$/, '') as MetaNivel || meta.nivel;
     
+    // DEBUG: Log do que está sendo enviado para o Supabase
+    console.log('DEBUG metasService.create - meta recebida:', meta);
+    console.log('DEBUG metasService.create - prazo:', meta.prazo);
+    console.log('DEBUG metasService.create - tipo prazo:', typeof meta.prazo);
+    
     const { data, error } = await supabase
       .from('metas')
       .insert({ 
@@ -70,7 +75,10 @@ export const metasService = {
       .select()
       .single();
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error('DEBUG metasService.create - erro do Supabase:', error);
+      throw new Error(error.message);
+    }
     return data;
   },
 
@@ -142,5 +150,24 @@ export const metasService = {
     }
     
     return ancestors;
+  },
+
+  /**
+   * Busca todas as metas do usuário com suas áreas relacionadas
+   * para construir a hierarquia completa
+   */
+  async getFullHierarchy(userId: string): Promise<Meta[]> {
+    const { data, error } = await supabase
+      .from('metas')
+      .select(`
+        *,
+        areas:area_id (id, nome, icone, cor)
+      `)
+      .eq('user_id', userId)
+      .neq('status', 'arquivada')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   },
 };

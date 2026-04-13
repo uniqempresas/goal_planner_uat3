@@ -43,11 +43,14 @@ export function RecorrenciaConfigPanel({
         novaConfig.dias_semana = [];
         break;
       case 'mensal':
-        novaConfig.dia_mes = parseInt(dataInicio.split('-')[2]) || 1;
+        // Garantir que o dia seja um número válido entre 1-31
+        const diaDoMes = parseInt(dataInicio.split('-')[2]);
+        novaConfig.dia_mes = (diaDoMes >= 1 && diaDoMes <= 31) ? diaDoMes : 1;
         break;
       case 'anual':
         novaConfig.mes_ano = parseInt(dataInicio.split('-')[1]) - 1 || 0;
-        novaConfig.dia_ano = parseInt(dataInicio.split('-')[2]) || 1;
+        const diaAno = parseInt(dataInicio.split('-')[2]);
+        novaConfig.dia_ano = (diaAno >= 1 && diaAno <= 31) ? diaAno : 1;
         break;
       case 'intervalo_dias':
         novaConfig.intervalo_dias = 2;
