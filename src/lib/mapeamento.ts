@@ -13,6 +13,7 @@ export type Priority = 'high' | 'medium' | 'low';
 export interface TarefaUI {
   id: string;
   metaId?: string;
+  habitoId?: string;
   title: string;
   description?: string;
   block: TimeBlock;
@@ -35,9 +36,11 @@ export interface TarefaUI {
 export function mapBlocoToUI(bloco: string | null): TimeBlock {
   const map: Record<string, TimeBlock> = {
     'one-thing': 'oneThing',
+    'atrasadas': 'atrasadas',
     'manha': 'manha',
     'tarde': 'tarde',
     'noite': 'noite',
+    'habitos': 'habitos',
   };
   
   return map[bloco || ''] || 'recorrentes';
@@ -63,6 +66,7 @@ export function mapTarefaToUI(tarefa: TarefaDB): TarefaUI {
   return {
     id: tarefa.id,
     metaId: tarefa.meta_id || undefined,
+    habitoId: tarefa.habito_id || undefined,
     title: tarefa.titulo,
     description: tarefa.descricao || undefined,
     block: mapBlocoToUI(tarefa.bloco),
