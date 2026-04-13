@@ -32,11 +32,11 @@ const navGroups: NavGroup[] = [
     icon: <Target size={18} />,
     basePath: '/metas',
     children: [
-      { label: 'Grandes (3 anos)', path: '/metas/grandes', icon: <Mountain size={15} /> },
-      { label: 'Anuais', path: '/metas/anual', icon: <CalendarDays size={15} /> },
-      { label: 'Mensais', path: '/metas/mensal', icon: <CalendarCheck size={15} /> },
-      { label: 'Semanais', path: '/metas/semanal', icon: <CalendarRange size={15} /> },
-      { label: 'Diárias', path: '/metas/diaria', icon: <CheckSquare size={15} /> },
+      { label: 'Grandes', path: '/metas/grandes', icon: <Mountain size={15} /> },
+      { label: 'Anuais', path: '/metas/anuais', icon: <CalendarDays size={15} /> },
+      { label: 'Mensais', path: '/metas/mensais', icon: <CalendarCheck size={15} /> },
+      { label: 'Semanais', path: '/metas/semanais', icon: <CalendarRange size={15} /> },
+      { label: 'Diárias', path: '/metas/diarias', icon: <CheckSquare size={15} /> },
     ],
   },
   {

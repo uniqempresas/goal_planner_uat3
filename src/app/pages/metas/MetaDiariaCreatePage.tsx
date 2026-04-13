@@ -191,7 +191,7 @@ export default function MetaDiariaCreatePage() {
       });
 
       await loadMetas();
-      navigate('/metas/diaria');
+      navigate('/metas/diarias');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error('Erro ao criar meta:', message);
@@ -503,7 +503,7 @@ export default function MetaDiariaCreatePage() {
                 <div className="px-6 lg:px-8 py-4 bg-slate-50 border-t border-slate-100 flex justify-between">
                   <button
                     type="button"
-                    onClick={currentStep === 1 ? () => navigate('/metas/diaria') : prevStep}
+                    onClick={currentStep === 1 ? () => navigate('/metas/diarias') : prevStep}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-600 hover:bg-slate-200 transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />

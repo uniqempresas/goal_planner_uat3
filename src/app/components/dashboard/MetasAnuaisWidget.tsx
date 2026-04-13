@@ -17,7 +17,7 @@ export function MetasAnuaisWidget() {
             <h3 className="text-slate-800 font-semibold">Metas Anuais</h3>
           </div>
           <Link 
-            to="/metas/anual" 
+            to="/metas/anuais" 
             className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-1 transition-colors"
           >
             Ver <ArrowRight size={14} />
@@ -27,7 +27,7 @@ export function MetasAnuaisWidget() {
           <Target size={40} className="mx-auto text-slate-300 mb-3" />
           <p className="text-slate-500 text-sm">Nenhuma Meta Anual ainda</p>
           <Link 
-            to="/metas/anual" 
+            to="/metas/anuais" 
             className="text-indigo-600 text-sm font-medium mt-2 inline-block hover:underline"
           >
             Criar primeira meta
@@ -55,7 +55,7 @@ export function MetasAnuaisWidget() {
           <h3 className="text-slate-800 font-semibold">Metas Anuais</h3>
         </div>
         <Link 
-          to="/metas/anual" 
+          to="/metas/anuais" 
           className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-1 transition-colors"
         >
           Ver <ArrowRight size={14} />

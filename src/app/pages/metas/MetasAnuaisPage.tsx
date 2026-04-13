@@ -7,7 +7,7 @@ export default function MetasAnuaisPage() {
     <MetasListPageModern
       level="anual"
       metas={metasAnuais}
-      createPath="/metas/anual/criar"
+      createPath="/metas/anuais/criar"
       title="Metas Anuais"
       subtitle="O que você precisa conquistar este ano para avançar nas grandes metas?"
       focusingQuestion='Qual é a ÚNICA coisa que posso fazer este ano, de tal forma que avance significativamente em direção à minha grande meta?'

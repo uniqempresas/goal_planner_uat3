@@ -234,7 +234,7 @@ export default function RevisaoSemanalPage() {
           title="Nenhuma meta semanal criada"
           description="Crie metas semanais para ter o que avaliar nesta revisão."
           actionLabel="Criar Meta Semanal"
-          actionHref="/metas/semanal/criar"
+          actionHref="/metas/semanais/criar"
         />
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">

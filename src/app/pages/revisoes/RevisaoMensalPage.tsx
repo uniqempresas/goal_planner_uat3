@@ -187,7 +187,7 @@ export default function RevisaoMensalPage() {
           title="Nenhuma meta mensal criada"
           description="Crie metas mensais para ter o que avaliar nesta revisão."
           actionLabel="Criar Meta Mensal"
-          actionHref="/metas/mensal/criar"
+          actionHref="/metas/mensais/criar"
         />
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">

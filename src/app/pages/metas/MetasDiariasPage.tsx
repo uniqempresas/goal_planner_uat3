@@ -7,7 +7,7 @@ export default function MetasDiariasPage() {
     <MetasListPageModern
       level="diaria"
       metas={metasDiarias}
-      createPath="/metas/diaria/criar"
+      createPath="/metas/diarias/criar"
       title="Metas Diárias"
       subtitle="Sua ONE Thing de hoje. A tarefa que, se feita, tornará tudo o mais desnecessário."
       focusingQuestion='Qual é a ÚNICA coisa que posso fazer hoje, de tal forma que minha meta semanal avance de forma decisiva?'
