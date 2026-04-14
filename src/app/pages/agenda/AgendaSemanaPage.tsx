@@ -351,13 +351,13 @@ export default function AgendaSemanaPage() {
                   <EmptyStateAgenda
                     date={selectedDate}
                     dayName={diasCompletos[selectedDay]}
-                    onCreateTask={() => navigate(`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`)}
+                    onCreateTask={() => navigate(`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`)}
                   />
                 )}
                 
                 {/* Add Task Button */}
                 <Link 
-                  to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
+                  to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`}
                   className="flex items-center gap-2 p-3 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all text-sm mt-3"
                 >
                   <Plus size={16} />
@@ -434,7 +434,7 @@ export default function AgendaSemanaPage() {
         className="fixed bottom-6 right-6 sm:hidden z-50"
       >
         <Link
-          to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}&origem=semana`}
+          to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`}
           className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
         >
           <Plus size={24} />

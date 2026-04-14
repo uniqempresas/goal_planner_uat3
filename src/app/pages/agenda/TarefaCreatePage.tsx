@@ -250,7 +250,7 @@ function TarefaPreview({ titulo, descricao, data, hora, bloco, prioridade, metaT
 export default function TarefaCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, grandesMetas, metasAnuais, metasMensais } = useApp();
+  const { user, metasSemanais, metasMensais } = useApp();
 
   // Get params from URL
   const dataParam = searchParams.get('data');
@@ -280,13 +280,10 @@ export default function TarefaCreatePage() {
   // Validação em tempo real
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Metas disponíveis
-  const allMetas = origemParam === 'semana' 
-    ? metasMensais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Mensal' }))
-    : [
-        ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
-        ...metasAnuais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Anual' })),
-      ];
+  // Metas disponíveis (semanais e mensais)
+  const metasSemanaisOptions = metasSemanais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Semanal' }));
+  const metasMensaisOptions = metasMensais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Mensal' }));
+  const allMetas = [...metasSemanaisOptions, ...metasMensaisOptions];
 
   const metaSelecionada = allMetas.find(m => m.id === metaId);
 
@@ -874,11 +871,24 @@ export default function TarefaCreatePage() {
                             className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-colors"
                           >
                             <option value="">Selecione uma meta...</option>
-                            {allMetas.map(meta => (
-                              <option key={meta.id} value={meta.id}>
-                                {meta.titulo} ({meta.nivel})
-                              </option>
-                            ))}
+                            {metasSemanaisOptions.length > 0 && (
+                              <optgroup label="Metas Semanais">
+                                {metasSemanaisOptions.map(meta => (
+                                  <option key={meta.id} value={meta.id}>
+                                    {meta.titulo}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
+                            {metasMensaisOptions.length > 0 && (
+                              <optgroup label="Metas Mensais">
+                                {metasMensaisOptions.map(meta => (
+                                  <option key={meta.id} value={meta.id}>
+                                    {meta.titulo}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
                           </select>
                         </div>
                       )}

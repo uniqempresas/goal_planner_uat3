@@ -15,6 +15,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
@@ -44,7 +45,7 @@ type TarefaEditForm = z.infer<typeof tarefaEditSchema>;
 export default function TarefaEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, grandesMetas, metasAnuais, loadTarefas } = useApp();
+  const { user, metasSemanais, metasMensais, loadTarefas } = useApp();
   const [tarefa, setTarefa] = useState<Tarefa | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -60,10 +61,9 @@ export default function TarefaEditPage() {
   const [itens, setItens] = useState<TarefaItemUI[]>([]);
   const [loadingItens, setLoadingItens] = useState(false);
 
-  const allMetas = [
-    ...grandesMetas.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Grande' })),
-    ...metasAnuais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Anual' })),
-  ];
+  const metasSemanaisOptions = metasSemanais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Semanal' }));
+  const metasMensaisOptions = metasMensais.map(m => ({ id: m.id, titulo: m.titulo, nivel: 'Mensal' }));
+  const allMetas = [...metasSemanaisOptions, ...metasMensaisOptions];
 
   const form = useForm<TarefaEditForm>({
     resolver: zodResolver(tarefaEditSchema),
@@ -510,15 +510,32 @@ export default function TarefaEditPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {allMetas.map(meta => (
-                          <SelectItem key={meta.id} value={meta.id}>
-                            <div className="flex items-center gap-2">
-                              <Target className="h-4 w-4 text-indigo-500" />
-                              <span>{meta.titulo}</span>
-                              <span className="text-xs text-slate-400 ml-auto">({meta.nivel})</span>
-                            </div>
-                          </SelectItem>
-                        ))}
+                        {metasSemanaisOptions.length > 0 && (
+                          <>
+                            <SelectLabel>Metas Semanais</SelectLabel>
+                            {metasSemanaisOptions.map(meta => (
+                              <SelectItem key={meta.id} value={meta.id}>
+                                <div className="flex items-center gap-2">
+                                  <Target className="h-4 w-4 text-indigo-500" />
+                                  <span>{meta.titulo}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
+                        {metasMensaisOptions.length > 0 && (
+                          <>
+                            <SelectLabel>Metas Mensais</SelectLabel>
+                            {metasMensaisOptions.map(meta => (
+                              <SelectItem key={meta.id} value={meta.id}>
+                                <div className="flex items-center gap-2">
+                                  <Target className="h-4 w-4 text-indigo-500" />
+                                  <span>{meta.titulo}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
