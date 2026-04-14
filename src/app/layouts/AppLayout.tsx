@@ -144,7 +144,7 @@ function NavItem({ group, collapsed }: { group: NavGroup; collapsed: boolean }) 
 }
 
 export function AppLayout() {
-  const { user, logout, sidebarOpen, setSidebarOpen, loading, isAuthenticated, weeklyStats } = useApp();
+  const { user, logout, sidebarOpen, setSidebarOpen, loading, isAuthenticated, weeklyStats, tarefasHoje, metasDiarias } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const collapsed = !sidebarOpen;
@@ -156,6 +156,11 @@ export function AppLayout() {
     month: 'short', 
     year: 'numeric' 
   });
+
+  // ONE Thing de hoje: busca em tarefas (bloco one-thing) ou metas diárias (one_thing)
+  const oneThingTarefa = tarefasHoje.find(t => t.isOneThing);
+  const oneThingMeta = metasDiarias.find(m => m.one_thing);
+  const oneThingText = oneThingTarefa?.title || oneThingMeta?.titulo || null;
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -200,15 +205,20 @@ export function AppLayout() {
 
       {/* ONE Thing Highlight */}
       {!collapsed && (
-        <div className="mx-3 mt-3 p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+        <NavLink
+          to="/agenda/hoje"
+          className={({ isActive }) =>
+            `mx-3 mt-3 p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg block transition-colors ${isActive ? 'bg-amber-500/20' : 'hover:bg-amber-500/15'}`
+          }
+        >
           <div className="flex items-center gap-2 mb-1">
             <Star size={12} className="text-amber-400 fill-amber-400" />
             <span className="text-amber-400 text-xs font-medium">ONE Thing Hoje</span>
           </div>
           <p className="text-slate-300 text-xs leading-relaxed line-clamp-2">
-            Escrever artigo sobre React Server Components
+            {oneThingText || 'Nenhuma ONE Thing definida ainda'}
           </p>
-        </div>
+        </NavLink>
       )}
 
       {/* Navigation */}
