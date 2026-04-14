@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectLabel,
   SelectTrigger,
@@ -511,7 +512,7 @@ export default function TarefaEditPage() {
                       </FormControl>
                       <SelectContent>
                         {metasSemanaisOptions.length > 0 && (
-                          <>
+                          <SelectGroup>
                             <SelectLabel>Metas Semanais</SelectLabel>
                             {metasSemanaisOptions.map(meta => (
                               <SelectItem key={meta.id} value={meta.id}>
@@ -521,10 +522,10 @@ export default function TarefaEditPage() {
                                 </div>
                               </SelectItem>
                             ))}
-                          </>
+                          </SelectGroup>
                         )}
                         {metasMensaisOptions.length > 0 && (
-                          <>
+                          <SelectGroup>
                             <SelectLabel>Metas Mensais</SelectLabel>
                             {metasMensaisOptions.map(meta => (
                               <SelectItem key={meta.id} value={meta.id}>
@@ -534,7 +535,7 @@ export default function TarefaEditPage() {
                                 </div>
                               </SelectItem>
                             ))}
-                          </>
+                          </SelectGroup>
                         )}
                       </SelectContent>
                     </Select>
