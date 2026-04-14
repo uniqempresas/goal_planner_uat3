@@ -31,12 +31,12 @@ const priorityColors: Record<string, string> = {
   low: 'bg-slate-300',
 };
 
-function TarefaItem({ tarefa, onToggle, onDelete }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void }) {
+function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void; isAtrasada?: boolean }) {
   const { getMetaById } = useApp();
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
 
   return (
-    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}`}>
+    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'} ${isAtrasada ? 'bg-red-50/50 border border-red-100' : ''}`}>
       <button
         onClick={(e) => { e.preventDefault(); onToggle(tarefa.id); }}
         className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer"
@@ -49,12 +49,17 @@ function TarefaItem({ tarefa, onToggle, onDelete }: { tarefa: TarefaUI; onToggle
 
       <Link to={`/agenda/tarefas/${tarefa.id}`} className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className={`text-sm leading-relaxed ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'} ${tarefa.isOneThing ? 'font-medium' : ''}`}>
+          <p className={`text-sm leading-relaxed ${tarefa.completed ? 'line-through text-slate-400' : isAtrasada ? 'text-red-700' : 'text-slate-800'} ${tarefa.isOneThing ? 'font-medium' : ''}`}>
             {tarefa.title}
           </p>
-          {tarefa.priority && (
-            <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${priorityColors[tarefa.priority]}`} />
-          )}
+          <div className="flex items-center gap-1.5">
+            {isAtrasada && !tarefa.completed && (
+              <span className="text-[10px] font-medium text-red-600 bg-red-100 px-1.5 py-0.5 rounded">Atrasada</span>
+            )}
+            {tarefa.priority && (
+              <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${priorityColors[tarefa.priority]}`} />
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -148,7 +153,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
   onDeleteTarefa: (id: string) => void;
   onToggleHabito?: (id: string) => void;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const cfg = blockConfig[block];
   const completed = tarefas.filter(t => t.completed).length;
   const isOneThing = block === 'oneThing';
@@ -240,7 +245,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
           {tarefas.length > 0 && (
             <div className="space-y-1">
               {tarefas.map(tarefa => (
-                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} />
+                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} isAtrasada={block === 'atrasadas'} />
               ))}
             </div>
           )}
@@ -346,14 +351,24 @@ export default function AgendaHojePage() {
                 block={block}
                 // Filtrar: remover todas as tarefas que têm habitoId (são de hábitos)
                 // Os hábitos aparecem apenas no bloco 'habitos' via habitosHoje
-                tarefas={tarefasHoje.filter(t => {
-                  // Se a tarefa tem habitoId, não mostrar em nenhum bloco de tarefas
-                  // (ela será mostrada no sistema de hábitos)
-                  if (t.habitoId) {
-                    return false;
+                tarefas={(() => {
+                  // Tarefas sem vínculo a hábitos
+                  const tarefasSemHabito = tarefasHoje.filter(t => !t.habitoId);
+                  // Tarefas atrasadas: data < hoje e não concluídas
+                  const tarefasAtrasadas = tarefasSemHabito.filter(t => t.data < today && !t.completed);
+
+                  if (block === 'atrasadas') {
+                    return tarefasAtrasadas;
                   }
-                  return t.block === block;
-                })}
+
+                  return tarefasSemHabito.filter(t => {
+                    // Se a tarefa está atrasada, ela vai para o bloco 'atrasadas'
+                    if (t.data < today && !t.completed) {
+                      return false;
+                    }
+                    return t.block === block;
+                  });
+                })()}
                 habitos={block === 'habitos' ? habitosHoje : undefined}
                 onToggleTarefa={toggleTarefa}
                 onDeleteTarefa={handleDeleteTarefa}

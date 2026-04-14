@@ -74,7 +74,7 @@ export function MetasAnuaisWidget() {
           return (
             <motion.div key={meta.id} variants={scaleIn}>
               <Link
-                to={`/metas/anual/${meta.id}`}
+                to={`/metas/anuais/${meta.id}`}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group"
               >
                 {/* Level Badge */}
