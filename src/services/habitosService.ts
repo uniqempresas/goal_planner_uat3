@@ -173,30 +173,42 @@ export const habitosService = {
     if (!habito) throw new Error('Hábito não encontrado');
 
     const hoje = new Date().toISOString().split('T')[0];
-
-    if (habito.ultima_conclusao === hoje) {
-      // Já completou hoje, não fazer nada
-      return habito;
-    }
-
+    const todayDate = new Date();
     const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setDate(todayDate.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-    let novoStreak = 1;
+    // Verificar se já foi completado hoje
+    if (habito.ultima_conclusao === hoje) {
+      // Desmarcar: remover conclusão de hoje
+      let novoStreak = 0;
+      
+      // Se a conclusão anterior era yesterday, mantém o streak (não perde a sequência)
+      if (habito.ultima_conclusao === yesterdayStr) {
+        novoStreak = habito.streak_atual || 0;
+      }
+      
+      return this.update(id, {
+        streak_atual: novoStreak,
+        ultima_conclusao: null,
+      });
+    } else {
+      // Marcar: adicionar conclusão de hoje
+      let novoStreak = 1;
 
-    if (habito.ultima_conclusao === yesterdayStr) {
-      // Consecutivo!
-      novoStreak = (habito.streak_atual || 0) + 1;
+      if (habito.ultima_conclusao === yesterdayStr) {
+        // Consecutivo! Mantém a sequência
+        novoStreak = (habito.streak_atual || 0) + 1;
+      }
+
+      const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
+
+      return this.update(id, {
+        streak_atual: novoStreak,
+        melhor_streak: novoMelhor,
+        ultima_conclusao: hoje,
+      });
     }
-
-    const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
-
-    return this.update(id, {
-      streak_atual: novoStreak,
-      melhor_streak: novoMelhor,
-      ultima_conclusao: hoje,
-    });
   },
 
   async pausar(id: string): Promise<Habito> {
