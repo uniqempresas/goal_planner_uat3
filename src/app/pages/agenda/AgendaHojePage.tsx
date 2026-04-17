@@ -154,6 +154,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
   onToggleHabito?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(true);
+  const today = new Date().toISOString().split('T')[0];
   const cfg = blockConfig[block];
   const completed = tarefas.filter(t => t.completed).length;
   const isOneThing = block === 'oneThing';
@@ -161,8 +162,6 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
   const hasItems = tarefas.length > 0 || (habitos && habitos.length > 0);
 
   if (!hasItems && block !== 'oneThing' && block !== 'habitos') return null;
-
-  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div
@@ -190,8 +189,13 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
                 <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">Prioridade Absoluta</span>
               )}
             </div>
-            {tarefas.length > 0 && (
-              <span className="text-xs text-slate-400">{completed}/{tarefas.length} concluídas</span>
+            {(tarefas.length > 0 || (isHabitos && habitos && habitos.length > 0)) && (
+              <span className="text-xs text-slate-400">
+                {isHabitos && habitos 
+                  ? `${habitos.filter(h => h.ultima_conclusao === today).length}/${habitos.length} concluídos`
+                  : `${completed}/${tarefas.length} concluídas`
+                }
+              </span>
             )}
           </div>
         </div>

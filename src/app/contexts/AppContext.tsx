@@ -221,6 +221,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const toggleHabitoStreak = useCallback(async (id: string) => {
     try {
       await habitosService.toggleStreak(id);
+      
+      // Atualizar o estado local diretamente para refletir a mudança imediatamente
+      const hoje = new Date().toISOString().split('T')[0];
+      setHabitosHoje(prev => prev.map(h => {
+        if (h.id === id) {
+          return {
+            ...h,
+            ultima_conclusao: h.ultima_conclusao === hoje ? null : hoje,
+            streak_atual: h.ultima_conclusao === hoje 
+              ? Math.max(0, h.streak_atual - 1) 
+              : h.streak_atual + 1
+          };
+        }
+        return h;
+      }));
+      
+      // Também recarrega para garantir consistência com o banco
       loadHabitos();
     } catch (error) {
       console.error('Erro ao atualizar streak:', error);
