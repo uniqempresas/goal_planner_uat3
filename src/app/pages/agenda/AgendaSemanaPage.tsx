@@ -26,7 +26,7 @@ const diasCompletos = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira
 export default function AgendaSemanaPage() {
   const navigate = useNavigate();
   const { user, weeklyStats } = useApp();
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(() => new Date().getDay());
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
     const dayOfWeek = today.getDay();
