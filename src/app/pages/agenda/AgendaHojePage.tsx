@@ -31,7 +31,7 @@ const priorityColors: Record<string, string> = {
   low: 'bg-slate-300',
 };
 
-function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void; isAtrasada?: boolean }) {
+function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThing }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void; isAtrasada?: boolean; onPromoteToOneThing?: (id: string) => void }) {
   const { getMetaById } = useApp();
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
 
@@ -83,6 +83,15 @@ function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada }: { tarefa: Tarefa
 
       {/* Action Buttons */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {!tarefa.isOneThing && onPromoteToOneThing && (
+          <button
+            onClick={() => onPromoteToOneThing(tarefa.id)}
+            className="p-1.5 text-amber-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+            title="Tornar ONE Thing"
+          >
+            <Star size={16} />
+          </button>
+        )}
         <Link
           to={`/agenda/tarefas/${tarefa.id}/editar`}
           className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
@@ -145,13 +154,14 @@ function HabitoItem({ habito, onToggle }: { habito: Habito; onToggle: (id: strin
   );
 }
 
-function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTarefa, onToggleHabito }: {
+function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTarefa, onToggleHabito, onPromoteToOneThing }: {
   block: TimeBlock;
   tarefas: TarefaUI[];
   habitos?: Habito[];
   onToggleTarefa: (id: string) => void;
   onDeleteTarefa: (id: string) => void;
   onToggleHabito?: (id: string) => void;
+  onPromoteToOneThing?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(true);
   const today = new Date().toISOString().split('T')[0];
@@ -249,7 +259,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
           {tarefas.length > 0 && (
             <div className="space-y-1">
               {tarefas.map(tarefa => (
-                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} isAtrasada={block === 'atrasadas'} />
+                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} isAtrasada={block === 'atrasadas'} onPromoteToOneThing={onPromoteToOneThing} />
               ))}
             </div>
           )}
@@ -267,7 +277,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
 }
 
 export default function AgendaHojePage() {
-  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas } = useApp();
+  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas, updateTarefa } = useApp();
 
 const today = new Date().toISOString().split('T')[0];
   
@@ -294,6 +304,11 @@ const today = new Date().toISOString().split('T')[0];
       await deleteTarefa(id);
       await loadTarefas();
     }
+  };
+
+  const handlePromoteToOneThing = async (id: string) => {
+    await updateTarefa(id, { bloco: 'one-thing' });
+    await loadTarefas();
   };
 
   return (
@@ -380,6 +395,7 @@ const today = new Date().toISOString().split('T')[0];
                 onToggleTarefa={toggleTarefa}
                 onDeleteTarefa={handleDeleteTarefa}
                 onToggleHabito={block === 'habitos' ? toggleHabitoStreak : undefined}
+                onPromoteToOneThing={handlePromoteToOneThing}
               />
             ))}
           </div>
