@@ -280,6 +280,7 @@ const today = new Date().toISOString().split('T')[0];
   const total = totalTarefas + totalHabitos;
   
   const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const habitosProgress = totalHabitos > 0 ? Math.round((completedHabitos / totalHabitos) * 100) : 0;
 
   const todayFormatted = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
