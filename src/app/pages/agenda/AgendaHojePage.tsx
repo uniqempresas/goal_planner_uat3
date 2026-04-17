@@ -269,13 +269,17 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
 export default function AgendaHojePage() {
   const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas } = useApp();
 
-  const completed = tarefasHoje.filter(t => t.completed).length;
-  const total = tarefasHoje.length;
+const today = new Date().toISOString().split('T')[0];
+  
+  const completedTarefas = tarefasHoje.filter(t => t.completed).length;
+  const completedHabitos = habitosHoje.filter(h => h.ultima_conclusao === today).length;
+  const completed = completedTarefas + completedHabitos;
+  
+  const totalTarefas = tarefasHoje.length;
+  const totalHabitos = habitosHoje.length;
+  const total = totalTarefas + totalHabitos;
+  
   const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-  const habitosBlock = tarefasHoje.filter(t => t.block === 'habitos');
-  const habitosCompleted = habitosBlock.filter(t => t.completed).length;
-  const habitosProgress = habitosBlock.length > 0 ? Math.round((habitosCompleted / habitosBlock.length) * 100) : 0;
 
   const todayFormatted = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
@@ -283,8 +287,6 @@ export default function AgendaHojePage() {
     month: 'long',
     year: 'numeric',
   });
-
-  const today = new Date().toISOString().split('T')[0];
 
   const handleDeleteTarefa = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
