@@ -81,8 +81,8 @@ function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThin
         </div>
       </Link>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Action Buttons - sempre visível no mobile, hover no desktop */}
+      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         {!tarefa.isOneThing && onPromoteToOneThing && (
           <button
             onClick={() => onPromoteToOneThing(tarefa.id)}
