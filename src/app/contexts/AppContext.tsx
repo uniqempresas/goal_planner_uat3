@@ -165,8 +165,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const dataLocal = `${hojeLocal.getFullYear()}-${String(hojeLocal.getMonth() + 1).padStart(2, '0')}-${String(hojeLocal.getDate()).padStart(2, '0')}`;
       const dataParam = data || dataLocal;
       
-      // Carregar tarefas normais
-      const tarefasNormais = await tarefasService.getByData(user.id, dataParam);
+      // Carregar tarefas normais (excluindo templates)
+      const tarefasNormais = await tarefasService.getTarefasDoDia(user.id, dataParam);
       
       // Carregar instâncias de recorrentes
       const instanciasRecorrentes = await tarefasService.getInstanciasRecorrentesDoDia(user.id, dataParam);
