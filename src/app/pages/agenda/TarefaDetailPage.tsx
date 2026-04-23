@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
+import { recorrenciaService } from '../../../services/recorrenciaService';
 import type { Database } from '../../../lib/supabase';
-import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Repeat } from 'lucide-react';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 
@@ -14,6 +15,7 @@ export default function TarefaDetailPage() {
   const [tarefa, setTarefa] = useState<Tarefa | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<'single' | 'series'>('single');
 
   useEffect(() => {
     if (!id || !user) return;
@@ -23,10 +25,26 @@ export default function TarefaDetailPage() {
   }, [id, user]);
 
   const handleDelete = async () => {
-    if (!id) return;
-    await tarefasService.delete(id);
-    navigate('/agenda/hoje');
+    if (!id || !tarefa) return;
+    
+    try {
+      if (deleteMode === 'series' && (tarefa.parent_id || tarefa.is_template)) {
+        // Excluir toda a série
+        const parentId = tarefa.parent_id || tarefa.id;
+        await recorrenciaService.excluirTodas(parentId);
+      } else {
+        // Excluir apenas esta tarefa
+        await tarefasService.delete(id);
+      }
+      navigate('/agenda/hoje');
+    } catch (error) {
+      console.error('Erro ao excluir tarefa:', error);
+      alert('Erro ao excluir tarefa. Tente novamente.');
+    }
   };
+
+  const isRecorrente = tarefa && (tarefa.parent_id !== null || tarefa.is_template === true);
+  const isInstancia = tarefa && tarefa.parent_id !== null;
 
   if (loading) {
     return (
@@ -124,6 +142,14 @@ export default function TarefaDetailPage() {
             <h1 className={`text-2xl font-semibold ${tarefa.completed ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
               {tarefa.titulo}
             </h1>
+            {isRecorrente && (
+              <div className="flex items-center gap-2 mt-2 text-indigo-600">
+                <Repeat size={16} />
+                <span className="text-sm font-medium">
+                  {isInstancia ? 'Tarefa recorrente (instância)' : 'Tarefa recorrente'}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Descrição */}
@@ -212,23 +238,84 @@ export default function TarefaDetailPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Excluir Tarefa?</h3>
-            <p className="text-slate-500 mb-6">
-              Esta ação não pode ser desfeita. A tarefa "{tarefa.titulo}" será excluída permanentemente.
-            </p>
-            <div className="flex gap-3">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-slate-800 mb-2">
+              {isRecorrente ? 'Excluir Tarefa Recorrente' : 'Excluir Tarefa?'}
+            </h3>
+            
+            {isRecorrente ? (
+              <div className="space-y-4">
+                <p className="text-slate-500">
+                  Esta é uma tarefa recorrente. Como você deseja excluir?
+                </p>
+                
+                <div className="space-y-3">
+                  <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                    deleteMode === 'single' ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-slate-300'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="deleteMode"
+                      value="single"
+                      checked={deleteMode === 'single'}
+                      onChange={() => setDeleteMode('single')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <p className="font-medium text-slate-700">Apenas esta tarefa</p>
+                      <p className="text-sm text-slate-500">
+                        {isInstancia 
+                          ? 'Exclui apenas esta instância. As outras tarefas da recorrência continuarão.'
+                          : 'Exclui apenas esta tarefa.'}
+                      </p>
+                    </div>
+                  </label>
+                  
+                  <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                    deleteMode === 'series' ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-slate-300'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="deleteMode"
+                      value="series"
+                      checked={deleteMode === 'series'}
+                      onChange={() => setDeleteMode('series')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <p className="font-medium text-slate-700">Toda a série</p>
+                      <p className="text-sm text-slate-500">
+                        Exclui esta tarefa e todas as outras instâncias da recorrência.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <p className="text-slate-500 mb-6">
+                Esta ação não pode ser desfeita. A tarefa "{tarefa.titulo}" será excluída permanentemente.
+              </p>
+            )}
+            
+            <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteMode('single');
+                }}
                 className="flex-1 px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors ${
+                  deleteMode === 'series' 
+                    ? 'bg-red-500 hover:bg-red-600' 
+                    : 'bg-red-500 hover:bg-red-600'
+                }`}
               >
-                Excluir
+                {deleteMode === 'series' ? 'Excluir Série' : 'Excluir'}
               </button>
             </div>
           </div>
