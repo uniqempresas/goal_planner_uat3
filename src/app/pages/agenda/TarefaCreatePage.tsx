@@ -750,6 +750,10 @@ export default function TarefaCreatePage() {
                                   : 'Clique nos dias para selecionar'
                                 }
                               </p>
+                              {/* Debug - mostrar valores brutos */}
+                              <p className="text-xs text-slate-300 mt-1 font-mono">
+                                Valores: [{recorrenciaConfig.dias_semana?.join(', ') || 'nenhum'}]
+                              </p>
                             </div>
                           )}
 

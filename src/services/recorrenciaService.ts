@@ -73,19 +73,25 @@ export function calcularDatasSemanal(
   // Normalizar dias da semana para garantir ordenação
   const diasOrdenados = [...diasSemana].sort((a, b) => a - b);
 
+  console.log(`[recorrencia] DEBUG calcularDatasSemanal: diasOrdenados=[${diasOrdenados.join(',')}], inicio=${dataInicio}, fim=${dataFim}`);
+  
   while ((!end || current <= end) && count < max) {
     const jsDay = current.getDay(); // 0=Dom, 1=Seg, ..., 6=Sab
     const mappedDay = mapDiaSemanaJS(jsDay); // 0=Seg, 6=Dom
+    const dataStr = formatDate(current);
+    const diaSemanaStr = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'][jsDay];
 
     if (diasOrdenados.includes(mappedDay) && current >= start) {
-      datas.push(formatDate(current));
+      datas.push(dataStr);
       count++;
+      console.log(`[recorrencia] DEBUG ✓ Incluido: ${dataStr} (${diaSemanaStr}, mapped=${mappedDay})`);
     }
 
     current.setDate(current.getDate() + 1);
   }
 
   console.log(`[recorrencia] Calculadas ${datas.length} datas semanais de ${dataInicio} até ${dataFim || 'sem limite'}`);
+  console.log(`[recorrencia] DEBUG Primeiras 5 datas:`, datas.slice(0, 5));
   return datas;
 }
 
