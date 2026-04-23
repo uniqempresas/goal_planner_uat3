@@ -358,7 +358,7 @@ async function verificarInstanciaExistente(
  */
 export async function gerarInstancias(
   tarefaMae: Tarefa,
-  diasParaFrente: number = DIAS_GERACAO_INICIAL
+  diasParaFrente?: number
 ): Promise<Tarefa[]> {
   console.log(`[recorrencia] Gerando instâncias para tarefa ${tarefaMae.id} (${tarefaMae.titulo})`);
 
@@ -368,11 +368,39 @@ export async function gerarInstancias(
     return [];
   }
 
+  // Determinar período de geração baseado no tipo de recorrência
+  const config = tarefaMae.recorrencia_config as RecorrenciaConfig;
+  let diasParaGerar: number;
+  
+  switch (config.tipo) {
+    case 'diaria':
+      diasParaGerar = diasParaFrente || DIAS_GERACAO_INICIAL; // 30 dias
+      break;
+    case 'semanal':
+      diasParaGerar = diasParaFrente || 90; // 3 meses
+      break;
+    case 'mensal':
+      diasParaGerar = diasParaFrente || 365; // 1 ano
+      break;
+    case 'anual':
+      diasParaGerar = diasParaFrente || 1825; // 5 anos
+      break;
+    case 'intervalo_dias':
+      diasParaGerar = diasParaFrente || 90; // 3 meses
+      break;
+    default:
+      diasParaGerar = diasParaFrente || DIAS_GERACAO_INICIAL;
+  }
+
   // Calcular datas de geração
+  // Usar a data da tarefa mãe ou hoje (o que for maior)
+  const dataMae = new Date(tarefaMae.data);
   const hoje = new Date();
-  const dataInicio = formatDate(hoje);
-  const dataFim = new Date(hoje);
-  dataFim.setDate(dataFim.getDate() + diasParaFrente);
+  const dataInicial = dataMae > hoje ? dataMae : hoje;
+  const dataInicio = formatDate(dataInicial);
+  
+  const dataFim = new Date(dataInicial);
+  dataFim.setDate(dataFim.getDate() + diasParaGerar);
 
   // Calcular todas as datas
   const datas = calcularDatas(

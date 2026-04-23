@@ -104,7 +104,7 @@ export const tarefasService = {
       .select('*')
       .eq('user_id', userId)
       .eq('data', data)
-      .is('parent_id', null) // Não incluir instâncias de recorrentes (elas são tratadas separadamente)
+      .eq('is_template', false) // Não incluir templates (tarefas mãe de recorrentes)
       .order('hora', { ascending: true });
 
     if (error) throw error;
