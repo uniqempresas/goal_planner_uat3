@@ -753,6 +753,28 @@ export default function TarefaCreatePage() {
                             </div>
                           )}
 
+                          {recorrenciaConfig?.tipo === 'mensal' && (
+                            <div className="mt-3">
+                              <label className="block text-xs font-medium text-slate-600 mb-2">
+                                Dia do mês
+                              </label>
+                              <input
+                                type="number"
+                                min={1}
+                                max={31}
+                                value={recorrenciaConfig.dia_mes || 1}
+                                onChange={(e) => setRecorrenciaConfig({ 
+                                  ...recorrenciaConfig, 
+                                  dia_mes: parseInt(e.target.value) || 1 
+                                })}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                              />
+                              <p className="text-xs text-slate-400 mt-1">
+                                Ex: 25 = todo dia 25 de cada mês
+                              </p>
+                            </div>
+                          )}
+
                           {recorrenciaConfig?.tipo === 'intervalo_dias' && (
                             <div className="mt-3">
                               <label className="block text-xs font-medium text-slate-600 mb-2">
