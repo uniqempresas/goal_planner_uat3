@@ -797,18 +797,25 @@ export default function TarefaCreatePage() {
                           {recorrenciaConfig && recorrenciaConfig.tipo !== 'unica' && (
                             <div className="mt-3">
                               <label className="block text-xs font-medium text-slate-600 mb-2">
-                                Repetir até (opcional)
+                                Repetir até <span className="text-red-500">*</span>
+                                <span className="text-slate-400 font-normal"> (obrigatório)</span>
                               </label>
                               <input
                                 type="date"
                                 value={recorrenciaConfig.data_fim || ''}
                                 min={data}
+                                required
                                 onChange={(e) => setRecorrenciaConfig({ 
                                   ...recorrenciaConfig, 
                                   data_fim: e.target.value || undefined 
                                 })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
                               />
+                              {!recorrenciaConfig.data_fim && (
+                                <p className="text-xs text-red-500 mt-1">
+                                  Defina até quando esta tarefa deve se repetir
+                                </p>
+                              )}
                             </div>
                           )}
                         </div>

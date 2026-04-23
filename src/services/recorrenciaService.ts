@@ -399,8 +399,20 @@ export async function gerarInstancias(
   const dataInicial = dataMae > hoje ? dataMae : hoje;
   const dataInicio = formatDate(dataInicial);
   
-  const dataFim = new Date(dataInicial);
-  dataFim.setDate(dataFim.getDate() + diasParaGerar);
+  // Determinar data final: usar a data_fim_recorrencia se existir
+  // Isso garante que o usuário tenha controle sobre até quando a tarefa se repete
+  let dataFim: Date;
+  
+  if (tarefaMae.data_fim_recorrencia) {
+    // Usar a data final definida pelo usuário (obrigatória)
+    dataFim = new Date(tarefaMae.data_fim_recorrencia);
+    console.log(`[recorrencia] Usando data final do usuário: ${formatDate(dataFim)}`);
+  } else {
+    // Fallback: usar o período padrão (não deveria acontecer se data_fim for obrigatória)
+    dataFim = new Date(dataInicial);
+    dataFim.setDate(dataFim.getDate() + diasParaGerar);
+    console.log(`[recorrencia] Usando data final padrão: ${formatDate(dataFim)}`);
+  }
 
   // Calcular todas as datas
   const datas = calcularDatas(
@@ -844,12 +856,18 @@ export function validarConfiguracao(config: RecorrenciaConfig): { valido: boolea
       break;
   }
 
-  // Validar data fim
-  if (config.data_fim && config.data_inicio) {
-    const inicio = new Date(config.data_inicio);
-    const fim = new Date(config.data_fim);
-    if (fim <= inicio) {
-      return { valido: false, erro: 'Data de término deve ser posterior à data de início' };
+  // Validar data fim - OBRIGATÓRIA para recorrências
+  if (config.tipo !== 'unica') {
+    if (!config.data_fim) {
+      return { valido: false, erro: 'Data de término é obrigatória para tarefas recorrentes. Defina até quando a tarefa deve se repetir.' };
+    }
+    
+    if (config.data_inicio) {
+      const inicio = new Date(config.data_inicio);
+      const fim = new Date(config.data_fim);
+      if (fim <= inicio) {
+        return { valido: false, erro: 'Data de término deve ser posterior à data de início' };
+      }
     }
   }
 
