@@ -710,27 +710,46 @@ export default function TarefaCreatePage() {
                                 Dias da semana
                               </label>
                               <div className="flex gap-1">
-                                {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((dia, idx) => (
+                                {/* 
+                                  Mapeamento correto:
+                                  Botão: D S T Q Q S S (Dom-Seg-Ter-Qua-Qui-Sex-Sab)
+                                  Sistema: 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sab, 6=Dom
+                                */}
+                                {[
+                                  { label: 'D', value: 6 }, // Domingo → 6
+                                  { label: 'S', value: 0 }, // Segunda → 0
+                                  { label: 'T', value: 1 }, // Terça → 1
+                                  { label: 'Q', value: 2 }, // Quarta → 2
+                                  { label: 'Q', value: 3 }, // Quinta → 3
+                                  { label: 'S', value: 4 }, // Sexta → 4
+                                  { label: 'S', value: 5 }, // Sábado → 5
+                                ].map((dia) => (
                                   <button
-                                    key={idx}
+                                    key={dia.value}
                                     type="button"
                                     onClick={() => {
                                       const dias = recorrenciaConfig.dias_semana || [];
-                                      const newDias = dias.includes(idx)
-                                        ? dias.filter(d => d !== idx)
-                                        : [...dias, idx];
+                                      const newDias = dias.includes(dia.value)
+                                        ? dias.filter(d => d !== dia.value)
+                                        : [...dias, dia.value].sort((a, b) => a - b);
                                       setRecorrenciaConfig({ ...recorrenciaConfig, dias_semana: newDias });
                                     }}
                                     className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
-                                      (recorrenciaConfig.dias_semana || []).includes(idx)
+                                      (recorrenciaConfig.dias_semana || []).includes(dia.value)
                                         ? 'bg-indigo-500 text-white'
                                         : 'bg-white text-slate-600 border border-slate-200'
                                     }`}
                                   >
-                                    {dia}
+                                    {dia.label}
                                   </button>
                                 ))}
                               </div>
+                              <p className="text-xs text-slate-400 mt-1">
+                                {(recorrenciaConfig.dias_semana || []).length > 0 
+                                  ? `Selecionados: ${(recorrenciaConfig.dias_semana || []).map(d => ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'][d]).join(', ')}`
+                                  : 'Clique nos dias para selecionar'
+                                }
+                              </p>
                             </div>
                           )}
 
