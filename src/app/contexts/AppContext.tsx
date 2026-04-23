@@ -160,7 +160,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const loadTarefas = useCallback(async (data?: string) => {
     if (!user) return;
     try {
-      const dataParam = data || new Date().toISOString().split('T')[0];
+      // Usar data local (não UTC) para evitar problemas de fuso horário
+      const hojeLocal = new Date();
+      const dataLocal = `${hojeLocal.getFullYear()}-${String(hojeLocal.getMonth() + 1).padStart(2, '0')}-${String(hojeLocal.getDate()).padStart(2, '0')}`;
+      const dataParam = data || dataLocal;
       
       // Carregar tarefas normais
       const tarefasNormais = await tarefasService.getByData(user.id, dataParam);
@@ -223,7 +226,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await habitosService.toggleStreak(id);
       
       // Atualizar o estado local diretamente para refletir a mudança imediatamente
-      const hoje = new Date().toISOString().split('T')[0];
+      // Usar data local (não UTC) para evitar problemas de fuso horário
+      const hojeObj = new Date();
+      const hoje = `${hojeObj.getFullYear()}-${String(hojeObj.getMonth() + 1).padStart(2, '0')}-${String(hojeObj.getDate()).padStart(2, '0')}`;
       setHabitosHoje(prev => prev.map(h => {
         if (h.id === id) {
           return {
