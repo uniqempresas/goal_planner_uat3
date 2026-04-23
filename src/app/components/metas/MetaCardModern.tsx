@@ -17,6 +17,7 @@ interface MetaCardModernProps {
   levelPath: string;
   levelLabel: string;
   index?: number;
+  progress?: number;
 }
 
 const statusConfig: Record<string, { label: string; bgColor: string; textColor: string; icon: typeof CheckCircle2 }> = {
@@ -49,7 +50,8 @@ export function MetaCardModern({
   textColor, 
   levelPath,
   levelLabel,
-  index = 0 
+  index = 0,
+  progress: progressProp
 }: MetaCardModernProps) {
   const { areas, getMetaById, loadMetas } = useApp();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -61,8 +63,10 @@ export function MetaCardModern({
   const status = meta.status;
   const isCompleted = status === 'concluida';
   
-  // Progresso simulado (pode ser calculado baseado em tarefas relacionadas)
-  const progress = isCompleted ? 100 : Math.floor(Math.random() * 40) + 30;
+  // Usar progresso real se fornecido, senão 0 para ativas ou 100 para concluídas
+  const progress = progressProp !== undefined 
+    ? progressProp 
+    : (isCompleted ? 100 : 0);
   
   const statusInfo = statusConfig[status] || statusConfig.ativa;
   const StatusIcon = statusInfo.icon;

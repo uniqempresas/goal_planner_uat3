@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
+import { tarefasService } from './tarefasService';
 
 type Meta = Database['public']['Tables']['metas']['Row'];
 type MetaInsert = Database['public']['Tables']['metas']['Insert'];
@@ -169,5 +170,53 @@ export const metasService = {
 
     if (error) throw error;
     return data || [];
+  },
+
+  /**
+   * Calcula o progresso real de uma meta baseado nas tarefas vinculadas
+   * Fórmula: (Tarefas Concluídas / Total de Tarefas) × 100
+   * 
+   * Regras:
+   * - Meta concluída manualmente: sempre 100%
+   * - Meta sem tarefas: 0%
+   * - Tarefas recorrentes (instâncias) também são contadas
+   */
+  async calcularProgresso(metaId: string): Promise<number> {
+    try {
+      // Verificar se a meta está concluída manualmente
+      const meta = await this.getById(metaId);
+      if (meta?.status === 'concluida') {
+        return 100;
+      }
+
+      // Buscar todas as tarefas vinculadas à meta (incluindo instâncias de recorrentes)
+      const tarefas = await tarefasService.getByMetaId(metaId);
+      
+      if (tarefas.length === 0) {
+        return 0;
+      }
+
+      const concluidas = tarefas.filter(t => t.completed).length;
+      return Math.round((concluidas / tarefas.length) * 100);
+    } catch (error) {
+      console.error(`[metasService] Erro ao calcular progresso da meta ${metaId}:`, error);
+      return 0;
+    }
+  },
+
+  /**
+   * Calcula o progresso de múltiplas metas de uma só vez
+   * Útil para listas de metas
+   */
+  async calcularProgressoMultiplo(metaIds: string[]): Promise<Record<string, number>> {
+    const progressos: Record<string, number> = {};
+    
+    await Promise.all(
+      metaIds.map(async (metaId) => {
+        progressos[metaId] = await this.calcularProgresso(metaId);
+      })
+    );
+    
+    return progressos;
   },
 };

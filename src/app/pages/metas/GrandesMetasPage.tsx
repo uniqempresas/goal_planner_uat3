@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import type { Meta } from '../../../services/metasService';
+import { metasService } from '../../../services/metasService';
 import { MetaCardModern } from '../../components/metas/MetaCardModern';
 import { StatsCard } from '../../components/metas/StatsCard';
 import { FocusingQuestionCard } from '../../components/metas/FocusingQuestionCard';
@@ -40,6 +41,8 @@ export default function GrandesMetasPage() {
   const navigate = useNavigate();
   const { grandesMetas, weeklyStats } = useApp();
   const [metasList, setMetasList] = useState<Meta[]>(grandesMetas);
+  const [progressos, setProgressos] = useState<Record<string, number>>({});
+  const [loadingProgress, setLoadingProgress] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'ativa' | 'concluida'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [showFilters, setShowFilters] = useState(false);
@@ -48,6 +51,29 @@ export default function GrandesMetasPage() {
   useEffect(() => {
     setMetasList(grandesMetas);
   }, [grandesMetas]);
+
+  // Calcular progresso real das metas
+  useEffect(() => {
+    async function carregarProgressos() {
+      if (metasList.length === 0) {
+        setProgressos({});
+        return;
+      }
+
+      setLoadingProgress(true);
+      try {
+        const metaIds = metasList.map(m => m.id);
+        const progressosCalculados = await metasService.calcularProgressoMultiplo(metaIds);
+        setProgressos(progressosCalculados);
+      } catch (error) {
+        console.error('Erro ao carregar progressos:', error);
+      } finally {
+        setLoadingProgress(false);
+      }
+    }
+
+    carregarProgressos();
+  }, [metasList]);
 
   // Filter metas
   const filteredMetas = useMemo(() => {
@@ -61,12 +87,21 @@ export default function GrandesMetasPage() {
     const concluidas = metasList.filter(m => m.status === 'concluida').length;
     const ativas = metasList.filter(m => m.status === 'ativa').length;
     const oneThings = metasList.filter(m => m.one_thing).length;
+    
+    // Calcular progresso médio baseado nos progressos reais
     const progressoMedio = total > 0 
-      ? Math.round(metasList.reduce((acc, m) => acc + (m.status === 'concluida' ? 100 : 35), 0) / total)
+      ? Math.round(
+          metasList.reduce((acc, m) => {
+            // Meta concluída = 100%
+            if (m.status === 'concluida') return acc + 100;
+            // Usar progresso calculado ou 0
+            return acc + (progressos[m.id] || 0);
+          }, 0) / total
+        )
       : 0;
 
     return { total, concluidas, ativas, oneThings, progressoMedio };
-  }, [metasList]);
+  }, [metasList, progressos]);
 
   const handleDelete = (id: string) => {
     setMetasList(prev => prev.filter(m => m.id !== id));
@@ -318,6 +353,7 @@ export default function GrandesMetasPage() {
                   levelPath={levelConfig.levelPath}
                   levelLabel={levelConfig.label}
                   index={index}
+                  progress={progressos[meta.id]}
                 />
               ))
             )}

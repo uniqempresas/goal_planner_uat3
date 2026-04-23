@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Edit, CheckCircle, Calendar, Target, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, Calendar, Target, Star, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { metasService, type MetaNivel } from '../../../services/metasService';
 import { tarefasService } from '../../../services/tarefasService';
@@ -28,6 +28,7 @@ export default function MetaDetailPage() {
   const [meta, setMeta] = useState<Meta | null>(null);
   const [submetas, setSubmetas] = useState<Meta[]>([]);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const [progresso, setProgresso] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +56,10 @@ export default function MetaDetailPage() {
         setMeta(metaData);
         setSubmetas(subMetaData);
         setTarefas(tarefasData);
+        
+        // Calcular progresso real
+        const progressoCalculado = await metasService.calcularProgresso(id);
+        setProgresso(progressoCalculado);
       } catch (err) {
         console.error('Erro ao carregar meta:', err);
         setError('Erro ao carregar meta');
@@ -72,6 +77,11 @@ export default function MetaDetailPage() {
     try {
       const updated = await metasService.toggleStatus(meta.id);
       setMeta(updated);
+      
+      // Recalcular progresso após mudança de status
+      const novoProgresso = await metasService.calcularProgresso(meta.id);
+      setProgresso(novoProgresso);
+      
       await loadMetas();
     } catch (err) {
       console.error('Erro ao atualizar status:', err);
@@ -80,11 +90,11 @@ export default function MetaDetailPage() {
 
   const handleDelete = async () => {
     if (!meta) return;
-    
+
     if (!confirm('Tem certeza que deseja excluir esta meta?\n\nIsso também excluirá todas as metas filhas vinculadas. Esta ação não pode ser desfeita.')) {
       return;
     }
-    
+
     try {
       await metasService.delete(meta.id);
       await loadMetas();
@@ -92,6 +102,21 @@ export default function MetaDetailPage() {
     } catch (err) {
       console.error('Erro ao excluir meta:', err);
       alert('Erro ao excluir meta. Tente novamente.');
+    }
+  };
+
+  const handleToggleTarefa = async (tarefaId: string) => {
+    try {
+      const updated = await tarefasService.toggleCompleted(tarefaId);
+      setTarefas(prev => prev.map(t => t.id === tarefaId ? updated : t));
+
+      // Recalcular progresso da meta após concluir/desmarcar tarefa
+      if (meta) {
+        const novoProgresso = await metasService.calcularProgresso(meta.id);
+        setProgresso(novoProgresso);
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar tarefa:', err);
     }
   };
 
@@ -145,10 +170,24 @@ export default function MetaDetailPage() {
                   <Star className="w-3 h-3 mr-1" /> ONE Thing
                 </Badge>
               )}
+              {/* Progresso Badge */}
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${
+                  progresso === 100 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                    : progresso >= 50 
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-slate-50 text-slate-600 border-slate-200'
+                }`}
+              >
+                <TrendingUp className="w-3 h-3 mr-1" />
+                {progresso}% completo
+              </Badge>
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}/${meta.id}/editar`)}>
             <Edit className="w-4 h-4 mr-2" />
@@ -166,6 +205,56 @@ export default function MetaDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Progresso */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Progresso
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Barra de progresso */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">
+                  {tarefas.length === 0 
+                    ? 'Sem tarefas vinculadas' 
+                    : `${tarefas.filter(t => t.completed).length} de ${tarefas.length} tarefas concluídas`
+                  }
+                </span>
+                <span className="font-bold" style={{ 
+                  color: progresso === 100 ? '#10b981' : progresso >= 50 ? '#3b82f6' : '#6366f1' 
+                }}>
+                  {progresso}%
+                </span>
+              </div>
+              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ 
+                    width: `${progresso}%`,
+                    backgroundColor: progresso === 100 ? '#10b981' : progresso >= 50 ? '#3b82f6' : '#6366f1'
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Status do progresso */}
+            {progresso === 100 && meta.status !== 'concluida' && (
+              <div className="p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm">
+                <strong>Parabéns!</strong> Todas as tarefas foram concluídas. 
+                Que tal marcar esta meta como concluída?
+              </div>
+            )}
+            {progresso === 0 && tarefas.length > 0 && (
+              <div className="p-3 bg-slate-50 text-slate-600 rounded-lg text-sm">
+                Comece concluindo suas tarefas para avançar no progresso desta meta.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Main Info */}
         <Card>
           <CardHeader>
@@ -247,7 +336,7 @@ export default function MetaDetailPage() {
                     <input 
                       type="checkbox" 
                       checked={tarefa.completed}
-                      onChange={() => tarefasService.toggleCompleted(tarefa.id)}
+                      onChange={() => handleToggleTarefa(tarefa.id)}
                       className="rounded"
                     />
                     <span className={tarefa.completed ? 'line-through text-slate-400' : ''}>
