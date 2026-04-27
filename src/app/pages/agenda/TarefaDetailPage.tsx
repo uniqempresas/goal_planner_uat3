@@ -8,6 +8,45 @@ import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle,
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 
+function MetaVinculadaLink({ metaId }: { metaId: string }) {
+  const { getMetaById } = useApp();
+  const meta = getMetaById(metaId);
+  
+  // Mapear nível para o path correto (plural)
+  const nivelPathMap: Record<string, string> = {
+    'grande': 'grandes',
+    'anual': 'anuais',
+    'mensal': 'mensais',
+    'semanal': 'semanais',
+    'diaria': 'diarias',
+  };
+  
+  // Se não encontrou a meta, mostra um link genérico
+  if (!meta) {
+    return (
+      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+        <Target className="w-5 h-5 text-slate-400" />
+        <span className="text-sm text-slate-500">Meta não encontrada</span>
+      </div>
+    );
+  }
+  
+  const nivelPath = nivelPathMap[meta.nivel] || meta.nivel;
+  
+  return (
+    <Link 
+      to={`/metas/${nivelPath}/${meta.id}`}
+      className="flex items-center gap-3 p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors"
+    >
+      <Target className="w-5 h-5 text-indigo-500" />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-indigo-700 truncate">{meta.titulo}</p>
+        <p className="text-xs text-indigo-500">Ver Meta</p>
+      </div>
+    </Link>
+  );
+}
+
 export default function TarefaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -223,13 +262,7 @@ export default function TarefaDetailPage() {
           {tarefa.meta_id && (
             <div>
               <p className="text-xs text-slate-400 mb-2">Meta Vinculada</p>
-              <Link 
-                to={`/metas/${tarefa.nivel}/${tarefa.meta_id}`}
-                className="flex items-center gap-3 p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors"
-              >
-                <Target className="w-5 h-5 text-indigo-500" />
-                <span className="text-sm font-medium text-indigo-700">Ver Meta</span>
-              </Link>
+              <MetaVinculadaLink metaId={tarefa.meta_id} />
             </div>
           )}
         </div>
