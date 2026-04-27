@@ -42,7 +42,7 @@ const levelConfigs: Record<string, {
     label: 'Meta Anual', 
     icon: '📅',
     description: 'Anual',
-    levelPath: 'anual'
+    levelPath: 'anuais'
   },
   mensal: { 
     color: '#10b981', 
@@ -52,7 +52,7 @@ const levelConfigs: Record<string, {
     label: 'Meta Mensal', 
     icon: '🗓️',
     description: 'Mensal',
-    levelPath: 'mensal'
+    levelPath: 'mensais'
   },
   semanal: { 
     color: '#f59e0b', 
@@ -62,7 +62,7 @@ const levelConfigs: Record<string, {
     label: 'Meta Semanal', 
     icon: '📆',
     description: 'Semanal',
-    levelPath: 'semanal'
+    levelPath: 'semanais'
   },
   diaria: { 
     color: '#f43f5e', 
@@ -72,7 +72,7 @@ const levelConfigs: Record<string, {
     label: 'Meta Diária', 
     icon: '☀️',
     description: 'Diária',
-    levelPath: 'diaria'
+    levelPath: 'diarias'
   },
 };
 

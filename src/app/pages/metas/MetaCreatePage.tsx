@@ -41,8 +41,17 @@ export default function MetaCreatePage() {
     },
   });
 
-  // Helper para obter o caminho correto da lista (grande -> grandes)
-  const getListPath = (n: MetaNivel) => n === 'grande' ? 'grandes' : n;
+  // Helper para obter o caminho correto da lista (singular -> plural)
+  const getListPath = (n: MetaNivel) => {
+    switch (n) {
+      case 'grande': return 'grandes';
+      case 'anual': return 'anuais';
+      case 'mensal': return 'mensais';
+      case 'semanal': return 'semanais';
+      case 'diaria': return 'diarias';
+      default: return n;
+    }
+  };
 
   const onSubmit = async (values: MetaFormSchema) => {
     if (!user) return;

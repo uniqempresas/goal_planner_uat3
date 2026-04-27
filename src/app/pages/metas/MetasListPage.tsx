@@ -26,11 +26,11 @@ interface MetasListPageProps {
 
 function getLevelPath(level: MetaLevel): string {
   switch (level) {
-    case 'A': return 'anual';
-    case 'M': return 'mensal';
-    case 'S': return 'semanal';
-    case 'D': return 'diaria';
-    default: return 'anual';
+    case 'A': return 'anuais';
+    case 'M': return 'mensais';
+    case 'S': return 'semanais';
+    case 'D': return 'diarias';
+    default: return 'anuais';
   }
 }
 
