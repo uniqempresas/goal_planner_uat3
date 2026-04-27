@@ -341,7 +341,6 @@ export default function MetaEditPage() {
         parent_id: values.parent_id || null,
         focusing_question: values.focusing_question || null,
         one_thing: values.prioridade === 'one_thing',
-        prioridade: values.prioridade,
         status: values.status,
       };
 
@@ -367,7 +366,8 @@ export default function MetaEditPage() {
       navigate(`/metas/${nivelPath}/${id}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido ao salvar';
-      console.error('Erro ao atualizar meta:', message);
+      console.error('Erro ao atualizar meta:', err);
+      console.error('Dados enviados:', updateData);
       setError(message);
     } finally {
       setSaving(false);
