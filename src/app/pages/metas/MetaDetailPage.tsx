@@ -284,42 +284,86 @@ export default function MetaDetailPage() {
           </CardContent>
         </Card>
 
-        {/* Submetas */}
+        {/* Submetas ou Tarefas (dependendo do nível) */}
         <Card>
           <CardHeader>
-            <CardTitle>Metas Filhas</CardTitle>
+            <CardTitle>
+              {meta.nivel === 'semanal' ? 'Tarefas para Cumprir' : 'Metas Filhas'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {submetas.length > 0 ? (
-              <ul className="space-y-2">
-                {submetas.map((sub) => (
-                  <li key={sub.id}>
-                    <Link 
-                      to={`/metas/${getNextNivel(meta.nivel || nivel)}/${sub.id}`}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-slate-50"
-                    >
-                      <Target className="w-4 h-4 text-slate-400" />
-                      <span className="flex-1">{sub.titulo}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {getNextNivelLabel(meta.nivel || nivel)}
-                      </Badge>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            {meta.nivel === 'semanal' ? (
+              // Para metas semanais: mostrar TAREFAS
+              <div className="space-y-3">
+                {tarefas.length > 0 ? (
+                  <ul className="space-y-2">
+                    {tarefas.map((tarefa) => (
+                      <li key={tarefa.id} className="flex items-center gap-3 p-2 border rounded hover:bg-slate-50">
+                        <input 
+                          type="checkbox" 
+                          checked={tarefa.completed}
+                          onChange={() => handleToggleTarefa(tarefa.id)}
+                          className="rounded accent-indigo-600"
+                        />
+                        <Link
+                          to={`/agenda/tarefas/${tarefa.id}`}
+                          className={`flex-1 ${tarefa.completed ? 'line-through text-slate-400' : ''}`}
+                        >
+                          {tarefa.titulo}
+                        </Link>
+                        <span className="text-xs text-slate-500">
+                          {new Date(tarefa.data).toLocaleDateString('pt-BR')}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-slate-500">Nenhuma tarefa vinculada</p>
+                )}
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4 bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+                  onClick={() => navigate(`/agenda/tarefas/criar?meta=${meta.id}&origem=semanal`)}
+                >
+                  + Criar Tarefa para esta Meta
+                </Button>
+              </div>
             ) : (
-              <p className="text-sm text-slate-500">Nenhuma meta filha vinculada</p>
+              // Para outros níveis: mostrar SUBMETAS (comportamento atual)
+              <div>
+                {submetas.length > 0 ? (
+                  <ul className="space-y-2">
+                    {submetas.map((sub) => (
+                      <li key={sub.id}>
+                        <Link 
+                          to={`/metas/${getNextNivel(meta.nivel || nivel)}/${sub.id}`}
+                          className="flex items-center gap-2 p-2 rounded hover:bg-slate-50"
+                        >
+                          <Target className="w-4 h-4 text-slate-400" />
+                          <span className="flex-1">{sub.titulo}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {getNextNivelLabel(meta.nivel || nivel)}
+                          </Badge>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-slate-500">Nenhuma meta filha vinculada</p>
+                )}
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => {
+                    const nivelParaNavegar = meta.nivel || nivel;
+                    navigate(`/metas/${getNextNivelPath(nivelParaNavegar)}/criar?pai=${meta.id}`);
+                  }}
+                >
+                  Criar Meta Filha
+                </Button>
+              </div>
             )}
-            <Button 
-              variant="outline" 
-              className="w-full mt-4"
-              onClick={() => {
-                const nivelParaNavegar = meta.nivel || nivel;
-                navigate(`/metas/${getNextNivelPath(nivelParaNavegar)}/criar?pai=${meta.id}`);
-              }}
-            >
-              Criar Meta Filha
-            </Button>
           </CardContent>
         </Card>
 

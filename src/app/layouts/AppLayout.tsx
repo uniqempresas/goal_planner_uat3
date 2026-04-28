@@ -36,7 +36,7 @@ const navGroups: NavGroup[] = [
       { label: 'Anuais', path: '/metas/anuais', icon: <CalendarDays size={15} /> },
       { label: 'Mensais', path: '/metas/mensais', icon: <CalendarCheck size={15} /> },
       { label: 'Semanais', path: '/metas/semanais', icon: <CalendarRange size={15} /> },
-      { label: 'Diárias', path: '/metas/diarias', icon: <CheckSquare size={15} /> },
+      // Metas Diárias removidas - agora usamos Tarefas diretamente vinculadas às Semanais
     ],
   },
   {
