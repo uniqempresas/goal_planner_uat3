@@ -340,11 +340,11 @@ const today = new Date().toISOString().split('T')[0];
 
         <div className="grid grid-cols-3 gap-3 mt-4">
           <div className="text-center">
-            <div className="text-lg font-bold text-emerald-600">{completed}</div>
+            <div className="text-lg font-bold text-emerald-600">{completedTarefas}</div>
             <div className="text-slate-400 text-xs">Concluídas</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-indigo-600">{total - completed}</div>
+            <div className="text-lg font-bold text-indigo-600">{totalTarefas - completedTarefas}</div>
             <div className="text-slate-400 text-xs">Pendentes</div>
           </div>
           <div className="text-center">
