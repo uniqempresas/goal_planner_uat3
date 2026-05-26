@@ -8,6 +8,13 @@ type HabitoUpdate = Database['public']['Tables']['habitos']['Update'];
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type TarefaInsert = Database['public']['Tables']['tarefas']['Insert'];
 
+function formatDateLocal(date: Date): string {
+  const ano = date.getFullYear();
+  const mes = String(date.getMonth() + 1).padStart(2, '0');
+  const dia = String(date.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
 // Tipo auxiliar para criação de hábito (campos que o frontend envia)
 interface HabitoCreateData {
   titulo: string;
@@ -244,7 +251,7 @@ export const habitosService = {
 
       if (habito.dias_semana?.includes(mappedDay)) {
         // Check if task already exists for this habit/date
-        const dataStr = current.toISOString().split('T')[0];
+        const dataStr = formatDateLocal(current);
         const { data: existingTasks } = await supabase
           .from('tarefas')
           .select('id')
