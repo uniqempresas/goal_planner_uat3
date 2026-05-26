@@ -13,6 +13,7 @@ interface AreaVidaSelectorProps {
   selectedId?: string | null;
   onSelect: (areaId: string | null) => void;
   themeColor?: string;
+  parentAreaId?: string;
 }
 
 // Map de ícones para componentes
@@ -29,7 +30,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string; size?: n
   'leaf': Leaf,
 };
 
-export function AreaVidaSelector({ selectedId, onSelect, themeColor = '#6366f1' }: AreaVidaSelectorProps) {
+export function AreaVidaSelector({ selectedId, onSelect, themeColor = '#6366f1', parentAreaId }: AreaVidaSelectorProps) {
   const { areas } = useApp();
 
   // Fallback areas se não houver dados
@@ -44,9 +45,14 @@ export function AreaVidaSelector({ selectedId, onSelect, themeColor = '#6366f1' 
     { id: 'social', nome: 'Social', icone: 'users', cor: '#6366f1' },
   ];
 
-  const displayAreas = areas.length > 0 
+  const allAreas = areas.length > 0 
     ? areas.map(a => ({ ...a, icone: a.icone || 'briefcase', cor: a.cor || themeColor }))
     : defaultAreas;
+
+  const isLocked = !!parentAreaId;
+  const displayAreas = isLocked
+    ? allAreas.filter(a => a.id === parentAreaId)
+    : allAreas;
 
   return (
     <div className="space-y-3">
@@ -97,20 +103,22 @@ export function AreaVidaSelector({ selectedId, onSelect, themeColor = '#6366f1' 
         })}
       </div>
 
-      {/* Opção "Nenhuma área" */}
-      <motion.button
-        type="button"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => onSelect(null)}
-        className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-          !selectedId
-            ? 'bg-slate-100 text-slate-600'
-            : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
-        }`}
-      >
-        Nenhuma área selecionada
-      </motion.button>
+      {/* Opção "Nenhuma área" - oculta quando herdada da meta pai */}
+      {!isLocked && (
+        <motion.button
+          type="button"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onSelect(null)}
+          className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+            !selectedId
+              ? 'bg-slate-100 text-slate-600'
+              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Nenhuma área selecionada
+        </motion.button>
+      )}
     </div>
   );
 }

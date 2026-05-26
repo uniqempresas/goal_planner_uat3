@@ -94,6 +94,7 @@ export default function MetaAnualCreatePage() {
           if (meta) {
             setParentMeta(meta);
             form.setValue('parent_id', meta.id);
+            if (meta.area_id) form.setValue('area_id', meta.area_id);
             const ancestorsList = await metasService.getMetaAncestors(meta.id);
             setAncestors(ancestorsList);
           }
@@ -354,6 +355,7 @@ export default function MetaAnualCreatePage() {
                           selectedId={form.watch('area_id')}
                           onSelect={(areaId) => form.setValue('area_id', areaId)}
                           themeColor={THEME.primary}
+                          parentAreaId={parentMeta?.area_id || undefined}
                         />
 
                         {/* Prazo */}
