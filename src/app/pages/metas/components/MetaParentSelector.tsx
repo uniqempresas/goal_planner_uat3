@@ -10,6 +10,7 @@ interface MetaParentSelectorProps {
   nivel: MetaNivel;
   onSelect: (metaId: string | null) => void;
   selectedId?: string;
+  parentId?: string;
 }
 
 const nivelPaiMap: Record<MetaNivel, MetaNivel | null> = {
@@ -38,12 +39,13 @@ function getNivelPath(nivel: MetaNivel): string {
   }
 }
 
-export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSelectorProps) {
+export function MetaParentSelector({ nivel, onSelect, selectedId, parentId }: MetaParentSelectorProps) {
   const { user } = useApp();
   const [metasPai, setMetasPai] = useState<Awaited<ReturnType<typeof metasService.getMetasByNivel>>>([]);
   const [loading, setLoading] = useState(true);
 
   const nivelPai = nivelPaiMap[nivel];
+  const isLocked = !!parentId;
 
   useEffect(() => {
     async function loadMetas() {
@@ -53,8 +55,13 @@ export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSe
       }
 
       try {
-        const metas = await metasService.getMetasByNivel(user.id, nivelPai);
-        setMetasPai(metas);
+        if (parentId) {
+          const meta = await metasService.getById(parentId);
+          setMetasPai(meta ? [meta] : []);
+        } else {
+          const metas = await metasService.getMetasByNivel(user.id, nivelPai);
+          setMetasPai(metas);
+        }
       } catch (error) {
         console.error('Erro ao carregar metas pai:', error);
       } finally {
@@ -63,7 +70,7 @@ export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSe
     }
 
     loadMetas();
-  }, [user, nivelPai]);
+  }, [user, nivelPai, parentId]);
 
   if (!nivelPai) {
     return null;
@@ -88,19 +95,21 @@ export function MetaParentSelector({ nivel, onSelect, selectedId }: MetaParentSe
         <CardTitle>Selecione a Meta Pai (Opcional)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Opção "Nenhuma" */}
-        <div
-          onClick={() => onSelect(null)}
-          className={cn(
-            'cursor-pointer rounded-lg border-2 p-4 transition-all',
-            selectedId === null || selectedId === undefined
-              ? 'border-indigo-500 bg-indigo-50'
-              : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-          )}
-        >
-          <p className="font-medium text-slate-700">Nenhuma meta pai</p>
-          <p className="text-sm text-slate-500">Criar como meta independente</p>
-        </div>
+        {/* Opção "Nenhuma" - oculta quando já tem uma meta pai definida via URL */}
+        {!isLocked && (
+          <div
+            onClick={() => onSelect(null)}
+            className={cn(
+              'cursor-pointer rounded-lg border-2 p-4 transition-all',
+              selectedId === null || selectedId === undefined
+                ? 'border-indigo-500 bg-indigo-50'
+                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+            )}
+          >
+            <p className="font-medium text-slate-700">Nenhuma meta pai</p>
+            <p className="text-sm text-slate-500">Criar como meta independente</p>
+          </div>
+        )}
 
         {/* Cards de metas */}
         {metasPai.length === 0 ? (

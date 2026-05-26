@@ -438,6 +438,7 @@ export default function MetaDiariaCreatePage() {
                           nivel={NIVEL}
                           onSelect={handleParentSelect}
                           selectedId={form.watch('parent_id')}
+                          parentId={paiParam || undefined}
                         />
 
                         {/* Hierarchy Preview */}
