@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
+import { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useParams, Link, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Edit, Trash2, CheckCircle, Calendar, Target, Star,
@@ -15,6 +15,14 @@ import { Badge } from '../../components/ui/badge';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { Database } from '../../../lib/supabase';
+
+const PATH_TO_NIVEL: Record<string, MetaNivel> = {
+  grandes: 'grande',
+  anuais: 'anual',
+  mensais: 'mensal',
+  semanais: 'semanal',
+  diarias: 'diaria',
+};
 
 type Meta = Database['public']['Tables']['metas']['Row'];
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
@@ -220,6 +228,7 @@ function MetaDetailSkeleton() {
 export default function MetaDetailPage() {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
   const { getAreaById, loadMetas } = useApp();
 
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -230,7 +239,10 @@ export default function MetaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const nivel = (params.nivel as MetaNivel) || 'grande';
+  const nivel = useMemo<MetaNivel>(() => {
+    const pathSegment = location.pathname.split('/')[2];
+    return PATH_TO_NIVEL[pathSegment] || 'grande';
+  }, [location.pathname]);
   const id = params.id;
   const config = NIVEL_CONFIG[nivel];
   const area = meta?.area_id ? getAreaById(meta.area_id) : null;
