@@ -92,13 +92,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Calcular weeklyStats dinamicamente baseado nas tarefasHoje
   useEffect(() => {
-    const total = tarefasHoje.length;
-    const concluidas = tarefasHoje.filter(t => t.completed).length;
-    const produtividade = total > 0 ? Math.round((concluidas / total) * 100) : 0;
-    
+    const tarefas = tarefasHoje.filter(t => !t.habitoId);
+    const total = tarefas.length;
+    const concluidas = tarefas.filter(t => t.completed).length;
+    const produtividade = tarefasHoje.length > 0
+      ? Math.round((tarefasHoje.filter(t => t.completed).length / tarefasHoje.length) * 100)
+      : 0;
+
     // Para sequenciaDias, usar um valor baseado no histórico ou mock por enquanto
     // TODO: Implementar cálculo real de sequência baseado no histórico de tarefas
-    const sequenciaDias = concluidas > 0 ? Math.floor(Math.random() * 5) + 1 : 0; // Mock temporário
+    const sequenciaDias = tarefasHoje.filter(t => t.completed).length > 0 ? Math.floor(Math.random() * 5) + 1 : 0;
     
     setWeeklyStats({
       tarefasTotal: total,

@@ -75,6 +75,7 @@ export default function AgendaSemanaPage() {
           tasks[i] = todasTarefas.map(t => ({
             id: t.id,
             metaId: t.meta_id || undefined,
+            habitoId: t.habito_id || undefined,
             title: t.titulo,
             description: t.descricao || undefined,
             block: (t.bloco === 'one-thing' ? 'oneThing' : t.bloco === 'manha' ? 'manha' : t.bloco === 'tarde' ? 'tarde' : t.bloco === 'noite' ? 'noite' : 'recorrentes') as any,
@@ -178,15 +179,20 @@ export default function AgendaSemanaPage() {
       if (!b.hora) return -1;
       return a.hora.localeCompare(b.hora);
     });
-  const completedCount = dayTasks.filter(t => t.completed).length;
-  const totalCount = dayTasks.length;
+  const dayTarefas = dayTasks.filter(t => !t.habitoId);
+  const completedTarefas = dayTarefas.filter(t => t.completed).length;
+  const totalTarefas = dayTarefas.length;
+  const dayHabitos = dayTasks.filter(t => t.habitoId);
+  const completedHabitos = dayHabitos.filter(t => t.completed).length;
+  const totalHabitos = dayHabitos.length;
 
   // Week stats calculation
   const weekTotalTasks = Object.values(tasksByDay).flat();
-  const weekCompleted = weekTotalTasks.filter(t => t.completed).length;
+  const weekOnlyTarefas = weekTotalTasks.filter(t => !t.habitoId);
+  const weekCompleted = weekOnlyTarefas.filter(t => t.completed).length;
   const weekOneThings = weekTotalTasks.filter(t => t.isOneThing).length;
   const weekProgress = weekTotalTasks.length > 0 
-    ? Math.round((weekCompleted / weekTotalTasks.length) * 100) 
+    ? Math.round((weekTotalTasks.filter(t => t.completed).length / weekTotalTasks.length) * 100) 
     : 0;
 
   return (
@@ -280,8 +286,8 @@ export default function AgendaSemanaPage() {
                 date={d}
                 isSelected={isSelected}
                 isToday={isTodayDate}
-                completedTasks={dayTasksData.filter(t => t.completed).length}
-                totalTasks={dayTasksData.length}
+                completedTasks={dayTasksData.filter(t => !t.habitoId && t.completed).length}
+                totalTasks={dayTasksData.filter(t => !t.habitoId).length}
                 hasOneThing={dayTasksData.some(t => t.isOneThing)}
                 onClick={() => setSelectedDay(i)}
               />
@@ -306,7 +312,7 @@ export default function AgendaSemanaPage() {
                     {diasCompletos[selectedDay]}, {selectedDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}
                   </h3>
                   <p className="text-slate-500 text-sm">
-                    {completedCount}/{totalCount} tarefas concluídas
+                    {completedTarefas}/{totalTarefas} tarefas concluídas
                   </p>
                 </div>
                 {dayTasks.find(t => t.isOneThing) && (

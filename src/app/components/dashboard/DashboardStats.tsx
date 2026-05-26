@@ -22,8 +22,9 @@ interface StatItem {
 export function DashboardStats() {
   const { tarefasHoje, weeklyStats } = useApp();
 
-  const completedToday = tarefasHoje.filter(t => t.completed).length;
-  const totalToday = tarefasHoje.length;
+  const tarefasOnly = tarefasHoje.filter(t => !t.habitoId);
+  const completedToday = tarefasOnly.filter(t => t.completed).length;
+  const totalToday = tarefasOnly.length;
   const progressPercent = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
 
   const stats: StatItem[] = [

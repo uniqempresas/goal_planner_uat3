@@ -329,7 +329,7 @@ const today = new Date().toISOString().split('T')[0];
       <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
         <div className="flex items-center justify-between mb-3">
           <span className="text-slate-700 text-sm font-medium">Progresso do Dia</span>
-          <span className="text-slate-600 text-sm">{completed}/{total} tarefas · {progressPct}%</span>
+          <span className="text-slate-600 text-sm">{completedTarefas}/{totalTarefas} tarefas · {progressPct}%</span>
         </div>
         <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
           <div

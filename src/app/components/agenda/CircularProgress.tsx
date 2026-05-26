@@ -7,6 +7,7 @@ interface CircularProgressProps {
   color?: string;
   bgColor?: string;
   showLabel?: boolean;
+  labelClassName?: string;
 }
 
 export function CircularProgress({
@@ -16,6 +17,7 @@ export function CircularProgress({
   color = '#6366F1',
   bgColor = '#E2E8F0',
   showLabel = true,
+  labelClassName,
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -56,7 +58,7 @@ export function CircularProgress({
         />
       </svg>
       {showLabel && (
-        <span className="absolute text-[10px] font-semibold text-slate-600">
+        <span className={`absolute text-[10px] font-semibold ${labelClassName || 'text-slate-600'}`}>
           {Math.round(clampedProgress)}%
         </span>
       )}

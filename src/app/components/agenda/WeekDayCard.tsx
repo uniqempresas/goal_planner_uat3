@@ -33,7 +33,7 @@ export function WeekDayCard({
         relative flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 
         transition-all cursor-pointer w-full min-w-[80px]
         ${isSelected
-          ? 'border-indigo-500 bg-indigo-50/50 shadow-lg shadow-indigo-100'
+          ? 'border-indigo-600 bg-indigo-600 shadow-lg shadow-indigo-200'
           : isToday
           ? 'border-indigo-300 bg-white shadow-md'
           : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md'
@@ -51,14 +51,14 @@ export function WeekDayCard({
       )}
       
       {/* Day name */}
-      <span className={`text-xs font-medium ${isSelected ? 'text-indigo-700' : 'text-slate-500'}`}>
+      <span className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-slate-500'}`}>
         {dayName}
       </span>
       
       {/* Day number */}
       <span className={`
         text-lg font-bold leading-none
-        ${isSelected ? 'text-indigo-800' : isToday ? 'text-indigo-600' : 'text-slate-700'}
+        ${isSelected ? 'text-white' : isToday ? 'text-indigo-600' : 'text-slate-700'}
       `}>
         {dayNumber}
       </span>
@@ -80,13 +80,14 @@ export function WeekDayCard({
           progress={progress}
           size={40}
           strokeWidth={3}
-          color={isSelected ? '#6366F1' : '#6366F1'}
+          color={isSelected ? '#FFFFFF' : '#6366F1'}
           showLabel={true}
+          labelClassName={isSelected ? 'text-white' : undefined}
         />
       </div>
       
       {/* Task count */}
-      <span className="text-[10px] text-slate-400 font-medium">
+      <span className={`text-[10px] font-medium ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
         {completedTasks}/{totalTasks}
       </span>
     </motion.button>
