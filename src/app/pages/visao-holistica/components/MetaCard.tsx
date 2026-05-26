@@ -1,6 +1,29 @@
 import { ChevronRight, ChevronDown, Star } from 'lucide-react';
 import { levelColors, levelIcons, statusColors } from '../lib/constants';
-import type { MetaNode } from '../types';
+import type { MetaNode, MetaNivel } from '../types';
+
+function getDateSuffix(nivel: MetaNivel, prazo?: string | null): string {
+  if (!prazo) return '';
+  const date = new Date(prazo);
+  if (isNaN(date.getTime())) return '';
+
+  switch (nivel) {
+    case 'anual':
+      return ` ${date.getFullYear()}`;
+    case 'mensal': {
+      const month = date.toLocaleDateString('pt-BR', { month: 'long' });
+      return ` ${month.charAt(0).toUpperCase() + month.slice(1)}`;
+    }
+    case 'semanal': {
+      const week = Math.ceil(date.getDate() / 7);
+      return ` ${week}ª Semana`;
+    }
+    case 'diaria':
+      return ` ${date.toLocaleDateString('pt-BR')}`;
+    default:
+      return '';
+  }
+}
 
 interface MetaCardProps {
   meta: MetaNode;
@@ -61,6 +84,9 @@ export function MetaCard({
         
         <span className={`text-sm font-medium truncate flex-1 ${colors.text}`}>
           {meta.titulo}
+          <span className="text-xs opacity-70 ml-1">
+            {getDateSuffix(meta.nivel, meta.prazo)}
+          </span>
         </span>
         
         {meta.one_thing && (
@@ -141,6 +167,9 @@ export function MetaCard({
 
             <h3 className={`font-semibold text-lg leading-tight ${colors.text} mb-1`}>
               {meta.titulo}
+              <span className="text-sm font-normal opacity-70 ml-2">
+                {getDateSuffix(meta.nivel, meta.prazo)}
+              </span>
             </h3>
 
             {viewMode === 'detalhado' && meta.descricao && (
