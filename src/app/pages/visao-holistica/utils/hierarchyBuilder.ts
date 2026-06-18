@@ -41,10 +41,29 @@ export function buildHierarchy(metas: Meta[]): MetaNode[] {
   // Ordenar raízes por hierarquia
   roots.sort((a, b) => nivelOrder[a.nivel] - nivelOrder[b.nivel]);
 
+  // Ordenar filhos recursivamente por prazo ascendente
+  sortChildrenByPrazo(roots);
+
   // Terceira passagem: calcular progresso recursivamente
   calculateProgressRecursively(roots);
 
   return roots;
+}
+
+/**
+ * Ordena os filhos de cada nó recursivamente por prazo ascendente
+ */
+function sortChildrenByPrazo(nodes: MetaNode[]) {
+  nodes.forEach(node => {
+    if (node.children && node.children.length > 0) {
+      node.children.sort((a, b) => {
+        if (!a.prazo) return 1;
+        if (!b.prazo) return -1;
+        return a.prazo.localeCompare(b.prazo);
+      });
+      sortChildrenByPrazo(node.children);
+    }
+  });
 }
 
 /**
