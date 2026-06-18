@@ -132,6 +132,15 @@ const NIVEL_CONFIG: Record<MetaNivel, {
   },
 };
 
+// Mapeamento de nivel (singular) para path na URL (plural)
+const NIVEL_TO_PATH: Record<MetaNivel, string> = {
+  grande: 'grandes',
+  anual: 'anuais',
+  mensal: 'mensais',
+  semanal: 'semanais',
+  diaria: 'diarias',
+};
+
 // --- Componentes Auxiliares ---
 
 function ProgressCircle({ progresso, cor }: { progresso: number; cor: string }) {
@@ -315,7 +324,7 @@ export default function MetaDetailPage() {
     try {
       await metasService.delete(meta.id);
       await loadMetas();
-      navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`);
+      navigate(`/metas/${NIVEL_TO_PATH[nivel]}`);
     } catch (err) {
       console.error('Erro ao excluir meta:', err);
       alert('Erro ao excluir meta. Tente novamente.');
@@ -343,7 +352,7 @@ export default function MetaDetailPage() {
     return (
       <div className="p-6">
         <p className="text-red-500">{error || 'Meta nao encontrada'}</p>
-        <Button onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`)} className="mt-4">
+        <Button onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}`)} className="mt-4">
           Voltar
         </Button>
       </div>
@@ -366,7 +375,7 @@ export default function MetaDetailPage() {
       <nav className="flex items-center gap-2 text-sm text-slate-500">
         <Button
           variant="ghost" size="sm"
-          onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}`)}
+          onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}`)}
           className="h-auto px-2 py-1 -ml-2"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
@@ -413,7 +422,7 @@ export default function MetaDetailPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/metas/${nivel === 'grande' ? 'grandes' : nivel}/${meta.id}/editar`)}>
+          <Button variant="outline" size="sm" onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}/${meta.id}/editar`)}>
             <Edit className="w-4 h-4 mr-1" /> Editar
           </Button>
           <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" onClick={handleDelete}>
