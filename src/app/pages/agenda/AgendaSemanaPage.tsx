@@ -286,8 +286,8 @@ export default function AgendaSemanaPage() {
                 date={d}
                 isSelected={isSelected}
                 isToday={isTodayDate}
-                completedTasks={dayTasksData.filter(t => !t.habitoId && t.completed).length}
-                totalTasks={dayTasksData.filter(t => !t.habitoId).length}
+                completedTasks={dayTasksData.filter(t => t.completed).length}
+                totalTasks={dayTasksData.length}
                 hasOneThing={dayTasksData.some(t => t.isOneThing)}
                 onClick={() => setSelectedDay(i)}
               />
