@@ -77,9 +77,10 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
 
       taskViewItems.forEach((tarefa) => {
         const status = getTaskStatus(tarefa);
-        if (agrupadas[status]) {
-          agrupadas[status].push(tarefa);
-        }
+        const key = status === 'atrasada' ? 'atrasadas'
+          : status === 'aberta' ? 'abertas'
+          : 'concluidas';
+        agrupadas[key].push(tarefa);
       });
 
       // Ordenar por data
