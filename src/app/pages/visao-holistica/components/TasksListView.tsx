@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
@@ -22,6 +23,7 @@ interface TaskItemProps {
 }
 
 function TaskItem({ tarefa }: TaskItemProps) {
+  const navigate = useNavigate();
   const isRecorrente = tarefa.habito_id !== null;
   
   const formattedDate = useMemo(() => {
@@ -36,7 +38,10 @@ function TaskItem({ tarefa }: TaskItemProps) {
   }, [tarefa.data]);
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-100 hover:border-indigo-200 hover:shadow-sm transition-all">
+    <div
+      className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-100 hover:border-indigo-200 hover:shadow-sm transition-all cursor-pointer"
+      onClick={() => navigate(`/agenda/tarefas/${tarefa.id}`)}
+    >
       {tarefa.completed ? (
         <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />
       ) : (

@@ -32,7 +32,7 @@ export default function VisaoHolisticaPage() {
     tipo: 'todas',
     showAtrasadas: true,
     showAberto: true,
-    showConcluidas: true,
+    showConcluidas: false,
   });
 
   const { tarefas, isLoading: isLoadingTarefas, error: errorTarefas, refetch: refetchTarefas } = useTarefasHierarchy();
