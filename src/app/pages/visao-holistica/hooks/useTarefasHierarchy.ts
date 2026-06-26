@@ -19,6 +19,10 @@ function getTaskStatus(tarefa: TaskViewItem): 'atrasada' | 'aberta' | 'concluida
     return 'concluida';
   }
 
+  if (!tarefa.data) {
+    return 'aberta';
+  }
+
   const hoje = startOfDay(new Date());
   const tarefaData = startOfDay(parseISO(tarefa.data));
 
@@ -73,7 +77,9 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
 
       taskViewItems.forEach((tarefa) => {
         const status = getTaskStatus(tarefa);
-        agrupadas[status].push(tarefa);
+        if (agrupadas[status]) {
+          agrupadas[status].push(tarefa);
+        }
       });
 
       // Ordenar por data
