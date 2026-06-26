@@ -87,6 +87,12 @@ export function MetaCard({
           <span className="text-xs opacity-70 ml-1">
             {getDateSuffix(meta.nivel, meta.prazo)}
           </span>
+          {meta.nivel === 'grande' && meta.areas && (
+            <span className="inline-flex items-center gap-1 ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/60 text-slate-600">
+              {meta.areas.icone && <span>{meta.areas.icone}</span>}
+              {meta.areas.nome}
+            </span>
+          )}
         </span>
         
         {meta.one_thing && (
