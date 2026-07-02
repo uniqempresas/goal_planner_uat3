@@ -72,7 +72,7 @@ export default function AreasListPage() {
               {/* Card de Adicionar Área */}
               <Link 
                 to="/areas/criar"
-                className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 rounded-2xl p-5 transition-all cursor-pointer group min-h-[200px]"
+                className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 rounded-2xl p-5 transition-all cursor-pointer group min-h-[140px] sm:min-h-[180px]"
               >
                 <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-indigo-100 flex items-center justify-center mb-3 transition-colors">
                   <Plus size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />

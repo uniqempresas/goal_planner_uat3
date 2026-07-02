@@ -27,7 +27,7 @@ export default function AreaDetailPage() {
 
   if (!area) {
     return (
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate('/areas')}>
             <ArrowLeft className="h-5 w-5" />
@@ -52,12 +52,12 @@ export default function AreaDetailPage() {
   const progresso = totalMetas > 0 ? Math.round((metasConcluidas / totalMetas) * 100) : 0;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+      <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 sm:mb-6">
         <Link to="/areas" className="hover:text-indigo-600">Áreas</Link>
         <span>/</span>
-        <span className="text-slate-800">{area.nome}</span>
+        <span className="text-slate-800 truncate">{area.nome}</span>
       </div>
 
       {/* Header */}
@@ -68,47 +68,49 @@ export default function AreaDetailPage() {
         >
           {area.icone || '🎯'}
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-slate-800">{area.nome}</h1>
-            <Link to={`/areas/${area.id}/edit`}>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Pencil className="h-4 w-4" />
-                Editar
-              </Button>
-            </Link>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-600 hover:bg-red-50 border-red-200">
-                  <Trash2 className="h-4 w-4" />
-                  Excluir
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 truncate">{area.nome}</h1>
+            <div className="flex items-center gap-2">
+              <Link to={`/areas/${area.id}/edit`}>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Pencil className="h-4 w-4" />
+                  Editar
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Excluir Área</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Tem certeza que deseja excluir a área "{area.nome}"? Esta ação não pode ser desfeita e todas as metas vinculadas a esta área ficarão órfãs.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={async () => {
-                      try {
-                        await deleteArea(id!);
-                        navigate('/areas');
-                      } catch (error) {
-                        console.error('Erro ao excluir área:', error);
-                      }
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
+              </Link>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-600 hover:bg-red-50 border-red-200">
+                    <Trash2 className="h-4 w-4" />
                     Excluir
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir Área</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja excluir a área "{area.nome}"? Esta ação não pode ser desfeita e todas as metas vinculadas a esta área ficarão órfãs.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={async () => {
+                        try {
+                          await deleteArea(id!);
+                          navigate('/areas');
+                        } catch (error) {
+                          console.error('Erro ao excluir área:', error);
+                        }
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
           {area.descricao && (
             <p className="text-slate-500 mb-4 max-w-2xl">{area.descricao}</p>
@@ -167,7 +169,7 @@ export default function AreaDetailPage() {
 
       {/* Grandes Metas List */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-4">Grandes Metas</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4">Grandes Metas</h2>
         {metasDaArea.length === 0 ? (
           <Card>
             <CardContent className="py-10 text-center text-slate-500">
@@ -186,16 +188,16 @@ export default function AreaDetailPage() {
               const metaProgress = 0;
               return (
                 <Card key={meta.id} className="hover:border-slate-300 transition-colors">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="font-semibold">G</Badge>
-                      <div>
-                        <h3 className="text-slate-800 font-medium">{meta.title}</h3>
+                  <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Badge variant="outline" className="font-semibold shrink-0">G</Badge>
+                      <div className="min-w-0">
+                        <h3 className="text-slate-800 font-medium truncate">{meta.title}</h3>
                         <p className="text-xs text-slate-400">Criada em {new Date(meta.created_at).toLocaleDateString('pt-BR')}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-24">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <div className="flex-1 sm:w-24">
                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className="h-full rounded-full" 
@@ -206,11 +208,11 @@ export default function AreaDetailPage() {
                           />
                         </div>
                       </div>
-                      <span className="text-xs font-medium text-slate-500">{metaProgress}%</span>
+                      <span className="text-xs font-medium text-slate-500 min-w-[28px] text-right">{metaProgress}%</span>
                       {meta.status === 'concluida' ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
                       ) : (
-                        <Clock className="h-5 w-5 text-slate-300" />
+                        <Clock className="h-5 w-5 text-slate-300 shrink-0" />
                       )}
                     </div>
                   </CardContent>
