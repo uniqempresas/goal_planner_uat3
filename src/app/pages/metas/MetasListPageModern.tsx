@@ -305,12 +305,39 @@ export function MetasListPageModern({
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        {/* Mobile Compact Stats Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="sm:hidden mb-4 flex items-center justify-between gap-3 p-3 bg-white rounded-xl border border-slate-200 shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold"
+              style={{ backgroundColor: config.bgColor, color: config.textColor }}
+            >
+              {stats.progressoMedio}%
+            </div>
+            <div className="text-xs text-slate-500 leading-tight">
+              <div className="font-semibold text-slate-700">
+                {stats.total} {stats.total === 1 ? 'meta' : 'metas'}
+              </div>
+              <div>{stats.concluidas} concluída{stats.concluidas === 1 ? '' : 's'}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-orange-50 px-2.5 py-1.5 rounded-lg">
+            <Flame size={14} className="text-orange-500" />
+            <span>{weeklyStats.sequenciaDias} dias</span>
+          </div>
+        </motion.div>
+
         {/* Stats Grid */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6"
+          className="hidden sm:grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6"
         >
           <StatsCard
             icon={Target}
@@ -343,7 +370,7 @@ export function MetasListPageModern({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-6"
+          className="hidden sm:block mb-6"
         >
           <FocusingQuestionCard
             question={focusingQuestion}
@@ -358,7 +385,7 @@ export function MetasListPageModern({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mb-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl text-white"
+          className="hidden sm:flex mb-6 flex-wrap items-center justify-between gap-4 p-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl text-white"
         >
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
