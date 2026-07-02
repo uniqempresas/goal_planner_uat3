@@ -52,6 +52,15 @@ function formatDate(date: Date): string {
 }
 
 /**
+ * Converte string YYYY-MM-DD em Date representando meia-noite LOCAL.
+ * Evita o deslocamento de fuso que ocorre com new Date('YYYY-MM-DD').
+ */
+function parseDateLocal(dateStr: string): Date {
+  const [ano, mes, dia] = dateStr.split('-').map(Number);
+  return new Date(ano, mes - 1, dia);
+}
+
+/**
  * Calcula datas para recorrência semanal
  */
 export function calcularDatasSemanal(
@@ -61,8 +70,8 @@ export function calcularDatasSemanal(
   maxOcorrencias?: number
 ): string[] {
   const datas: string[] = [];
-  const start = new Date(dataInicio);
-  const end = dataFim ? new Date(dataFim) : null;
+  const start = parseDateLocal(dataInicio);
+  const end = dataFim ? parseDateLocal(dataFim) : null;
   const max = maxOcorrencias || MAX_OCORRENCIAS_BATCH;
 
   // Validar dias da semana
@@ -108,8 +117,8 @@ export function calcularDatasDiaria(
   maxOcorrencias?: number
 ): string[] {
   const datas: string[] = [];
-  const start = new Date(dataInicio);
-  const end = dataFim ? new Date(dataFim) : null;
+  const start = parseDateLocal(dataInicio);
+  const end = dataFim ? parseDateLocal(dataFim) : null;
   const max = maxOcorrencias || MAX_OCORRENCIAS_BATCH;
 
   let current = new Date(start);
@@ -135,8 +144,8 @@ export function calcularDatasIntervalo(
   maxOcorrencias?: number
 ): string[] {
   const datas: string[] = [];
-  const start = new Date(dataInicio);
-  const end = dataFim ? new Date(dataFim) : null;
+  const start = parseDateLocal(dataInicio);
+  const end = dataFim ? parseDateLocal(dataFim) : null;
   const max = maxOcorrencias || MAX_OCORRENCIAS_BATCH;
 
   // Validar intervalo
@@ -168,8 +177,8 @@ export function calcularDatasMensal(
   maxOcorrencias?: number
 ): string[] {
   const datas: string[] = [];
-  const start = new Date(dataInicio);
-  const end = dataFim ? new Date(dataFim) : null;
+  const start = parseDateLocal(dataInicio);
+  const end = dataFim ? parseDateLocal(dataFim) : null;
   const max = maxOcorrencias || 24; // 2 anos por padrão
 
   // Validar dia do mês
@@ -216,8 +225,8 @@ export function calcularDatasAnual(
   maxOcorrencias?: number
 ): string[] {
   const datas: string[] = [];
-  const start = new Date(dataInicio);
-  const end = dataFim ? new Date(dataFim) : null;
+  const start = parseDateLocal(dataInicio);
+  const end = dataFim ? parseDateLocal(dataFim) : null;
   const max = maxOcorrencias || 10; // 10 anos por padrão
 
   // Validar mês e dia
@@ -404,7 +413,7 @@ export async function gerarInstancias(
 
   // Calcular datas de geração
   // Usar a data da tarefa mãe ou hoje (o que for maior)
-  const dataMae = new Date(tarefaMae.data);
+  const dataMae = parseDateLocal(tarefaMae.data);
   const hoje = new Date();
   const dataInicial = dataMae > hoje ? dataMae : hoje;
   const dataInicio = formatDate(dataInicial);
@@ -415,7 +424,7 @@ export async function gerarInstancias(
   
   if (tarefaMae.data_fim_recorrencia) {
     // Usar a data final definida pelo usuário (obrigatória)
-    dataFim = new Date(tarefaMae.data_fim_recorrencia);
+    dataFim = parseDateLocal(tarefaMae.data_fim_recorrencia);
     console.log(`[recorrencia] Usando data final do usuário: ${formatDate(dataFim)}`);
   } else {
     // Fallback: usar o período padrão (não deveria acontecer se data_fim for obrigatória)
@@ -490,7 +499,7 @@ export async function verificarEGerarNovasInstancias(
 
   // Verificar se tem data fim e se já passou
   if (tarefaMae.data_fim_recorrencia) {
-    const dataFim = new Date(tarefaMae.data_fim_recorrencia);
+    const dataFim = parseDateLocal(tarefaMae.data_fim_recorrencia);
     const hoje = new Date();
     if (dataFim < hoje) {
       console.log('[recorrencia] Recorrência já terminou');
@@ -519,7 +528,7 @@ export async function verificarEGerarNovasInstancias(
   }
 
   // Verificar se precisa de mais instâncias
-  const ultimaData = new Date(ultimasInstancias[0].data);
+  const ultimaData = parseDateLocal(ultimasInstancias[0].data);
   const hoje = new Date();
   const dataLimite = new Date(hoje);
   dataLimite.setDate(dataLimite.getDate() + diasMinimos);
@@ -682,7 +691,7 @@ export async function excluirTodasFuturas(
   console.log(`[recorrencia] Cancelando futuras a partir de ${dataLimite}`);
 
   // Definir data fim na tarefa mãe
-  const ontem = new Date(dataLimite);
+  const ontem = parseDateLocal(dataLimite);
   ontem.setDate(ontem.getDate() - 1);
 
   const { error: errorUpdate } = await supabase
@@ -873,8 +882,8 @@ export function validarConfiguracao(config: RecorrenciaConfig): { valido: boolea
     }
     
     if (config.data_inicio) {
-      const inicio = new Date(config.data_inicio);
-      const fim = new Date(config.data_fim);
+      const inicio = parseDateLocal(config.data_inicio);
+      const fim = parseDateLocal(config.data_fim);
       if (fim <= inicio) {
         return { valido: false, erro: 'Data de término deve ser posterior à data de início' };
       }

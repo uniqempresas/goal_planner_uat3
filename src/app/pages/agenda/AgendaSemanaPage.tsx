@@ -23,6 +23,13 @@ import { pageTransition, fadeInUp, staggerContainer } from '../../components/met
 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const diasCompletos = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
+function formatDateLocal(date: Date): string {
+  const ano = date.getFullYear();
+  const mes = String(date.getMonth() + 1).padStart(2, '0');
+  const dia = String(date.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
 export default function AgendaSemanaPage() {
   const navigate = useNavigate();
   const { user, weeklyStats } = useApp();
@@ -60,7 +67,7 @@ export default function AgendaSemanaPage() {
       for (let i = 0; i < 7; i++) {
         const date = new Date(currentWeekStart);
         date.setDate(currentWeekStart.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = formatDateLocal(date);
         
         try {
           const tarefasNormais = await tarefasService.getTarefasDoDia(user.id, dateStr);
@@ -357,13 +364,13 @@ export default function AgendaSemanaPage() {
                   <EmptyStateAgenda
                     date={selectedDate}
                     dayName={diasCompletos[selectedDay]}
-                    onCreateTask={() => navigate(`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`)}
+                    onCreateTask={() => navigate(`/agenda/tarefas/criar?data=${formatDateLocal(selectedDate)}`)}
                   />
                 )}
                 
                 {/* Add Task Button */}
                 <Link 
-                  to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`}
+                  to={`/agenda/tarefas/criar?data=${formatDateLocal(selectedDate)}`}
                   className="flex items-center gap-2 p-3 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all text-sm mt-3"
                 >
                   <Plus size={16} />
@@ -440,7 +447,7 @@ export default function AgendaSemanaPage() {
         className="fixed bottom-6 right-6 sm:hidden z-50"
       >
         <Link
-          to={`/agenda/tarefas/criar?data=${selectedDate.toISOString().split('T')[0]}`}
+          to={`/agenda/tarefas/criar?data=${formatDateLocal(selectedDate)}`}
           className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
         >
           <Plus size={24} />

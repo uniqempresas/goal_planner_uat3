@@ -54,9 +54,10 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
       setError(null);
 
       const data = await tarefasService.getAll(user.id);
+      const actionableTasks = data.filter((tarefa) => !tarefa.is_template);
 
       // Converter para TaskViewItem
-      const taskViewItems: TaskViewItem[] = data.map((tarefa) => ({
+      const taskViewItems: TaskViewItem[] = actionableTasks.map((tarefa) => ({
         id: tarefa.id,
         titulo: tarefa.titulo,
         descricao: tarefa.descricao || undefined,
