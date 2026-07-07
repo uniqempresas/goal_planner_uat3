@@ -230,9 +230,9 @@ export default function AreaDetailPage() {
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <Layers className="h-4 w-4 mx-auto mb-0.5 text-slate-400 hidden sm:block" aria-hidden="true" />
+            <Layers className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
-              Total de Metas
+              Total
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -241,9 +241,9 @@ export default function AreaDetailPage() {
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <Clock className="h-4 w-4 mx-auto mb-0.5 text-slate-400 hidden sm:block" aria-hidden="true" />
+            <Clock className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
-              Metas Ativas
+              Ativas
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -254,9 +254,9 @@ export default function AreaDetailPage() {
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <CheckCircle2 className="h-4 w-4 mx-auto mb-0.5 text-slate-400 hidden sm:block" aria-hidden="true" />
+            <CheckCircle2 className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
-              Metas Concluídas
+              Concluídas
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
