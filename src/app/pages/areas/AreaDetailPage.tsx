@@ -230,7 +230,7 @@ export default function AreaDetailPage() {
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <Layers className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
+            <Layers className="h-5 w-5 mx-auto mb-0.5 text-indigo-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
               Total
             </CardTitle>
@@ -241,7 +241,7 @@ export default function AreaDetailPage() {
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <Clock className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
+            <Clock className="h-5 w-5 mx-auto mb-0.5 text-violet-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
               Ativas
             </CardTitle>
@@ -254,7 +254,7 @@ export default function AreaDetailPage() {
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
           <CardHeader className="p-0 pb-0 sm:pb-2">
-            <CheckCircle2 className="h-4 w-4 mx-auto mb-0.5 text-slate-400" aria-hidden="true" />
+            <CheckCircle2 className="h-5 w-5 mx-auto mb-0.5 text-emerald-400" aria-hidden="true" />
             <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
               Concluídas
             </CardTitle>
@@ -312,7 +312,7 @@ export default function AreaDetailPage() {
                     <div className="flex items-center gap-3 min-w-0">
                       <Badge variant="outline" className="font-semibold shrink-0">G</Badge>
                       <div className="min-w-0">
-                        <h3 className="text-slate-800 font-medium truncate">{meta.title}</h3>
+                          <h3 className="text-slate-800 font-medium truncate">{meta.titulo}</h3>
                         <p className="text-xs text-slate-400">
                           Criada em {new Date(meta.created_at).toLocaleDateString('pt-BR')}
                         </p>
