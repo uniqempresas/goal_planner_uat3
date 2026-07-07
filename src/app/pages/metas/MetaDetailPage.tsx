@@ -510,7 +510,7 @@ export default function MetaDetailPage() {
             </Card>
           )}
 
-          <div className={`grid gap-3 sm:gap-4 ${nivel === 'semanal' ? 'grid-cols-2' : 'grid-cols-1'} sm:grid-cols-2`}>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {/* Prazo */}
             <Card className="p-3 sm:p-4">
               <CardHeader className="pb-2 px-0 sm:px-0">
@@ -682,11 +682,6 @@ export default function MetaDetailPage() {
                   icon={<ListChecks className="w-8 h-8 text-slate-300" />}
                   title="Nenhuma tarefa ainda"
                   description="Adicione tarefas para comecar a trackear seu progresso semanal."
-                  action={
-                    <Button variant="outline" onClick={() => navigate(`/agenda/tarefas/criar?meta=${meta.id}`)}>
-                      <Plus className="w-4 h-4 mr-2" /> Adicionar Tarefa
-                    </Button>
-                  }
                 />
               )}
 
