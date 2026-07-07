@@ -435,20 +435,14 @@ export default function MetaDetailPage() {
                     {meta.titulo}
                   </h1>
                 </div>
-                {area && (
-                  <div className="flex items-center gap-1.5 mt-1 sm:hidden">
-                    <span className="text-base leading-none" aria-hidden="true">{area.icone}</span>
-                    <span className="text-xs text-slate-500 truncate">{area.nome}</span>
-                  </div>
-                )}
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
                   <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
                     {config.label}
                   </Badge>
                   {area && (
-                    <Badge variant="outline" className="text-slate-600 hidden sm:inline-flex">
+                    <Badge variant="outline" className="text-slate-600 inline-flex max-w-[120px]">
                       <span className="mr-1">{area.icone}</span>
-                      <span>{area.nome}</span>
+                      <span className="truncate">{area.nome}</span>
                     </Badge>
                   )}
                   <Badge variant={meta.status === 'ativa' ? 'default' : 'secondary'}>
