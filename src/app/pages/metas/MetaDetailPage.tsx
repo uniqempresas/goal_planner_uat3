@@ -190,7 +190,7 @@ function MiniProgressCircle({ progresso, cor }: { progresso: number; cor: string
 
   return (
     <div
-      className="relative flex items-center justify-center flex-shrink-0 w-[52px] h-[52px]"
+      className="relative flex items-center justify-center flex-shrink-0 w-[55px] h-[55px]"
       role="img"
       aria-label={`Progresso da meta: ${progresso}%`}
     >
@@ -463,7 +463,7 @@ export default function MetaDetailPage() {
             </div>
           </div>
           {nivel === 'semanal' && (
-            <div className="sm:hidden flex-shrink-0 pr-2">
+            <div className="sm:hidden flex-shrink-0 pr-3">
               <MiniProgressCircle progresso={progresso} cor={nivel} />
             </div>
           )}
