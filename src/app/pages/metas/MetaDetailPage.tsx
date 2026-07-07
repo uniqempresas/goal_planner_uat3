@@ -471,7 +471,7 @@ export default function MetaDetailPage() {
 
         {/* Mobile action row with deadline */}
         <div className="lg:hidden flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
-          <div className="sm:hidden flex flex-col gap-0.5">
+          <div className="sm:hidden flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
               <Calendar className="w-3.5 h-3.5" />
               <span className="font-medium text-slate-700">
@@ -526,8 +526,8 @@ export default function MetaDetailPage() {
               onClick={handleToggleStatus}
               aria-label={meta.status === 'ativa' ? 'Concluir meta' : 'Reativar meta'}
             >
-              <CheckCircle className="w-4 h-4 sm:mr-1" />
-              <span className="hidden sm:inline">{meta.status === 'ativa' ? 'Concluir' : 'Reativar'}</span>
+              <CheckCircle className="w-4 h-4 mr-1" />
+              {meta.status === 'ativa' ? 'Concluir' : 'Reativar'}
             </Button>
           </div>
         </div>
