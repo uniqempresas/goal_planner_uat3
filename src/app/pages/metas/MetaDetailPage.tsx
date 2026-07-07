@@ -392,33 +392,15 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-start gap-3 sm:gap-4">
-          <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-2xl sm:text-3xl`}>
-            {config.emoji}
-          </div>
-          <div className="min-w-0">
+        <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
+          <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
+              <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-2xl sm:text-3xl`}>
+                {config.emoji}
+              </div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
                 {meta.titulo}
               </h1>
-              {nivel === 'semanal' && (
-                <div className="sm:hidden relative w-16 h-16 flex-shrink-0">
-                  <svg viewBox="0 0 100 100" className="w-16 h-16 transform -rotate-90">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
-                    <circle
-                      cx="50" cy="50" r="42" fill="none"
-                      stroke="currentColor" strokeWidth="10"
-                      strokeLinecap="round"
-                      strokeDasharray={2 * Math.PI * 42}
-                      strokeDashoffset={2 * Math.PI * 42 * (1 - progresso / 100)}
-                      className={config.corTexto}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-xs font-bold ${config.corTexto}`}>{progresso}%</span>
-                  </div>
-                </div>
-              )}
             </div>
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
               <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
@@ -441,6 +423,26 @@ export default function MetaDetailPage() {
               )}
             </div>
           </div>
+          {nivel === 'semanal' && (
+            <div className="sm:hidden flex items-center justify-center">
+              <div className="relative h-full aspect-square">
+                <svg viewBox="0 0 100 100" className="h-full w-full transform -rotate-90">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+                  <circle
+                    cx="50" cy="50" r="42" fill="none"
+                    stroke="currentColor" strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 42}
+                    strokeDashoffset={2 * Math.PI * 42 * (1 - progresso / 100)}
+                    className={config.corTexto}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className={`text-xs font-bold ${config.corTexto}`}>{progresso}%</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
