@@ -690,11 +690,6 @@ export default function MetaDetailPage() {
                   icon={<Target className="w-8 h-8 text-slate-300" />}
                   title="Nenhuma meta filha"
                   description="Crie metas filhas para decompor esta meta em passos menores."
-                  action={
-                    <Button variant="outline" onClick={() => navigate(`/metas/${config.proximoPath}/criar?pai=${meta.id}`)}>
-                      <Plus className="w-4 h-4 mr-2" /> Criar Meta Filha
-                    </Button>
-                  }
                 />
               )}
             </div>
