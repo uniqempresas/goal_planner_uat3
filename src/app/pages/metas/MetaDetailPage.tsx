@@ -156,7 +156,7 @@ function ProgressCircle({ progresso, cor }: { progresso: number; cor: string }) 
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <svg viewBox="0 0 100 100" className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90">
+            <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 transform -rotate-90">
         <circle cx="50" cy="50" r={raio} fill="none" stroke="#f1f5f9" strokeWidth="8" />
         <motion.circle
           cx="50" cy="50" r={raio} fill="none"
@@ -171,7 +171,7 @@ function ProgressCircle({ progresso, cor }: { progresso: number; cor: string }) 
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span
-          className={`text-4xl md:text-5xl font-extrabold ${config.corTexto}`}
+          className={`text-3xl sm:text-4xl md:text-5xl font-extrabold ${config.corTexto}`}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -392,21 +392,22 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-start gap-4">
-          <div className={`w-14 h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-3xl`}>
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-2xl sm:text-3xl`}>
             {config.emoji}
           </div>
           <div className="min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
               {meta.titulo}
             </h1>
-            <div className="flex flex-wrap items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
               <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
                 {config.label}
               </Badge>
               {area && (
                 <Badge variant="outline" className="text-slate-600">
-                  {area.icone} {area.nome}
+                  <span className="sm:mr-1">{area.icone}</span>
+                  <span className="hidden sm:inline">{area.nome}</span>
                 </Badge>
               )}
               <Badge variant={meta.status === 'ativa' ? 'default' : 'secondary'}>
@@ -414,7 +415,8 @@ export default function MetaDetailPage() {
               </Badge>
               {meta.one_thing && (
                 <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
-                  <Star className="w-3 h-3 mr-1" /> ONE Thing
+                  <Star className="w-3 h-3 sm:mr-1" />
+                  <span className="hidden sm:inline">ONE Thing</span>
                 </Badge>
               )}
             </div>
@@ -422,11 +424,13 @@ export default function MetaDetailPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}/${meta.id}/editar`)}>
-            <Edit className="w-4 h-4 mr-1" /> Editar
+          <Button variant="outline" size="sm" onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}/${meta.id}/editar`)} className="px-2 sm:px-3">
+            <Edit className="w-4 h-4" />
+            <span className="hidden sm:inline ml-1">Editar</span>
           </Button>
-          <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" onClick={handleDelete}>
-            <Trash2 className="w-4 h-4 mr-1" /> Excluir
+          <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50 px-2 sm:px-3" onClick={handleDelete}>
+            <Trash2 className="w-4 h-4" />
+            <span className="hidden sm:inline ml-1">Excluir</span>
           </Button>
           <Button
             size="sm"
@@ -440,7 +444,7 @@ export default function MetaDetailPage() {
       </motion.header>
 
       {/* === PROGRESSO + INFO GRID === */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Progresso */}
         <motion.div
           className="lg:col-span-1"
@@ -448,9 +452,9 @@ export default function MetaDetailPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
         >
-          <Card className="h-full flex flex-col items-center justify-center p-6">
+          <Card className="h-full flex flex-col items-center justify-center p-4 sm:p-6">
             <ProgressCircle progresso={progresso} cor={nivel} />
-            <p className="mt-4 text-sm text-slate-500 text-center">
+            <p className="mt-3 sm:mt-4 text-sm text-slate-500 text-center">
               {tarefas.length === 0
                 ? 'Sem tarefas vinculadas'
                 : `${tarefasConcluidas} de ${tarefas.length} tarefas concluidas`
@@ -458,7 +462,7 @@ export default function MetaDetailPage() {
             </p>
             {progresso === 100 && meta.status !== 'concluida' && (
               <motion.div
-                className="mt-4 p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm text-center"
+                className="mt-3 sm:mt-4 p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm text-center"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 }}
@@ -471,20 +475,20 @@ export default function MetaDetailPage() {
 
         {/* Info Grid */}
         <motion.div
-          className="lg:col-span-2 space-y-4"
+          className="lg:col-span-2 space-y-3 sm:space-y-4"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
         >
           {/* Descricao */}
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="p-3 sm:p-4">
+            <CardHeader className="pb-2 px-0 sm:px-0">
               <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
                 <FileText className="w-4 h-4" /> Descricao
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-slate-800 leading-relaxed">
+            <CardContent className="px-0 sm:px-0">
+              <p className="text-sm sm:text-base text-slate-800 leading-relaxed">
                 {meta.descricao || <span className="text-slate-400 italic">Sem descricao</span>}
               </p>
             </CardContent>
@@ -492,32 +496,32 @@ export default function MetaDetailPage() {
 
           {/* Focusing Question */}
           {meta.focusing_question && (
-            <Card className={`border-l-4 ${config.corBorda.replace('200', '400')} bg-gradient-to-r from-slate-50 to-white`}>
-              <CardHeader className="pb-2">
+            <Card className={`p-3 sm:p-4 border-l-4 ${config.corBorda.replace('200', '400')} bg-gradient-to-r from-slate-50 to-white`}>
+              <CardHeader className="pb-2 px-0 sm:px-0">
                 <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4" /> Focusing Question
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-lg font-medium text-slate-700 italic">
+              <CardContent className="px-0 sm:px-0">
+                <p className="text-base sm:text-lg font-medium text-slate-700 italic">
                   &ldquo;{meta.focusing_question}&rdquo;
                 </p>
               </CardContent>
             </Card>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {/* Prazo */}
-            <Card>
-              <CardHeader className="pb-2">
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="pb-2 px-0 sm:px-0">
                 <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
                   <Calendar className="w-4 h-4" /> Prazo
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-0 sm:px-0">
                 {meta.prazo ? (
                   <>
-                    <p className="font-medium text-slate-800">
+                    <p className="font-medium text-slate-800 text-sm sm:text-base">
                       {new Date(meta.prazo).toLocaleDateString('pt-BR', {
                         day: 'numeric', month: 'long', year: 'numeric'
                       })}
@@ -531,28 +535,28 @@ export default function MetaDetailPage() {
                     )}
                   </>
                 ) : (
-                  <p className="text-slate-400 italic">Sem prazo definido</p>
+                  <p className="text-slate-400 italic text-sm sm:text-base">Sem prazo definido</p>
                 )}
               </CardContent>
             </Card>
 
             {/* Area */}
-            <Card>
-              <CardHeader className="pb-2">
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="pb-2 px-0 sm:px-0">
                 <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
                   <LayoutGrid className="w-4 h-4" /> Area de Vida
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-0 sm:px-0">
                 {area ? (
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{area.icone}</span>
                     <div>
-                      <p className="font-medium text-slate-800">{area.nome}</p>
+                      <p className="font-medium text-slate-800 text-sm sm:text-base">{area.nome}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-slate-400 italic">Sem area definida</p>
+                  <p className="text-slate-400 italic text-sm sm:text-base">Sem area definida</p>
                 )}
               </CardContent>
             </Card>
@@ -566,25 +570,26 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.4 }}
       >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="p-3 sm:p-4">
+          <CardHeader className="px-0 sm:px-0 pb-3">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <GitBranch className="w-5 h-5 text-slate-500" /> Hierarquia
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 px-0 sm:px-0">
             {/* Meta Pai */}
             {metaPai && (
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <ArrowUp className="w-4 h-4 text-slate-400" />
-                <span className="text-sm text-slate-500">Pertence a:</span>
+              <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <ArrowUp className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <span className="text-sm text-slate-500 hidden sm:inline">Pertence a:</span>
                 <Link
                   to={`/metas/${nivel === 'anual' ? 'grandes' : (nivel === 'mensal' ? 'anuais' : nivel === 'semanal' ? 'mensais' : 'semanais')}/${metaPai.id}`}
-                  className={`flex-1 font-medium text-slate-800 ${config.corTextoHover} transition-colors`}
+                  className={`flex-1 min-w-0 font-medium text-slate-800 ${config.corTextoHover} transition-colors truncate text-sm sm:text-base`}
                 >
-                  {NIVEL_CONFIG[metaPai.nivel as MetaNivel]?.emoji} {metaPai.titulo}
+                  <span className="mr-1">{NIVEL_CONFIG[metaPai.nivel as MetaNivel]?.emoji}</span>
+                  <span>{metaPai.titulo}</span>
                 </Link>
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs flex-shrink-0 hidden sm:inline-flex">
                   {NIVEL_CONFIG[metaPai.nivel as MetaNivel]?.label}
                 </Badge>
               </div>
@@ -609,7 +614,7 @@ export default function MetaDetailPage() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                      className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
                         tarefa.completed
                           ? 'bg-slate-50 border-slate-200'
                           : 'bg-white border-slate-200 hover:border-amber-300 hover:shadow-sm'
@@ -619,15 +624,15 @@ export default function MetaDetailPage() {
                         id={tarefa.id}
                         checked={tarefa.completed}
                         onCheckedChange={() => handleToggleTarefa(tarefa.id)}
-                        className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                        className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0"
                       />
                       <label
                         htmlFor={tarefa.id}
-                        className={`flex-1 cursor-pointer ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}
+                        className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}
                       >
                         {tarefa.titulo}
                       </label>
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-slate-500 whitespace-nowrap">
                         {new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}
                       </span>
                     </motion.div>
@@ -647,9 +652,9 @@ export default function MetaDetailPage() {
                           to={`/metas/${config.proximoPath}/${sub.id}`}
                           className="block"
                         >
-                          <div className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${config.corBordaHover} ${config.corBgHover}`}>
-                            <Target className={`w-4 h-4 ${subConfig.corTexto}`} />
-                            <span className="flex-1 font-medium text-slate-800">{sub.titulo}</span>
+                          <div className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${config.corBordaHover} ${config.corBgHover}`}>
+                            <Target className={`w-4 h-4 ${subConfig.corTexto} mt-1 sm:mt-0`} />
+                            <span className="flex-1 font-medium text-slate-800 text-sm sm:text-base leading-tight">{sub.titulo}</span>
                             <div className="flex items-center gap-2">
                               <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
                                 <div
@@ -662,7 +667,7 @@ export default function MetaDetailPage() {
                             <Badge variant="outline" className="text-xs hidden sm:inline-flex">
                               {subConfig.label}
                             </Badge>
-                            <ChevronRight className="w-4 h-4 text-slate-300" />
+                            <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
                           </div>
                         </Link>
                       </motion.div>
