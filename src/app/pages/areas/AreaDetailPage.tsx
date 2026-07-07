@@ -60,6 +60,24 @@ export default function AreaDetailPage() {
 
   const area = getAreaById(id || '');
 
+  const metasDaArea = useMemo(
+    () => (area ? grandesMetas.filter(m => m.area_id === area.id) : []),
+    [area, grandesMetas],
+  );
+
+  const totalMetas = metasDaArea.length;
+  const metasConcluidas = metasDaArea.filter(m => m.status === 'concluida').length;
+  const progresso = totalMetas > 0 ? Math.round((metasConcluidas / totalMetas) * 100) : 0;
+
+  const metasComProgresso = useMemo(
+    () =>
+      metasDaArea.map(meta => ({
+        ...meta,
+        computedProgress: getMetaProgress(meta, metasAnuais, metasMensais, metasSemanais, metasDiarias),
+      })),
+    [metasDaArea, metasAnuais, metasMensais, metasSemanais, metasDiarias],
+  );
+
   if (!area) {
     return (
       <div className="p-4 sm:p-6 max-w-5xl mx-auto">
@@ -77,20 +95,6 @@ export default function AreaDetailPage() {
       </div>
     );
   }
-
-  const metasDaArea = grandesMetas.filter(m => m.area_id === area.id);
-  const totalMetas = metasDaArea.length;
-  const metasConcluidas = metasDaArea.filter(m => m.status === 'concluida').length;
-  const progresso = totalMetas > 0 ? Math.round((metasConcluidas / totalMetas) * 100) : 0;
-
-  const metasComProgresso = useMemo(
-    () =>
-      metasDaArea.map(meta => ({
-        ...meta,
-        computedProgress: getMetaProgress(meta, metasAnuais, metasMensais, metasSemanais, metasDiarias),
-      })),
-    [metasDaArea, metasAnuais, metasMensais, metasSemanais, metasDiarias],
-  );
 
   return (
     <motion.div
