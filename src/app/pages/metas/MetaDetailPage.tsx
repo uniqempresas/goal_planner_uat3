@@ -491,6 +491,11 @@ export default function MetaDetailPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
+            {nivel === 'semanal' && (
+              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
+                <MiniProgressCircle progresso={progresso} cor={nivel} />
+              </div>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -501,11 +506,6 @@ export default function MetaDetailPage() {
               <Edit className="w-4 h-4" />
               <span className="hidden sm:inline ml-1">Editar</span>
             </Button>
-            {nivel === 'semanal' && (
-              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
-                <MiniProgressCircle progresso={progresso} cor={nivel} />
-              </div>
-            )}
             <Button
               variant="outline"
               size="sm"
@@ -525,11 +525,6 @@ export default function MetaDetailPage() {
               <CheckCircle className="w-4 h-4 mr-1" />
               {meta.status === 'ativa' ? 'Concluir' : 'Reativar'}
             </Button>
-            {nivel === 'semanal' && (
-              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
-                <MiniProgressCircle progresso={progresso} cor={nivel} />
-              </div>
-            )}
           </div>
         </div>
 
