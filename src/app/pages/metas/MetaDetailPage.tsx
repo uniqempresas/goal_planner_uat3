@@ -190,7 +190,7 @@ function MiniProgressCircle({ progresso, cor }: { progresso: number; cor: string
 
   return (
     <div
-      className="relative flex items-center justify-center flex-shrink-0 w-14 h-14"
+      className="relative flex items-center justify-center flex-shrink-0 w-9 h-9"
       role="img"
       aria-label={`Progresso da meta: ${progresso}%`}
     >
@@ -207,7 +207,7 @@ function MiniProgressCircle({ progresso, cor }: { progresso: number; cor: string
           className={`transition-all duration-700 ease-out ${config.corTexto}`}
         />
       </svg>
-      <span className={`absolute text-xs font-bold ${config.corTexto}`}>
+      <span className={`absolute text-[9px] font-bold ${config.corTexto}`}>
         {progresso}%
       </span>
     </div>
@@ -434,11 +434,6 @@ export default function MetaDetailPage() {
                   <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
                     {meta.titulo}
                   </h1>
-                  {nivel === 'semanal' && (
-                    <div className="sm:hidden flex-shrink-0 pr-3">
-                      <MiniProgressCircle progresso={progresso} cor={nivel} />
-                    </div>
-                  )}
                 </div>
                 {area && (
                   <div className="flex items-center gap-1.5 mt-1 sm:hidden">
@@ -531,6 +526,11 @@ export default function MetaDetailPage() {
               <CheckCircle className="w-4 h-4 mr-1" />
               {meta.status === 'ativa' ? 'Concluir' : 'Reativar'}
             </Button>
+            {nivel === 'semanal' && (
+              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
+                <MiniProgressCircle progresso={progresso} cor={nivel} />
+              </div>
+            )}
           </div>
         </div>
 
