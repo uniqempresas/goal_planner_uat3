@@ -397,13 +397,13 @@ export default function MetaDetailPage() {
             {config.emoji}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-3">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
                 {meta.titulo}
               </h1>
               {nivel === 'semanal' && (
-                <div className="sm:hidden relative w-10 h-10 flex-shrink-0">
-                  <svg viewBox="0 0 100 100" className="w-10 h-10 transform -rotate-90">
+                <div className="sm:hidden relative w-16 h-16 flex-shrink-0">
+                  <svg viewBox="0 0 100 100" className="w-16 h-16 transform -rotate-90">
                     <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
                     <circle
                       cx="50" cy="50" r="42" fill="none"
@@ -415,7 +415,7 @@ export default function MetaDetailPage() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-[10px] font-bold ${config.corTexto}`}>{progresso}%</span>
+                    <span className={`text-xs font-bold ${config.corTexto}`}>{progresso}%</span>
                   </div>
                 </div>
               )}
