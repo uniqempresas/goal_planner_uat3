@@ -15,6 +15,7 @@ type User = {
 } | null;
 
 type Area = Database['public']['Tables']['areas']['Row'];
+type AreaEnriched = Area & { metasCount: number; metasConcluidas: number; progress: number };
 type Meta = Database['public']['Tables']['metas']['Row'];
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type Habito = Database['public']['Tables']['habitos']['Row'];
@@ -35,33 +36,13 @@ interface AppContextType {
   logout: () => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
 
-  areas: Area[];
+  areas: AreaEnriched[];
   loadAreas: () => Promise<void>;
   createArea: (area: Omit<Area, 'id' | 'user_id' | 'created_at'>) => Promise<Area>;
   updateArea: (id: string, area: Partial<Area>) => Promise<Area>;
   deleteArea: (id: string) => Promise<void>;
 
-  grandesMetas: Meta[];
-  metasAnuais: Meta[];
-  metasMensais: Meta[];
-  metasSemanais: Meta[];
-  metasDiarias: Meta[];
-  loadMetas: () => Promise<void>;
-  getMetaById: (id: string) => Meta | undefined;
-
-  tarefasHoje: TarefaUI[];
-  loadTarefas: (data?: string) => Promise<void>;
-  toggleTarefa: (id: string) => Promise<void>;
-  createTarefa: (tarefa: Omit<Tarefa, 'id' | 'user_id' | 'created_at'>) => Promise<Tarefa>;
-  updateTarefa: (id: string, tarefa: Partial<Tarefa>) => Promise<Tarefa>;
-  deleteTarefa: (id: string) => Promise<void>;
-
-  habitosHoje: Habito[];
-  loadHabitos: () => Promise<void>;
-  toggleHabitoStreak: (id: string) => Promise<void>;
-
-  weeklyStats: WeeklyStats;
-  getAreaById: (id: string) => Area | undefined;
+  getAreaById: (id: string) => AreaEnriched | undefined;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
@@ -73,7 +54,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
-  const [areas, setAreas] = useState<Area[]>([]);
+  const [areas, setAreas] = useState<AreaEnriched[]>([]);
   const [grandesMetas, setGrandesMetas] = useState<Meta[]>([]);
   const [metasAnuais, setMetasAnuais] = useState<Meta[]>([]);
   const [metasMensais, setMetasMensais] = useState<Meta[]>([]);

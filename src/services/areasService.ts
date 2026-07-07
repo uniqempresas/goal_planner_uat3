@@ -6,15 +6,39 @@ type AreaInsert = Database['public']['Tables']['areas']['Insert'];
 type AreaUpdate = Database['public']['Tables']['areas']['Update'];
 
 export const areasService = {
-  async getAll(userId: string): Promise<Area[]> {
-    const { data, error } = await supabase
+  async getAll(userId: string): Promise<(Area & { metasCount: number; metasConcluidas: number; progress: number })[]> {
+    const { data: rawAreas, error } = await supabase
       .from('areas')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    if (!rawAreas || rawAreas.length === 0) return [];
+
+    const { data: metas } = await supabase
+      .from('metas')
+      .select('area_id, status')
+      .eq('user_id', userId);
+
+    const counts: Record<string, { total: number; concluidas: number }> = {};
+    if (metas) {
+      for (const m of metas) {
+        if (!m.area_id) continue;
+        if (!counts[m.area_id]) counts[m.area_id] = { total: 0, concluidas: 0 };
+        counts[m.area_id].total++;
+        if (m.status === 'concluida') counts[m.area_id].concluidas++;
+      }
+    }
+
+    return rawAreas.map(area => ({
+      ...area,
+      metasCount: counts[area.id]?.total || 0,
+      metasConcluidas: counts[area.id]?.concluidas || 0,
+      progress: counts[area.id]
+        ? Math.round((counts[area.id].concluidas / counts[area.id].total) * 100)
+        : 0,
+    }));
   },
 
   async getById(id: string): Promise<Area | null> {
