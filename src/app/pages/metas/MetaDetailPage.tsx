@@ -423,16 +423,23 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="grid grid-cols-2 items-start gap-3 sm:flex sm:flex-1 sm:items-start sm:gap-4">
-          <div className="min-w-0 sm:flex-1">
+        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+          <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-xl sm:text-3xl flex-shrink-0`}>
                 {config.emoji}
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
-                  {meta.titulo}
-                </h1>
+                <div className="flex items-start gap-3">
+                  <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
+                    {meta.titulo}
+                  </h1>
+                  {nivel === 'semanal' && (
+                    <div className="sm:hidden flex-shrink-0 pr-3">
+                      <MiniProgressCircle progresso={progresso} cor={nivel} />
+                    </div>
+                  )}
+                </div>
                 {area && (
                   <div className="flex items-center gap-1.5 mt-1 sm:hidden">
                     <span className="text-base leading-none" aria-hidden="true">{area.icone}</span>
@@ -462,11 +469,6 @@ export default function MetaDetailPage() {
               </div>
             </div>
           </div>
-          {nivel === 'semanal' && (
-            <div className="sm:hidden flex justify-center self-center">
-              <MiniProgressCircle progresso={progresso} cor={nivel} />
-            </div>
-          )}
         </div>
 
         {/* Mobile action row with deadline */}
