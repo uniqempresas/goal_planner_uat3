@@ -491,11 +491,9 @@ export default function MetaDetailPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {nivel === 'semanal' && (
-              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
-                <MiniProgressCircle progresso={progresso} cor={nivel} />
-              </div>
-            )}
+            <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
+              <MiniProgressCircle progresso={progresso} cor={nivel} />
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -553,7 +551,7 @@ export default function MetaDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Progresso */}
         <motion.div
-          className={`lg:col-span-1 ${nivel === 'semanal' ? 'hidden sm:block' : ''}`}
+          className="lg:col-span-1 hidden sm:block"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
