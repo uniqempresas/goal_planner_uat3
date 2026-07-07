@@ -418,48 +418,122 @@ export default function MetaDetailPage() {
 
       {/* === HEADER === */}
       <motion.header
-        className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4"
+        className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between lg:gap-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
-              <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-2xl sm:text-3xl`}>
+              <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-xl sm:text-3xl flex-shrink-0`}>
                 {config.emoji}
               </div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
-                {meta.titulo}
-              </h1>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
-              <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
-                {config.label}
-              </Badge>
-              {area && (
-                <Badge variant="outline" className="text-slate-600">
-                  <span className="sm:mr-1">{area.icone}</span>
-                  <span className="hidden sm:inline">{area.nome}</span>
-                </Badge>
-              )}
-              <Badge variant={meta.status === 'ativa' ? 'default' : 'secondary'}>
-                {meta.status === 'ativa' ? 'Ativa' : meta.status === 'concluida' ? 'Concluida' : 'Arquivada'}
-              </Badge>
-              {meta.one_thing && (
-                <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
-                  <Star className="w-3 h-3 sm:mr-1" />
-                  <span className="hidden sm:inline">ONE Thing</span>
-                </Badge>
-              )}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
+                  {meta.titulo}
+                </h1>
+                {area && (
+                  <div className="flex items-center gap-1.5 mt-1 sm:hidden">
+                    <span className="text-base leading-none" aria-hidden="true">{area.icone}</span>
+                    <span className="text-xs text-slate-500 truncate">{area.nome}</span>
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
+                  <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
+                    {config.label}
+                  </Badge>
+                  {area && (
+                    <Badge variant="outline" className="text-slate-600 hidden sm:inline-flex">
+                      <span className="mr-1">{area.icone}</span>
+                      <span>{area.nome}</span>
+                    </Badge>
+                  )}
+                  <Badge variant={meta.status === 'ativa' ? 'default' : 'secondary'}>
+                    {meta.status === 'ativa' ? 'Ativa' : meta.status === 'concluida' ? 'Concluida' : 'Arquivada'}
+                  </Badge>
+                  {meta.one_thing && (
+                    <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
+                      <Star className="w-3 h-3 sm:mr-1" />
+                      <span className="hidden sm:inline">ONE Thing</span>
+                    </Badge>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           {nivel === 'semanal' && (
-            <MiniProgressCircle progresso={progresso} cor={nivel} />
+            <div className="sm:hidden flex-shrink-0 pr-2">
+              <MiniProgressCircle progresso={progresso} cor={nivel} />
+            </div>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Mobile action row with deadline */}
+        <div className="lg:hidden flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
+          <div className="sm:hidden flex flex-col gap-0.5">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="font-medium text-slate-700">
+                {meta.prazo
+                  ? new Date(meta.prazo).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })
+                  : 'Sem prazo'}
+              </span>
+            </div>
+            {meta.prazo && diasRestantes !== null && (
+              <Badge
+                variant="outline"
+                className={`text-[10px] w-fit px-1.5 py-0 h-auto ${
+                  diasRestantes < 0
+                    ? 'text-red-600 border-red-200 bg-red-50'
+                    : diasRestantes === 0
+                    ? 'text-amber-600 border-amber-200 bg-amber-50'
+                    : 'text-slate-600'
+                }`}
+              >
+                {diasRestantes > 0
+                  ? `${diasRestantes} dias`
+                  : diasRestantes === 0
+                  ? 'Vence hoje'
+                  : `${Math.abs(diasRestantes)} dias atrás`}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}/${meta.id}/editar`)}
+              className="px-2 sm:px-3 h-9"
+              aria-label="Editar meta"
+            >
+              <Edit className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1">Editar</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-red-600 hover:bg-red-50 px-2 sm:px-3 h-9"
+              onClick={handleDelete}
+              aria-label="Excluir meta"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1">Excluir</span>
+            </Button>
+            <Button
+              size="sm"
+              className={`${config.corSolid} ${config.corSolidHover} h-9 px-2 sm:px-3`}
+              onClick={handleToggleStatus}
+              aria-label={meta.status === 'ativa' ? 'Concluir meta' : 'Reativar meta'}
+            >
+              <CheckCircle className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">{meta.status === 'ativa' ? 'Concluir' : 'Reativar'}</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop action buttons */}
+        <div className="hidden lg:flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate(`/metas/${NIVEL_TO_PATH[nivel]}/${meta.id}/editar`)} className="px-2 sm:px-3">
             <Edit className="w-4 h-4" />
             <span className="hidden sm:inline ml-1">Editar</span>
@@ -546,7 +620,7 @@ export default function MetaDetailPage() {
             </Card>
           )}
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="hidden sm:grid grid-cols-2 gap-3 sm:gap-4">
             {/* Prazo */}
             <Card className="p-3 sm:p-4">
               <CardHeader className="pb-2 px-0 sm:px-0">
