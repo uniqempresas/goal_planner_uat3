@@ -183,6 +183,37 @@ function ProgressCircle({ progresso, cor }: { progresso: number; cor: string }) 
   );
 }
 
+function MiniProgressCircle({ progresso, cor }: { progresso: number; cor: string }) {
+  const raio = 42;
+  const circunferencia = 2 * Math.PI * raio;
+  const config = NIVEL_CONFIG[cor as MetaNivel] || NIVEL_CONFIG.grande;
+
+  return (
+    <div
+      className="relative flex items-center justify-center flex-shrink-0 w-[52px] h-[52px]"
+      role="img"
+      aria-label={`Progresso da meta: ${progresso}%`}
+    >
+      <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90" aria-hidden="true">
+        <circle cx="50" cy="50" r={raio} fill="none" stroke="#f1f5f9" strokeWidth="8" />
+        <circle
+          cx="50" cy="50" r={raio}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={circunferencia}
+          strokeDashoffset={circunferencia * (1 - progresso / 100)}
+          className={`transition-all duration-700 ease-out ${config.corTexto}`}
+        />
+      </svg>
+      <span className={`absolute text-xs font-bold ${config.corTexto}`}>
+        {progresso}%
+      </span>
+    </div>
+  );
+}
+
 function EmptyState({ icon, title, description, action }: {
   icon: React.ReactNode;
   title: string;
@@ -392,7 +423,7 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
               <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-2xl sm:text-3xl`}>
@@ -424,24 +455,7 @@ export default function MetaDetailPage() {
             </div>
           </div>
           {nivel === 'semanal' && (
-            <div className="sm:hidden flex items-center justify-center">
-              <div className="relative w-10 h-10">
-                <svg viewBox="0 0 100 100" className="w-10 h-10 transform -rotate-90">
-                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                  <circle
-                    cx="50" cy="50" r="42" fill="none"
-                    stroke="currentColor" strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={2 * Math.PI * 42}
-                    strokeDashoffset={2 * Math.PI * 42 * (1 - progresso / 100)}
-                    className={config.corTexto}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={`text-[10px] font-bold ${config.corTexto}`}>{progresso}%</span>
-                </div>
-              </div>
-            </div>
+            <MiniProgressCircle progresso={progresso} cor={nivel} />
           )}
         </div>
 
