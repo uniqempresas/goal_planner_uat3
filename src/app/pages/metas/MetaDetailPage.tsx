@@ -699,118 +699,162 @@ export default function MetaDetailPage() {
               </div>
             )}
 
-            {/* Metas Filhas / Tarefas */}
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-slate-500">
-                {nivel === 'semanal'
-                  ? `${tarefas.length} tarefa(s)`
-                  : `${submetas.length} meta(s) filha(s)`
-                }
-              </h4>
+            {nivel === 'mensal' ? (
+              <>
+                {/* Metas Filhas (mensal) */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-slate-500">
+                    {submetas.length} meta(s) filha(s)
+                  </h4>
 
-              <AnimatePresence>
-                {nivel === 'semanal' ? (
-                  // TAREFAS (nivel semanal)
-                  tarefas.map((tarefa, index) => (
-                    <motion.div
-                      key={tarefa.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
-                        tarefa.completed
-                          ? 'bg-slate-50 border-slate-200'
-                          : 'bg-white border-slate-200 hover:border-amber-300 hover:shadow-sm'
-                      }`}
-                    >
-                      <Checkbox
-                        id={tarefa.id}
-                        checked={tarefa.completed}
-                        onCheckedChange={() => handleToggleTarefa(tarefa.id)}
-                        className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0"
-                      />
-                      <label
-                        htmlFor={tarefa.id}
-                        className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}
-                      >
-                        {tarefa.titulo}
-                      </label>
-                      <span className="text-xs text-slate-500 whitespace-nowrap">
-                        {new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}
-                      </span>
-                    </motion.div>
-                  ))
-                ) : (
-                  // SUBMETAS (outros niveis)
-                  submetas.map((sub, index) => {
-                    const subConfig = NIVEL_CONFIG[sub.nivel as MetaNivel] || NIVEL_CONFIG.grande;
-                    return (
+                  <AnimatePresence>
+                    {submetas.map((sub, index) => {
+                      const subConfig = NIVEL_CONFIG[sub.nivel as MetaNivel] || NIVEL_CONFIG.grande;
+                      return (
+                        <motion.div
+                          key={sub.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <Link
+                            to={`/metas/${config.proximoPath}/${sub.id}`}
+                            className="block"
+                          >
+                            <div className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${config.corBordaHover} ${config.corBgHover}`}>
+                              <Target className={`w-4 h-4 ${subConfig.corTexto} mt-1 sm:mt-0`} />
+                              <span className="flex-1 font-medium text-slate-800 text-sm sm:text-base leading-tight">{sub.titulo}</span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                                  <div className={`h-full ${subConfig.corSolid} rounded-full transition-all`} style={{ width: `${sub.progresso || 0}%` }} />
+                                </div>
+                                <span className="text-xs text-slate-500">{sub.progresso || 0}%</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs hidden sm:inline-flex">{subConfig.label}</Badge>
+                              <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
+                            </div>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+
+                  {submetas.length === 0 && (
+                    <EmptyState icon={<Target className="w-8 h-8 text-slate-300" />} title="Nenhuma meta filha" description="Crie metas filhas para decompor esta meta em passos menores." />
+                  )}
+
+                  <Button variant="outline" className={`w-full border-dashed border-slate-300 ${config.corBordaHover} ${config.corBgHover}`} onClick={() => navigate(`/metas/semanais/criar?pai=${meta.id}`)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Criar Meta Filha
+                  </Button>
+                </div>
+
+                <div className="border-t border-slate-200" />
+
+                {/* Tarefas (mensal) */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-slate-500">{tarefas.length} tarefa(s)</h4>
+
+                  <AnimatePresence>
+                    {tarefas.map((tarefa, index) => (
                       <motion.div
-                        key={sub.id}
+                        key={tarefa.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
+                          tarefa.completed
+                            ? 'bg-slate-50 border-slate-200'
+                            : 'bg-white border-slate-200 hover:border-amber-300 hover:shadow-sm'
+                        }`}
                       >
-                        <Link
-                          to={`/metas/${config.proximoPath}/${sub.id}`}
-                          className="block"
-                        >
-                          <div className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${config.corBordaHover} ${config.corBgHover}`}>
-                            <Target className={`w-4 h-4 ${subConfig.corTexto} mt-1 sm:mt-0`} />
-                            <span className="flex-1 font-medium text-slate-800 text-sm sm:text-base leading-tight">{sub.titulo}</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                                <div
-                                  className={`h-full ${subConfig.corSolid} rounded-full transition-all`}
-                                  style={{ width: `${sub.progresso || 0}%` }}
-                                />
-                              </div>
-                              <span className="text-xs text-slate-500">{sub.progresso || 0}%</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs hidden sm:inline-flex">
-                              {subConfig.label}
-                            </Badge>
-                            <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
-                          </div>
-                        </Link>
+                        <Checkbox id={tarefa.id} checked={tarefa.completed} onCheckedChange={() => handleToggleTarefa(tarefa.id)} className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0" />
+                        <label htmlFor={tarefa.id} className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</label>
+                        <span className="text-xs text-slate-500 whitespace-nowrap">{new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}</span>
                       </motion.div>
-                    );
-                  })
+                    ))}
+                  </AnimatePresence>
+
+                  {tarefas.length === 0 && (
+                    <EmptyState icon={<ListChecks className="w-8 h-8 text-slate-300" />} title="Nenhuma tarefa ainda" description="Adicione tarefas para começar a trackear seu progresso mensal." />
+                  )}
+
+                  <Button variant="outline" className={`w-full border-dashed border-slate-300 ${config.corBordaHover} ${config.corBgHover}`} onClick={() => navigate(`/agenda/tarefas/criar?meta=${meta.id}`)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar Tarefa
+                  </Button>
+                </div>
+              </>
+            ) : (
+              /* Metas Filhas / Tarefas (outros niveis) */
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-slate-500">
+                  {nivel === 'semanal'
+                    ? `${tarefas.length} tarefa(s)`
+                    : `${submetas.length} meta(s) filha(s)`
+                  }
+                </h4>
+
+                <AnimatePresence>
+                  {nivel === 'semanal' ? (
+                    tarefas.map((tarefa, index) => (
+                      <motion.div
+                        key={tarefa.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
+                          tarefa.completed
+                            ? 'bg-slate-50 border-slate-200'
+                            : 'bg-white border-slate-200 hover:border-amber-300 hover:shadow-sm'
+                        }`}
+                      >
+                        <Checkbox id={tarefa.id} checked={tarefa.completed} onCheckedChange={() => handleToggleTarefa(tarefa.id)} className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0" />
+                        <label htmlFor={tarefa.id} className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</label>
+                        <span className="text-xs text-slate-500 whitespace-nowrap">{new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}</span>
+                      </motion.div>
+                    ))
+                  ) : (
+                    submetas.map((sub, index) => {
+                      const subConfig = NIVEL_CONFIG[sub.nivel as MetaNivel] || NIVEL_CONFIG.grande;
+                      return (
+                        <motion.div key={sub.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }}>
+                          <Link to={`/metas/${config.proximoPath}/${sub.id}`} className="block">
+                            <div className={`flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${config.corBordaHover} ${config.corBgHover}`}>
+                              <Target className={`w-4 h-4 ${subConfig.corTexto} mt-1 sm:mt-0`} />
+                              <span className="flex-1 font-medium text-slate-800 text-sm sm:text-base leading-tight">{sub.titulo}</span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                                  <div className={`h-full ${subConfig.corSolid} rounded-full transition-all`} style={{ width: `${sub.progresso || 0}%` }} />
+                                </div>
+                                <span className="text-xs text-slate-500">{sub.progresso || 0}%</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs hidden sm:inline-flex">{subConfig.label}</Badge>
+                              <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
+                            </div>
+                          </Link>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </AnimatePresence>
+
+                {nivel === 'semanal' && tarefas.length === 0 && (
+                  <EmptyState icon={<ListChecks className="w-8 h-8 text-slate-300" />} title="Nenhuma tarefa ainda" description="Adicione tarefas para comecar a trackear seu progresso semanal." />
                 )}
-              </AnimatePresence>
 
-              {/* Empty State para filhas/tarefas */}
-              {nivel === 'semanal' && tarefas.length === 0 && (
-                <EmptyState
-                  icon={<ListChecks className="w-8 h-8 text-slate-300" />}
-                  title="Nenhuma tarefa ainda"
-                  description="Adicione tarefas para comecar a trackear seu progresso semanal."
-                />
-              )}
+                {nivel !== 'semanal' && submetas.length === 0 && (
+                  <EmptyState icon={<Target className="w-8 h-8 text-slate-300" />} title="Nenhuma meta filha" description="Crie metas filhas para decompor esta meta em passos menores." />
+                )}
 
-              {nivel !== 'semanal' && submetas.length === 0 && (
-                <EmptyState
-                  icon={<Target className="w-8 h-8 text-slate-300" />}
-                  title="Nenhuma meta filha"
-                  description="Crie metas filhas para decompor esta meta em passos menores."
-                />
-              )}
-            </div>
-
-            {/* CTA Adicionar */}
-            <Button
-              variant="outline"
-              className={`w-full border-dashed border-slate-300 ${config.corBordaHover} ${config.corBgHover}`}
-              onClick={() =>
-                nivel === 'semanal'
-                  ? navigate(`/agenda/tarefas/criar?meta=${meta.id}`)
-                  : navigate(`/metas/${config.proximoPath}/criar?pai=${meta.id}`)
-              }
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {nivel === 'semanal' ? 'Adicionar Tarefa' : 'Criar Meta Filha'}
-            </Button>
+                <Button variant="outline" className={`w-full border-dashed border-slate-300 ${config.corBordaHover} ${config.corBgHover}`} onClick={() => nivel === 'semanal' ? navigate(`/agenda/tarefas/criar?meta=${meta.id}`) : navigate(`/metas/${config.proximoPath}/criar?pai=${meta.id}`)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {nivel === 'semanal' ? 'Adicionar Tarefa' : 'Criar Meta Filha'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>

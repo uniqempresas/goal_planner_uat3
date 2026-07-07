@@ -1,10 +1,11 @@
 import { useParams, Link, useNavigate } from 'react-router';
-import { Pencil, Target, CheckCircle2, Clock, Trash2, Plus, ArrowLeft } from 'lucide-react';
+import { Pencil, Target, CheckCircle2, Clock, Trash2, Plus, ArrowLeft, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
+import { StatsCard } from '../../components/metas/StatsCard';
 import { useState, useMemo } from 'react';
 import {
   AlertDialog,
@@ -225,56 +226,30 @@ export default function AreaDetailPage() {
         </div>
       </motion.div>
 
-      {/* Progress Summary */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
-      >
-        <Card className="h-full flex flex-col items-center justify-center p-4 sm:p-6">
-          <div className="relative flex items-center justify-center">
-            <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-32 sm:h-32 transform -rotate-90">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-              <motion.circle
-                cx="50" cy="50" r="42" fill="none"
-                stroke={area.cor || '#6366f1'} strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 42}
-                initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
-                animate={{ strokeDashoffset: 2 * Math.PI * 42 * (1 - progresso / 100) }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <motion.span
-                className="text-3xl sm:text-4xl font-extrabold"
-                style={{ color: area.cor || '#6366f1' }}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                {progresso}%
-              </motion.span>
-            </div>
-          </div>
-          <p className="mt-3 sm:mt-4 text-sm text-slate-500 text-center">
-            {metasDaArea.length === 0
-              ? 'Sem metas vinculadas'
-              : `${metasConcluidas} de ${totalMetas} metas concluídas`
-            }
-          </p>
-          {progresso === 100 && metasDaArea.length > 0 && (
-            <motion.div
-              className="mt-3 sm:mt-4 p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-            >
-              <strong>Parabéns!</strong> Todas as metas concluídas.
-            </motion.div>
-          )}
-        </Card>
-      </motion.div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatsCard
+          icon={Target}
+          value={totalMetas}
+          label="Total de Metas"
+          color={area.cor || '#6366f1'}
+          bgColor={(area.cor || '#6366f1') + '20'}
+        />
+        <StatsCard
+          icon={TrendingUp}
+          value={`${progresso}%`}
+          label="Progresso Geral"
+          color={area.cor || '#6366f1'}
+          bgColor={(area.cor || '#6366f1') + '20'}
+        />
+        <StatsCard
+          icon={CheckCircle2}
+          value={metasConcluidas}
+          label="Metas Concluídas"
+          color="#10b981"
+          bgColor="#d1fae5"
+        />
+      </div>
 
       {/* Grandes Metas List */}
       <div>
