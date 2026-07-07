@@ -127,10 +127,10 @@ export function MetaCard({
 
         <button
           onClick={handleViewDetail}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-white/50"
+          className="p-1 rounded hover:bg-white/50 transition-colors"
           title="Ver detalhes"
         >
-          <Eye size={14} className="text-slate-500" />
+          <Eye size={14} className="text-slate-600" />
         </button>
       </div>
     );
@@ -198,7 +198,7 @@ export function MetaCard({
                 className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
                 title="Ver detalhes"
               >
-                <Eye size={16} className="text-slate-500" />
+                <Eye size={16} className="text-slate-600" />
               </button>
             </div>
 
