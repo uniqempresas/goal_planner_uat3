@@ -425,12 +425,12 @@ export default function MetaDetailPage() {
           </div>
           {nivel === 'semanal' && (
             <div className="sm:hidden flex items-center justify-center">
-              <div className="relative h-full aspect-square">
-                <svg viewBox="0 0 100 100" className="h-full w-full transform -rotate-90">
-                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+              <div className="relative w-10 h-10">
+                <svg viewBox="0 0 100 100" className="w-10 h-10 transform -rotate-90">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
                   <circle
                     cx="50" cy="50" r="42" fill="none"
-                    stroke="currentColor" strokeWidth="10"
+                    stroke="currentColor" strokeWidth="8"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 42}
                     strokeDashoffset={2 * Math.PI * 42 * (1 - progresso / 100)}
@@ -438,7 +438,7 @@ export default function MetaDetailPage() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={`text-xs font-bold ${config.corTexto}`}>{progresso}%</span>
+                  <span className={`text-[10px] font-bold ${config.corTexto}`}>{progresso}%</span>
                 </div>
               </div>
             </div>
