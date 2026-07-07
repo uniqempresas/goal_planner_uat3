@@ -397,9 +397,29 @@ export default function MetaDetailPage() {
             {config.emoji}
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
-              {meta.titulo}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight flex-1 min-w-0">
+                {meta.titulo}
+              </h1>
+              {nivel === 'semanal' && (
+                <div className="sm:hidden relative w-10 h-10 flex-shrink-0">
+                  <svg viewBox="0 0 100 100" className="w-10 h-10 transform -rotate-90">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+                    <circle
+                      cx="50" cy="50" r="42" fill="none"
+                      stroke="currentColor" strokeWidth="10"
+                      strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 42}
+                      strokeDashoffset={2 * Math.PI * 42 * (1 - progresso / 100)}
+                      className={config.corTexto}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className={`text-[10px] font-bold ${config.corTexto}`}>{progresso}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
               <Badge className={`${config.corBg} ${config.corTexto} ${config.corBorda}`}>
                 {config.label}
@@ -447,7 +467,7 @@ export default function MetaDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Progresso */}
         <motion.div
-          className="lg:col-span-1"
+          className={`lg:col-span-1 ${nivel === 'semanal' ? 'hidden sm:block' : ''}`}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
