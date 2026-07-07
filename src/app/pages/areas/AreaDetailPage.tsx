@@ -229,31 +229,34 @@ export default function AreaDetailPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
-          <CardHeader className="p-0 pb-1 sm:pb-2">
-            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500 hidden sm:block">Total de Metas</CardTitle>
+          <CardHeader className="p-0 pb-0 sm:pb-2">
+            <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
+              Total de Metas
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Layers className="h-4 w-4 sm:hidden mx-auto mb-1 text-slate-400" aria-hidden="true" />
             <div className="text-lg sm:text-2xl font-bold text-slate-800">{totalMetas}</div>
           </CardContent>
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
-          <CardHeader className="p-0 pb-1 sm:pb-2">
-            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500 hidden sm:block">Metas Ativas</CardTitle>
+          <CardHeader className="p-0 pb-0 sm:pb-2">
+            <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
+              Metas Ativas
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Clock className="h-4 w-4 sm:hidden mx-auto mb-1 text-slate-400" aria-hidden="true" />
             <div className="text-lg sm:text-2xl font-bold text-slate-800">
               {metasDaArea.filter(m => m.status === 'ativa').length}
             </div>
           </CardContent>
         </Card>
         <Card className="p-2 sm:p-4 flex flex-col items-center justify-center text-center">
-          <CardHeader className="p-0 pb-1 sm:pb-2">
-            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500 hidden sm:block">Metas Concluídas</CardTitle>
+          <CardHeader className="p-0 pb-0 sm:pb-2">
+            <CardTitle className="text-[9px] sm:text-sm font-medium text-slate-500 leading-tight">
+              Metas Concluídas
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <CheckCircle2 className="h-4 w-4 sm:hidden mx-auto mb-1 text-slate-400" aria-hidden="true" />
             <div className="text-lg sm:text-2xl font-bold text-slate-800">{metasConcluidas}</div>
           </CardContent>
         </Card>
