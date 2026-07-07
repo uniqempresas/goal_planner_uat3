@@ -190,7 +190,7 @@ function MiniProgressCircle({ progresso, cor }: { progresso: number; cor: string
 
   return (
     <div
-      className="relative flex items-center justify-center flex-shrink-0 w-16 h-16"
+      className="relative flex items-center justify-center flex-shrink-0 w-14 h-14"
       role="img"
       aria-label={`Progresso da meta: ${progresso}%`}
     >
@@ -423,7 +423,7 @@ export default function MetaDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:flex sm:flex-1 sm:items-start sm:gap-4">
+        <div className="grid grid-cols-2 items-start gap-3 sm:flex sm:flex-1 sm:items-start sm:gap-4">
           <div className="min-w-0 sm:flex-1">
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl ${config.corBg} flex items-center justify-center text-xl sm:text-3xl flex-shrink-0`}>
@@ -467,7 +467,6 @@ export default function MetaDetailPage() {
               <MiniProgressCircle progresso={progresso} cor={nivel} />
             </div>
           )}
-          <div className="sm:hidden" />
         </div>
 
         {/* Mobile action row with deadline */}
