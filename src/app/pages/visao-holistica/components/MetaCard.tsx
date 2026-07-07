@@ -1,6 +1,15 @@
-import { ChevronRight, ChevronDown, Star } from 'lucide-react';
+import { ChevronRight, ChevronDown, Star, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { levelColors, levelIcons, statusColors } from '../lib/constants';
 import type { MetaNode, MetaNivel } from '../types';
+
+const NIVEL_TO_PATH: Record<MetaNivel, string> = {
+  grande: 'grandes',
+  anual: 'anuais',
+  mensal: 'mensais',
+  semanal: 'semanais',
+  diaria: 'diarias',
+};
 
 function getDateSuffix(nivel: MetaNivel, prazo?: string | null): string {
   if (!prazo) return '';
@@ -46,11 +55,17 @@ export function MetaCard({
   isFocused,
   onFocus,
 }: MetaCardProps) {
+  const navigate = useNavigate();
   const LevelIcon = levelIcons[meta.nivel];
   const colors = levelColors[meta.nivel];
   const statusColors_ = statusColors[meta.computedStatus];
   
   const indentPadding = level * 24;
+
+  const handleViewDetail = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/metas/${NIVEL_TO_PATH[meta.nivel]}/${meta.id}`);
+  };
 
   if (viewMode === 'compacto') {
     return (
@@ -109,6 +124,14 @@ export function MetaCard({
         <span className={`text-xs font-medium ${statusColors_.text}`}>
           {meta.computedProgress}%
         </span>
+
+        <button
+          onClick={handleViewDetail}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-white/50"
+          title="Ver detalhes"
+        >
+          <Eye size={14} className="text-slate-500" />
+        </button>
       </div>
     );
   }
@@ -169,6 +192,14 @@ export function MetaCard({
                  meta.computedStatus === 'atrasada' ? 'Atrasada' :
                  meta.computedStatus === 'critica' ? 'Crítica' : 'Backlog'}
               </span>
+
+              <button
+                onClick={handleViewDetail}
+                className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
+                title="Ver detalhes"
+              >
+                <Eye size={16} className="text-slate-500" />
+              </button>
             </div>
 
             <h3 className={`font-semibold text-lg leading-tight ${colors.text} mb-1`}>
