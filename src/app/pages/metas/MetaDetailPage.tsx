@@ -397,7 +397,7 @@ export default function MetaDetailPage() {
 
   return (
     <motion.div
-      className="p-4 md:p-6 max-w-5xl mx-auto space-y-6"
+      className="p-4 md:p-6 max-w-5xl mx-auto space-y-4 md:space-y-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
@@ -501,6 +501,11 @@ export default function MetaDetailPage() {
               <Edit className="w-4 h-4" />
               <span className="hidden sm:inline ml-1">Editar</span>
             </Button>
+            {nivel === 'semanal' && (
+              <div className="sm:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center">
+                <MiniProgressCircle progresso={progresso} cor={nivel} />
+              </div>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -587,14 +592,14 @@ export default function MetaDetailPage() {
           transition={{ delay: 0.3, duration: 0.4 }}
         >
           {/* Descricao */}
-          <Card className="p-3 sm:p-4">
+          <Card className="p-2 sm:p-3">
             <CardHeader className="pb-2 px-0 sm:px-0">
-              <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                <FileText className="w-4 h-4" /> Descricao
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <FileText className="w-5 h-5 text-slate-500" /> Descricao
               </CardTitle>
             </CardHeader>
             <CardContent className="px-0 sm:px-0">
-              <p className="text-sm sm:text-base text-slate-800 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
                 {meta.descricao || <span className="text-slate-400 italic">Sem descricao</span>}
               </p>
             </CardContent>
