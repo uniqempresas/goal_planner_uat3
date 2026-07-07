@@ -38,7 +38,7 @@ export function AreaCardModern({ area, index }: AreaCardModernProps) {
     >
       <Link
         to={`/areas/${area.id}`}
-        className="relative block bg-white rounded-2xl border border-slate-200 p-5 cursor-pointer"
+        className="relative block bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 cursor-pointer active:scale-[0.99] transition-transform"
         style={{
           boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         }}
@@ -49,36 +49,36 @@ export function AreaCardModern({ area, index }: AreaCardModernProps) {
           style={{ backgroundColor: areaColor }}
         />
 
-        <div className="flex items-start justify-between mb-4">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-            style={{ backgroundColor: `${areaColor}20` }}
-          >
-            {area.icone || '🎯'}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {isComplete && (
-              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
-                ✅ Concluída
-              </span>
-            )}
-            {isHighProgress && !isComplete && (
-              <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
-                🔥 Em alta
-              </span>
-            )}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-400">{area.metasCount || 0} metas</span>
-              <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-xl sm:text-2xl shrink-0"
+              style={{ backgroundColor: `${areaColor}20` }}
+            >
+              {area.icone || '🎯'}
             </div>
+            <h3 className="text-slate-800 font-semibold text-sm sm:text-base truncate group-hover:text-indigo-600 transition-colors">
+              {area.nome}
+            </h3>
           </div>
+          <ArrowRight size={16} className="text-slate-300 group-hover:text-slate-500 transition-colors shrink-0" />
         </div>
 
-        <h3 className="text-slate-800 font-semibold text-base mb-1 group-hover:text-indigo-600 transition-colors">
-          {area.nome}
-        </h3>
-        <p className="text-slate-500 text-sm mb-4 leading-relaxed line-clamp-2">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          {isComplete && (
+            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full inline-flex items-center gap-1">
+              ✅ <span className="hidden sm:inline">Concluída</span>
+            </span>
+          )}
+          {isHighProgress && !isComplete && (
+            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full inline-flex items-center gap-1">
+              🔥 <span className="hidden sm:inline">Em alta</span>
+            </span>
+          )}
+          <span className="text-xs text-slate-400">{area.metasCount || 0} metas</span>
+        </div>
+
+        <p className="text-slate-500 text-sm mb-3 leading-relaxed line-clamp-2">
           {area.descricao || 'Sem descrição'}
         </p>
 

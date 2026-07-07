@@ -39,7 +39,7 @@ export function AreasOverview({ areas, totalMetas, completedMetas }: AreasOvervi
       </div>
 
       {/* Stacked progress bar */}
-      <div className="flex gap-1 h-3 rounded-full overflow-hidden mb-4">
+      <div className="flex gap-1 h-4 sm:h-3 rounded-full overflow-hidden mb-4">
         {areas.map((area) => (
           <motion.div
             key={area.id}
@@ -57,17 +57,17 @@ export function AreasOverview({ areas, totalMetas, completedMetas }: AreasOvervi
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-2 sm:gap-4">
         {areas.map((area) => (
-          <div key={area.id} className="flex items-center gap-2">
+          <div key={area.id} className="flex items-center gap-2 min-w-0">
             <div 
-              className="w-3 h-3 rounded-full flex-shrink-0" 
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
               style={{ backgroundColor: area.cor || DEFAULT_COLOR }}
             />
-            <span className="text-slate-500 text-sm">
+            <span className="text-slate-500 text-xs sm:text-sm truncate">
               {area.icone} {area.nome}
             </span>
-            <span className="text-slate-400 text-xs">
+            <span className="text-slate-400 text-xs hidden sm:inline">
               ({area.progress || 0}%)
             </span>
           </div>

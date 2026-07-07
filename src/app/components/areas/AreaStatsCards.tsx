@@ -25,7 +25,7 @@ export function AreaStatsCards({ areas }: AreaStatsCardsProps) {
     : 0;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
       <StatsCard
         icon={Layers}
         value={totalAreas}
@@ -33,6 +33,7 @@ export function AreaStatsCards({ areas }: AreaStatsCardsProps) {
         color="#6366F1"
         bgColor="#EEF2FF"
         delay={0}
+        compact
       />
       <StatsCard
         icon={Target}
@@ -41,6 +42,7 @@ export function AreaStatsCards({ areas }: AreaStatsCardsProps) {
         color="#8B5CF6"
         bgColor="#F3E8FF"
         delay={0.1}
+        compact
       />
       <StatsCard
         icon={TrendingUp}
@@ -49,6 +51,7 @@ export function AreaStatsCards({ areas }: AreaStatsCardsProps) {
         color="#10B981"
         bgColor="#D1FAE5"
         delay={0.2}
+        compact
       />
     </div>
   );
