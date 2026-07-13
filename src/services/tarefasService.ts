@@ -112,6 +112,24 @@ export const tarefasService = {
   },
 
   /**
+   * Busca tarefas atrasadas (data anterior a hoje) não concluídas
+   */
+  async getAtrasadas(userId: string, hoje: string): Promise<Tarefa[]> {
+    const { data: tarefas, error } = await supabase
+      .from('tarefas')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_template', false)
+      .eq('completed', false)
+      .lt('data', hoje)
+      .order('data', { ascending: false })
+      .order('hora', { ascending: true });
+
+    if (error) throw error;
+    return tarefas || [];
+  },
+
+  /**
    * Busca instâncias de tarefas recorrentes para uma data específica
    */
   async getInstanciasRecorrentesDoDia(userId: string, data: string): Promise<Tarefa[]> {
