@@ -94,16 +94,16 @@ function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThin
           </div>
 
           <div className="flex flex-wrap items-center gap-2 mt-1">
-            {tarefa.hora && (
-              <span className="text-xs text-slate-400 flex items-center gap-1">
-                <Clock size={10} />
-                {tarefa.hora}
-              </span>
-            )}
             {isAtrasada && (
               <span className="text-xs text-red-400 flex items-center gap-1">
                 <Calendar size={10} />
                 {new Date(tarefa.data + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+              </span>
+            )}
+            {tarefa.hora && (
+              <span className="text-xs text-slate-400 flex items-center gap-1">
+                <Clock size={10} />
+                {tarefa.hora}
               </span>
             )}
             {meta && (
