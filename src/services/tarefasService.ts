@@ -174,6 +174,48 @@ export const tarefasService = {
   },
 
   /**
+   * Marks a task as not executed (missed).
+   * The task stays on its original date with missed=true.
+   */
+  async markAsMissed(id: string): Promise<Tarefa> {
+    return this.update(id, { missed: true });
+  },
+
+  /**
+   * Reschedules a missed task by creating a copy on a new date.
+   * The original task remains with missed=true on its original date.
+   */
+  async rescheduleFromMissed(
+    userId: string,
+    originalId: string,
+    newData: string
+  ): Promise<{ original: Tarefa; nova: Tarefa }> {
+    const original = await this.getById(originalId);
+    if (!original) throw new Error('Tarefa original não encontrada');
+    
+    await this.update(originalId, { missed: true });
+
+    const novaTarefa = await this.create(userId, {
+      titulo: original.titulo,
+      descricao: original.descricao,
+      bloco: original.bloco,
+      hora: original.hora,
+      prioridade: original.prioridade,
+      completed: false,
+      data: newData,
+      recorrencia: original.recorrencia,
+      recorrencia_config: original.recorrencia_config,
+      meta_id: original.meta_id,
+      habito_id: original.habito_id,
+      parent_id: original.parent_id,
+      is_template: false,
+      data_fim_recorrencia: original.data_fim_recorrencia,
+    });
+
+    return { original, nova: novaTarefa };
+  },
+
+  /**
    * Verifica se uma tarefa é uma instância de recorrência
    */
   async isInstanciaRecorrente(tarefaId: string): Promise<boolean> {

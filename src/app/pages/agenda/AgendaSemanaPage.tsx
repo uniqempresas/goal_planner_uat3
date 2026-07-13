@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   Target,
   Flame,
-  Sparkles 
+  Sparkles,
+  XCircle 
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
@@ -47,6 +48,8 @@ export default function AgendaSemanaPage() {
   const [tasksByDay, setTasksByDay] = useState<Record<number, TarefaUI[]>>({});
   const [loading, setLoading] = useState(true);
   const [togglingTaskId, setTogglingTaskId] = useState<string | null>(null);
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState('');
 
   const selectedDate = new Date(currentWeekStart);
   selectedDate.setDate(currentWeekStart.getDate() + selectedDay);
@@ -89,6 +92,7 @@ export default function AgendaSemanaPage() {
             hora: t.hora || undefined,
             priority: (t.prioridade === 'alta' ? 'high' : t.prioridade === 'media' ? 'medium' : 'low') as any,
             completed: t.completed,
+            missed: t.missed,
             data: t.data,
             isOneThing: t.bloco === 'one-thing',
             notes: t.descricao || undefined,
@@ -174,6 +178,82 @@ export default function AgendaSemanaPage() {
     }
   };
 
+  const handleMarkMissed = async (taskId: string) => {
+    try {
+      await tarefasService.markAsMissed(taskId);
+      setTasksByDay(prev => {
+        const newTasksByDay = { ...prev };
+        for (let i = 0; i < 7; i++) {
+          const dayTasks = [...(newTasksByDay[i] || [])];
+          const taskIndex = dayTasks.findIndex(t => t.id === taskId);
+          if (taskIndex !== -1) {
+            dayTasks[taskIndex] = { ...dayTasks[taskIndex], missed: true };
+            newTasksByDay[i] = dayTasks;
+            break;
+          }
+        }
+        return newTasksByDay;
+      });
+    } catch (error) {
+      console.error('Erro ao marcar tarefa como não executada:', error);
+    }
+  };
+
+  const handleReschedule = async (taskId: string, newData: string) => {
+    if (!user) return;
+    try {
+      const result = await tarefasService.rescheduleFromMissed(user.id, taskId, newData);
+      setTasksByDay(prev => {
+        const newTasksByDay = { ...prev };
+        // Update original task as missed
+        for (let i = 0; i < 7; i++) {
+          const dayTasks = [...(newTasksByDay[i] || [])];
+          const taskIndex = dayTasks.findIndex(t => t.id === taskId);
+          if (taskIndex !== -1) {
+            dayTasks[taskIndex] = { ...dayTasks[taskIndex], missed: true };
+            newTasksByDay[i] = dayTasks;
+            break;
+          }
+        }
+        // Add new task to appropriate day
+        const newDate = new Date(result.nova.data + 'T12:00:00');
+        const newDayIndex = (newDate.getDay() - new Date(currentWeekStart).getDay() + 7) % 7;
+        // Find correct week offset
+        const weekStart = new Date(currentWeekStart);
+        let targetDayIndex = -1;
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(weekStart);
+          d.setDate(weekStart.getDate() + i);
+          const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          if (dStr === result.nova.data) {
+            targetDayIndex = i;
+            break;
+          }
+        }
+        if (targetDayIndex >= 0) {
+          const newDayTasks = [...(newTasksByDay[targetDayIndex] || [])];
+          newDayTasks.push({
+            id: result.nova.id,
+            title: result.nova.titulo,
+            description: result.nova.descricao || undefined,
+            block: (result.nova.bloco === 'one-thing' ? 'oneThing' : result.nova.bloco === 'manha' ? 'manha' : result.nova.bloco === 'tarde' ? 'tarde' : result.nova.bloco === 'noite' ? 'noite' : 'recorrentes') as any,
+            hora: result.nova.hora || undefined,
+            priority: (result.nova.prioridade === 'alta' ? 'high' : result.nova.prioridade === 'media' ? 'medium' : 'low') as any,
+            completed: false,
+            missed: false,
+            data: result.nova.data,
+            isOneThing: result.nova.bloco === 'one-thing',
+          });
+          newTasksByDay[targetDayIndex] = newDayTasks;
+        }
+        return newTasksByDay;
+      });
+      setReschedulingId(null);
+    } catch (error) {
+      console.error('Erro ao reagendar tarefa:', error);
+    }
+  };
+
   const handleNavigateToTask = (taskId: string) => {
     navigate(`/agenda/tarefas/${taskId}`);
   };
@@ -197,6 +277,7 @@ export default function AgendaSemanaPage() {
   const weekTotalTasks = Object.values(tasksByDay).flat();
   const weekOnlyTarefas = weekTotalTasks.filter(t => !t.habitoId);
   const weekCompleted = weekOnlyTarefas.filter(t => t.completed).length;
+  const weekMissed = weekOnlyTarefas.filter(t => t.missed).length;
   const weekOneThings = weekTotalTasks.filter(t => t.isOneThing).length;
   const weekProgress = weekTotalTasks.length > 0 
     ? Math.round((weekTotalTasks.filter(t => t.completed).length / weekTotalTasks.length) * 100) 
@@ -355,6 +436,8 @@ export default function AgendaSemanaPage() {
                             onToggle={handleToggleTask}
                             isToggling={togglingTaskId === task.id}
                             onNavigate={handleNavigateToTask}
+                            onMarkMissed={handleMarkMissed}
+                            onReschedule={handleReschedule}
                           />
                         </motion.div>
                       ))}
@@ -402,11 +485,18 @@ export default function AgendaSemanaPage() {
               delay={1}
             />
             <WeekStatsCard
+              icon={XCircle}
+              value={weekMissed}
+              label="Não executadas"
+              type="missed"
+              delay={2}
+            />
+            <WeekStatsCard
               icon={Target}
               value={`${weekProgress}%`}
               label="Taxa de conclusão"
               type="default"
-              delay={2}
+              delay={3}
             />
           </motion.div>
         </div>

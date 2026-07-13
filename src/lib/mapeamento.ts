@@ -29,6 +29,7 @@ export interface TarefaUI {
   hora?: string;
   priority?: Priority;
   completed: boolean;
+  missed?: boolean;
   data: string;
   isOneThing: boolean;
   notes?: string;
@@ -86,6 +87,7 @@ export function mapTarefaToUI(tarefa: TarefaDB): TarefaUI {
     hora: tarefa.hora || undefined,
     priority: mapPrioridadeToUI(tarefa.prioridade),
     completed: tarefa.completed,
+    missed: tarefa.missed,
     data: tarefa.data,
     isOneThing: tarefa.bloco === 'one-thing',
     notes: tarefa.descricao || undefined,

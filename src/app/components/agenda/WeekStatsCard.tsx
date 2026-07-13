@@ -5,7 +5,7 @@ interface WeekStatsCardProps {
   icon: LucideIcon;
   value: string | number;
   label: string;
-  type?: 'default' | 'success' | 'oneThing';
+  type?: 'default' | 'success' | 'oneThing' | 'missed';
   delay?: number;
 }
 
@@ -24,6 +24,11 @@ const typeStyles = {
     iconBg: 'bg-amber-100',
     iconColor: 'text-amber-600',
     gradient: 'from-amber-500 to-orange-600',
+  },
+  missed: {
+    iconBg: 'bg-red-100',
+    iconColor: 'text-red-600',
+    gradient: 'from-red-500 to-rose-600',
   },
 };
 

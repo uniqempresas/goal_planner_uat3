@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import {
   Star, AlertTriangle, Sun, Cloud, Moon, RefreshCw, Calendar,
   CheckCircle2, Circle, ChevronDown, ChevronUp, Plus, Clock,
-  Target, Flame, Pencil, Trash2,
+  Target, Flame, Pencil, Trash2, XCircle, CalendarPlus,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import EmptyState from '../../components/empty-state/EmptyState';
@@ -31,58 +31,135 @@ const priorityColors: Record<string, string> = {
   low: 'bg-slate-300',
 };
 
-function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThing }: { tarefa: TarefaUI; onToggle: (id: string) => void; onDelete: (id: string) => void; isAtrasada?: boolean; onPromoteToOneThing?: (id: string) => void }) {
+function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThing, onMarkMissed, onReschedule }: {
+  tarefa: TarefaUI;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  isAtrasada?: boolean;
+  onPromoteToOneThing?: (id: string) => void;
+  onMarkMissed?: (id: string) => void;
+  onReschedule?: (id: string, newData: string) => void;
+}) {
   const { getMetaById } = useApp();
   const meta = tarefa.metaId ? getMetaById(tarefa.metaId) : undefined;
+  const [showReschedulePicker, setShowReschedulePicker] = useState(false);
+  const hoje = new Date().toISOString().split('T')[0];
+  const [rescheduleDate, setRescheduleDate] = useState(hoje);
+
+  const handleConfirmReschedule = () => {
+    onReschedule?.(tarefa.id, rescheduleDate);
+    setShowReschedulePicker(false);
+  };
 
   return (
-    <div className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'} ${isAtrasada ? 'bg-red-50/50 border border-red-100' : ''}`}>
+    <div className={`
+      flex items-start gap-3 p-3 rounded-xl transition-all group
+      ${tarefa.completed ? 'opacity-60' : 'hover:bg-black/5'}
+      ${isAtrasada && !tarefa.missed ? 'bg-red-50/50 border border-red-100' : ''}
+      ${tarefa.missed ? 'bg-red-50/30 border-l-4 border-red-300' : ''}
+    `}>
       <button
         onClick={(e) => { e.preventDefault(); onToggle(tarefa.id); }}
-        className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer"
+        disabled={tarefa.missed}
+        className="mt-0.5 shrink-0 transition-transform hover:scale-110 cursor-pointer disabled:cursor-not-allowed"
       >
-        {tarefa.completed
-          ? <CheckCircle2 size={20} className="text-emerald-500" />
-          : <Circle size={20} className="text-slate-300 hover:text-slate-400" />
-        }
+        {tarefa.missed ? (
+          <XCircle size={20} className="text-red-400" />
+        ) : tarefa.completed ? (
+          <CheckCircle2 size={20} className="text-emerald-500" />
+        ) : (
+          <Circle size={20} className="text-slate-300 hover:text-slate-400" />
+        )}
       </button>
 
-      <Link to={`/agenda/tarefas/${tarefa.id}`} className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className={`text-sm leading-relaxed ${tarefa.completed ? 'line-through text-slate-400' : isAtrasada ? 'text-red-700' : 'text-slate-800'} ${tarefa.isOneThing ? 'font-medium' : ''}`}>
-            {tarefa.title}
-          </p>
-          <div className="flex items-center gap-1.5">
-            {isAtrasada && !tarefa.completed && (
-              <span className="text-[10px] font-medium text-red-600 bg-red-100 px-1.5 py-0.5 rounded">Atrasada</span>
+      <div className="flex-1 min-w-0">
+        <Link to={`/agenda/tarefas/${tarefa.id}`}>
+          <div className="flex items-start justify-between gap-2">
+            <p className={`text-sm leading-relaxed ${tarefa.completed ? 'line-through text-slate-400' : tarefa.missed ? 'text-red-600' : isAtrasada ? 'text-red-700' : 'text-slate-800'} ${tarefa.isOneThing ? 'font-medium' : ''}`}>
+              {tarefa.title}
+            </p>
+            <div className="flex items-center gap-1.5">
+              {tarefa.missed && (
+                <span className="text-[10px] font-medium text-red-600 bg-red-100 px-1.5 py-0.5 rounded border border-red-200">
+                  Não executada
+                </span>
+              )}
+              {isAtrasada && !tarefa.completed && !tarefa.missed && (
+                <span className="text-[10px] font-medium text-red-600 bg-red-100 px-1.5 py-0.5 rounded">Atrasada</span>
+              )}
+              {tarefa.priority && (
+                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${priorityColors[tarefa.priority]}`} />
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            {tarefa.hora && (
+              <span className="text-xs text-slate-400 flex items-center gap-1">
+                <Clock size={10} />
+                {tarefa.hora}
+              </span>
             )}
-            {tarefa.priority && (
-              <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${priorityColors[tarefa.priority]}`} />
+            {meta && (
+              <span className="text-xs text-indigo-500 flex items-center gap-1">
+                <Target size={10} />
+                {meta.titulo.slice(0, 30)}{meta.titulo.length > 30 ? '…' : ''}
+              </span>
+            )}
+            {tarefa.notes && (
+              <span className="text-xs text-slate-400 italic line-clamp-1">{tarefa.notes}</span>
             )}
           </div>
-        </div>
+        </Link>
 
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          {tarefa.hora && (
-            <span className="text-xs text-slate-400 flex items-center gap-1">
-              <Clock size={10} />
-              {tarefa.hora}
-            </span>
-          )}
-          {meta && (
-            <span className="text-xs text-indigo-500 flex items-center gap-1">
-              <Target size={10} />
-              {meta.titulo.slice(0, 30)}{meta.titulo.length > 30 ? '…' : ''}
-            </span>
-          )}
-          {tarefa.notes && (
-            <span className="text-xs text-slate-400 italic line-clamp-1">{tarefa.notes}</span>
-          )}
-        </div>
-      </Link>
+        {/* Reschedule inline form */}
+        {tarefa.missed && onReschedule && (
+          <div className="mt-2">
+            {showReschedulePicker ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+                <button
+                  onClick={handleConfirmReschedule}
+                  className="text-xs font-medium text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Confirmar
+                </button>
+                <button
+                  onClick={() => setShowReschedulePicker(false)}
+                  className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5"
+                >
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowReschedulePicker(true)}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors"
+              >
+                <CalendarPlus size={14} />
+                Reagendar
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
-      {/* Action Buttons - sempre visível no mobile, hover no desktop */}
+      {/* Action Buttons */}
       <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        {!tarefa.completed && !tarefa.missed && onMarkMissed && (
+          <button
+            onClick={() => onMarkMissed(tarefa.id)}
+            className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            title="Marcar como não executada"
+          >
+            <XCircle size={16} />
+          </button>
+        )}
         {!tarefa.isOneThing && onPromoteToOneThing && (
           <button
             onClick={() => onPromoteToOneThing(tarefa.id)}
@@ -154,7 +231,7 @@ function HabitoItem({ habito, onToggle }: { habito: Habito; onToggle: (id: strin
   );
 }
 
-function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTarefa, onToggleHabito, onPromoteToOneThing }: {
+function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTarefa, onToggleHabito, onPromoteToOneThing, onMarkMissed, onReschedule }: {
   block: TimeBlock;
   tarefas: TarefaUI[];
   habitos?: Habito[];
@@ -162,6 +239,8 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
   onDeleteTarefa: (id: string) => void;
   onToggleHabito?: (id: string) => void;
   onPromoteToOneThing?: (id: string) => void;
+  onMarkMissed?: (id: string) => void;
+  onReschedule?: (id: string, newData: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(true);
   const today = new Date().toISOString().split('T')[0];
@@ -259,7 +338,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
           {tarefas.length > 0 && (
             <div className="space-y-1">
               {tarefas.map(tarefa => (
-                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} isAtrasada={block === 'atrasadas'} onPromoteToOneThing={onPromoteToOneThing} />
+                <TarefaItem key={tarefa.id} tarefa={tarefa} onToggle={onToggleTarefa} onDelete={onDeleteTarefa} isAtrasada={block === 'atrasadas'} onPromoteToOneThing={onPromoteToOneThing} onMarkMissed={onMarkMissed} onReschedule={onReschedule} />
               ))}
             </div>
           )}
@@ -277,7 +356,7 @@ function TimeBlockSection({ block, tarefas, habitos, onToggleTarefa, onDeleteTar
 }
 
 export default function AgendaHojePage() {
-  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas, updateTarefa } = useApp();
+  const { tarefasHoje, toggleTarefa, habitosHoje, toggleHabitoStreak, weeklyStats, deleteTarefa, loadTarefas, updateTarefa, markTarefaAsMissed, rescheduleTarefa } = useApp();
 
 const today = new Date().toISOString().split('T')[0];
   
@@ -338,7 +417,7 @@ const today = new Date().toISOString().split('T')[0];
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mt-4">
+        <div className="grid grid-cols-4 gap-3 mt-4">
           <div className="text-center">
             <div className="text-lg font-bold text-emerald-600">{completedTarefas}</div>
             <div className="text-slate-400 text-xs">Concluídas</div>
@@ -346,6 +425,10 @@ const today = new Date().toISOString().split('T')[0];
           <div className="text-center">
             <div className="text-lg font-bold text-indigo-600">{totalTarefas - completedTarefas}</div>
             <div className="text-slate-400 text-xs">Pendentes</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-red-500">{tarefasHoje.filter(t => t.missed).length}</div>
+            <div className="text-slate-400 text-xs">Não executadas</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-amber-600">{habitosProgress}%</div>
@@ -376,7 +459,7 @@ const today = new Date().toISOString().split('T')[0];
                 tarefas={(() => {
                   // Tarefas sem vínculo a hábitos
                   const tarefasSemHabito = tarefasHoje.filter(t => !t.habitoId);
-                  // Tarefas atrasadas: data < hoje e não concluídas
+                  // Tarefas atrasadas: data < hoje e não concluídas (inclui missed)
                   const tarefasAtrasadas = tarefasSemHabito.filter(t => t.data < today && !t.completed);
 
                   if (block === 'atrasadas') {
@@ -396,6 +479,8 @@ const today = new Date().toISOString().split('T')[0];
                 onDeleteTarefa={handleDeleteTarefa}
                 onToggleHabito={block === 'habitos' ? toggleHabitoStreak : undefined}
                 onPromoteToOneThing={handlePromoteToOneThing}
+                onMarkMissed={markTarefaAsMissed}
+                onReschedule={rescheduleTarefa}
               />
             ))}
           </div>

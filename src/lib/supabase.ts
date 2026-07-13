@@ -171,6 +171,7 @@ export type Database = {
           hora: string | null;
           prioridade: 'alta' | 'media' | 'baixa';
           completed: boolean;
+          missed: boolean;
           data: string;
           recorrencia: 'nenhuma' | 'diaria' | 'semanal';
           // Novos campos para tarefas recorrentes
@@ -191,6 +192,7 @@ export type Database = {
           hora?: string | null;
           prioridade?: 'alta' | 'media' | 'baixa';
           completed?: boolean;
+          missed?: boolean;
           data: string;
           recorrencia?: 'nenhuma' | 'diaria' | 'semanal';
           // Novos campos
@@ -211,6 +213,7 @@ export type Database = {
           hora?: string | null;
           prioridade?: 'alta' | 'media' | 'baixa';
           completed?: boolean;
+          missed?: boolean;
           data?: string;
           recorrencia?: 'nenhuma' | 'diaria' | 'semanal';
           // Novos campos

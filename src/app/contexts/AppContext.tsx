@@ -23,6 +23,7 @@ type Habito = Database['public']['Tables']['habitos']['Row'];
 interface WeeklyStats {
   tarefasTotal: number;
   tarefasConcluidas: number;
+  tarefasPerdidas: number;
   metasConcluidas: number;
   sequenciaDias: number;
   produtividade: number;
@@ -76,6 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const tarefas = tarefasHoje.filter(t => !t.habitoId);
     const total = tarefas.length;
     const concluidas = tarefas.filter(t => t.completed).length;
+    const perdidas = tarefas.filter(t => t.missed).length;
     const produtividade = tarefasHoje.length > 0
       ? Math.round((tarefasHoje.filter(t => t.completed).length / tarefasHoje.length) * 100)
       : 0;
@@ -87,6 +89,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setWeeklyStats({
       tarefasTotal: total,
       tarefasConcluidas: concluidas,
+      tarefasPerdidas: perdidas,
       metasConcluidas: 0, // TODO: calcular metas concluídas
       sequenciaDias,
       produtividade,
@@ -245,6 +248,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setTarefasHoje(prev => prev.filter(t => t.id !== id));
   }, []);
 
+  const markTarefaAsMissed = useCallback(async (id: string) => {
+    const updated = await tarefasService.markAsMissed(id);
+    const tarefaMapeada = mapTarefaToUI(updated);
+    setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
+  }, []);
+
+  const rescheduleTarefa = useCallback(async (originalId: string, newData: string) => {
+    if (!user) throw new Error('Usuário não autenticado');
+    const result = await tarefasService.rescheduleFromMissed(user.id, originalId, newData);
+    const originalMapeada = mapTarefaToUI(result.original);
+    const novaMapeada = mapTarefaToUI(result.nova);
+    setTarefasHoje(prev => [
+      ...prev.map(t => t.id === originalId ? originalMapeada : t),
+      novaMapeada,
+    ]);
+  }, [user]);
+
   const login = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -361,6 +381,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createTarefa,
       updateTarefa,
       deleteTarefa,
+      markTarefaAsMissed,
+      rescheduleTarefa,
       habitosHoje,
       loadHabitos,
       toggleHabitoStreak,
