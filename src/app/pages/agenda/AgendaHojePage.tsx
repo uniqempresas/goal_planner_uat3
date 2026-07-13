@@ -100,6 +100,12 @@ function TarefaItem({ tarefa, onToggle, onDelete, isAtrasada, onPromoteToOneThin
                 {tarefa.hora}
               </span>
             )}
+            {isAtrasada && (
+              <span className="text-xs text-red-400 flex items-center gap-1">
+                <Calendar size={10} />
+                {new Date(tarefa.data + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+              </span>
+            )}
             {meta && (
               <span className="text-xs text-indigo-500 flex items-center gap-1">
                 <Target size={10} />
