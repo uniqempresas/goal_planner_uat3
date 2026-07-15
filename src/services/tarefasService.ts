@@ -121,6 +121,7 @@ export const tarefasService = {
       .eq('user_id', userId)
       .eq('is_template', false)
       .eq('completed', false)
+      .eq('missed', false)
       .lt('data', hoje)
       .order('data', { ascending: false })
       .order('hora', { ascending: true });
