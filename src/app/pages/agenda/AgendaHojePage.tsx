@@ -466,7 +466,7 @@ const today = new Date().toISOString().split('T')[0];
                   // Tarefas sem vínculo a hábitos
                   const tarefasSemHabito = tarefasHoje.filter(t => !t.habitoId);
                   // Tarefas atrasadas: data < hoje e não concluídas (inclui missed)
-                  const tarefasAtrasadas = tarefasSemHabito.filter(t => t.data < today && !t.completed);
+                  const tarefasAtrasadas = tarefasSemHabito.filter(t => t.data < today && !t.completed && !t.missed);
 
                   if (block === 'atrasadas') {
                     return tarefasAtrasadas;
