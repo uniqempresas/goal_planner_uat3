@@ -14,9 +14,13 @@ interface UseTarefasHierarchyResult {
 /**
  * Determina o status de uma tarefa baseado na data e completion
  */
-function getTaskStatus(tarefa: TaskViewItem): 'atrasada' | 'aberta' | 'concluida' {
+function getTaskStatus(tarefa: TaskViewItem): TaskStatus {
   if (tarefa.completed) {
     return 'concluida';
+  }
+
+  if (tarefa.missed) {
+    return 'nao_executada';
   }
 
   if (!tarefa.data) {
@@ -42,6 +46,7 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
     atrasadas: [],
     abertas: [],
     concluidas: [],
+    nao_executadas: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -64,21 +69,23 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
         data: tarefa.data,
         hora: tarefa.hora || undefined,
         completed: tarefa.completed,
+        missed: tarefa.missed,
         habito_id: tarefa.habito_id,
         meta_id: tarefa.meta_id,
         data_conclusao: tarefa.data_conclusao || undefined,
       }));
 
-      // Agrupar por status
       const agrupadas: GroupedTasks = {
         atrasadas: [],
         abertas: [],
         concluidas: [],
+        nao_executadas: [],
       };
 
       taskViewItems.forEach((tarefa) => {
         const status = getTaskStatus(tarefa);
-        const key = status === 'atrasada' ? 'atrasadas'
+        const key = status === 'nao_executada' ? 'nao_executadas'
+          : status === 'atrasada' ? 'atrasadas'
           : status === 'aberta' ? 'abertas'
           : 'concluidas';
         agrupadas[key].push(tarefa);
@@ -87,6 +94,7 @@ export function useTarefasHierarchy(): UseTarefasHierarchyResult {
       // Ordenar por data
       agrupadas.atrasadas.sort((a, b) => a.data.localeCompare(b.data));
       agrupadas.abertas.sort((a, b) => a.data.localeCompare(b.data));
+      agrupadas.nao_executadas.sort((a, b) => a.data.localeCompare(b.data));
       agrupadas.concluidas.sort((a, b) => {
         if (!a.data_conclusao || !b.data_conclusao) return 0;
         return b.data_conclusao.localeCompare(a.data_conclusao);
@@ -140,5 +148,6 @@ export function useFilteredTarefas(
     atrasadas: filtrarPorTipo(filtered.atrasadas),
     abertas: filtrarPorTipo(filtered.abertas),
     concluidas: filtrarPorTipo(filtered.concluidas),
+    nao_executadas: filtrarPorTipo(filtered.nao_executadas),
   };
 }

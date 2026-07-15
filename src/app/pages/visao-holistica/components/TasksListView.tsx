@@ -14,7 +14,8 @@ import {
   Clock,
   AlertCircle,
   CheckCircle,
-  CircleDashed
+  CircleDashed,
+  XCircle
 } from 'lucide-react';
 import type { TaskViewItem, TaskFilterState, GroupedTasks } from '../types';
 
@@ -44,6 +45,8 @@ function TaskItem({ tarefa }: TaskItemProps) {
     >
       {tarefa.completed ? (
         <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />
+      ) : tarefa.missed ? (
+        <XCircle size={20} className="text-red-500 flex-shrink-0" />
       ) : (
         <Circle size={20} className="text-slate-300 flex-shrink-0" />
       )}
@@ -51,7 +54,7 @@ function TaskItem({ tarefa }: TaskItemProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium truncate ${
-            tarefa.completed ? 'text-slate-400 line-through' : 'text-slate-700'
+            tarefa.completed ? 'text-slate-400 line-through' : tarefa.missed ? 'text-red-600' : 'text-slate-700'
           }`}>
             {tarefa.titulo}
           </span>
@@ -159,12 +162,14 @@ export function TasksListView({ tarefas, filtro, isLoading }: TasksListViewProps
       atrasadas: filtro.showAtrasadas ? filtrarPorTipo(tarefas.atrasadas) : [],
       abertas: filtro.showAberto ? filtrarPorTipo(tarefas.abertas) : [],
       concluidas: filtro.showConcluidas ? filtrarPorTipo(tarefas.concluidas) : [],
+      nao_executadas: filtro.showNaoExecutadas ? filtrarPorTipo(tarefas.nao_executadas) : [],
     };
   }, [tarefas, filtro]);
 
   const atrasadasCount = filteredTasks.atrasadas.length;
   const abertasCount = filteredTasks.abertas.length;
   const concluidasCount = filteredTasks.concluidas.length;
+  const naoExecutadasCount = filteredTasks.nao_executadas.length;
 
   if (isLoading) {
     return (
@@ -179,7 +184,7 @@ export function TasksListView({ tarefas, filtro, isLoading }: TasksListViewProps
     );
   }
 
-  const hasAnyTask = atrasadasCount > 0 || abertasCount > 0 || concluidasCount > 0;
+  const hasAnyTask = atrasadasCount > 0 || abertasCount > 0 || concluidasCount > 0 || naoExecutadasCount > 0;
 
   if (!hasAnyTask) {
     return (
@@ -207,6 +212,17 @@ export function TasksListView({ tarefas, filtro, isLoading }: TasksListViewProps
           tasks={filteredTasks.atrasadas}
           count={atrasadasCount}
           defaultExpanded={true}
+        />
+      )}
+      
+      {/* Não Executadas */}
+      {filtro.showNaoExecutadas && (
+        <TaskSection
+          title="Não Executadas"
+          icon={<XCircle size={18} className="text-red-500" />}
+          tasks={filteredTasks.nao_executadas}
+          count={naoExecutadasCount}
+          defaultExpanded={false}
         />
       )}
       

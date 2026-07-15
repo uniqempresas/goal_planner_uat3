@@ -49,6 +49,16 @@ export function TaskFilters({ filter, onFilterChange }: TaskFiltersProps) {
           />
           Concluídas
         </label>
+
+        <label className="flex items-center gap-2 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={filter.showNaoExecutadas}
+            onChange={(e) => onFilterChange({ ...filter, showNaoExecutadas: e.target.checked })}
+            className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+          />
+          Não Executadas
+        </label>
       </div>
     </div>
   );

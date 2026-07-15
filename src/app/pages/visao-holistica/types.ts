@@ -74,7 +74,7 @@ export type GroupedMetas = Record<string, MetaNode[]>;
 // Tipos para Tarefas
 // ============================================
 
-export type TaskStatus = 'atrasada' | 'aberta' | 'concluida';
+export type TaskStatus = 'atrasada' | 'aberta' | 'concluida' | 'nao_executada';
 
 export interface TaskViewItem {
   id: string;
@@ -83,6 +83,7 @@ export interface TaskViewItem {
   data: string;
   hora?: string;
   completed: boolean;
+  missed?: boolean;
   habito_id: string | null;
   meta_id: string | null;
   data_conclusao?: string | null;
@@ -93,10 +94,12 @@ export interface TaskFilterState {
   showAtrasadas: boolean;
   showAberto: boolean;
   showConcluidas: boolean;
+  showNaoExecutadas: boolean;
 }
 
 export interface GroupedTasks {
   atrasadas: TaskViewItem[];
   abertas: TaskViewItem[];
   concluidas: TaskViewItem[];
+  nao_executadas: TaskViewItem[];
 }
