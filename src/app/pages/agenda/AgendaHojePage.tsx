@@ -433,7 +433,7 @@ const today = new Date().toISOString().split('T')[0];
             <div className="text-slate-400 text-xs">Pendentes</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-red-500">{tarefasHoje.filter(t => t.missed).length}</div>
+            <div className="text-lg font-bold text-red-500">{tarefasHoje.filter(t => !t.habitoId && t.missed).length}</div>
             <div className="text-slate-400 text-xs">Não executadas</div>
           </div>
           <div className="text-center">
