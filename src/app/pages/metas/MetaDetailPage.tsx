@@ -592,7 +592,7 @@ export default function MetaDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-0 sm:px-0">
-              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
                 {meta.descricao || <span className="text-slate-400 italic">Sem descricao</span>}
               </p>
             </CardContent>
