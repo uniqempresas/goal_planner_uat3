@@ -366,11 +366,11 @@ export default function AgendaHojePage() {
 
 const today = new Date().toISOString().split('T')[0];
   
-  const completedTarefas = tarefasHoje.filter(t => t.completed).length;
+  const completedTarefas = tarefasHoje.filter(t => !t.habitoId && t.completed).length;
   const completedHabitos = habitosHoje.filter(h => h.ultima_conclusao === today).length;
   const completed = completedTarefas + completedHabitos;
   
-  const totalTarefas = tarefasHoje.length;
+  const totalTarefas = tarefasHoje.filter(t => !t.habitoId).length;
   const totalHabitos = habitosHoje.length;
   const total = totalTarefas + totalHabitos;
   
