@@ -102,13 +102,14 @@ export function MetaCard({
           <span className="text-xs opacity-70 ml-1">
             {getDateSuffix(meta.nivel, meta.prazo)}
           </span>
-          {meta.nivel === 'grande' && meta.areas && (
-            <span className="inline-flex items-center gap-1 ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/60 text-slate-600">
-              {meta.areas.icone && <span>{meta.areas.icone}</span>}
-              {meta.areas.nome}
-            </span>
-          )}
         </span>
+        
+        {meta.nivel === 'grande' && meta.areas && (
+          <span className="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/60 text-slate-600 flex-shrink-0">
+            {meta.areas.icone && <span>{meta.areas.icone}</span>}
+            {meta.areas.nome}
+          </span>
+        )}
         
         {meta.one_thing && (
           <Star size={12} className="text-amber-500 fill-amber-500" />
@@ -183,6 +184,13 @@ export function MetaCard({
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
                   <Star size={10} className="fill-amber-500" />
                   ONE Thing
+                </span>
+              )}
+              
+              {meta.nivel === 'grande' && meta.areas && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/60 text-slate-600 border border-slate-200/50">
+                  {meta.areas.icone && <span>{meta.areas.icone}</span>}
+                  {meta.areas.nome}
                 </span>
               )}
               
