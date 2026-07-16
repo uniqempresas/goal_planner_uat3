@@ -115,7 +115,7 @@ export function MetaCard({
           <Star size={12} className="text-amber-500 fill-amber-500" />
         )}
         
-        <div className="w-12 h-1.5 bg-white/50 rounded-full overflow-hidden">
+        <div className="w-6 h-1 bg-white/50 rounded-full overflow-hidden">
           <div
             className={`h-full ${statusColors_.bar} transition-all duration-300`}
             style={{ width: `${meta.computedProgress}%` }}
