@@ -2,9 +2,9 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams, Link, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft, Edit, Trash2, CheckCircle, Calendar, Target, Star,
+  ArrowLeft, Edit, Trash2, CheckCircle, Calendar, Target, Star, Eye,
   FileText, HelpCircle, LayoutGrid, GitBranch, ArrowUp,
-  ChevronRight, Plus, ListChecks
+  Plus, ListChecks
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { metasService, type MetaNivel } from '../../../services/metasService';
@@ -731,7 +731,7 @@ export default function MetaDetailPage() {
                                 <span className="text-xs text-slate-500">{sub.progresso || 0}%</span>
                               </div>
                               <Badge variant="outline" className="text-xs hidden sm:inline-flex">{subConfig.label}</Badge>
-                              <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
+                              <Eye className="w-4 h-4 text-slate-400 flex-shrink-0 mt-1 sm:mt-0" />
                             </div>
                           </Link>
                         </motion.div>
@@ -770,8 +770,18 @@ export default function MetaDetailPage() {
                         }`}
                       >
                         <Checkbox id={tarefa.id} checked={tarefa.completed} onCheckedChange={() => handleToggleTarefa(tarefa.id)} className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0" />
-                        <label htmlFor={tarefa.id} className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</label>
+                        <span className={`flex-1 text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</span>
                         <span className="text-xs text-slate-500 whitespace-nowrap">{new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/agenda/tarefas/${tarefa.id}`);
+                          }}
+                          className="p-1 rounded hover:bg-slate-100 transition-colors"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="w-4 h-4 text-slate-400" />
+                        </button>
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -812,8 +822,18 @@ export default function MetaDetailPage() {
                         }`}
                       >
                         <Checkbox id={tarefa.id} checked={tarefa.completed} onCheckedChange={() => handleToggleTarefa(tarefa.id)} className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 mt-1 sm:mt-0" />
-                        <label htmlFor={tarefa.id} className={`flex-1 cursor-pointer text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</label>
+                        <span className={`flex-1 text-sm sm:text-base leading-tight ${tarefa.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{tarefa.titulo}</span>
                         <span className="text-xs text-slate-500 whitespace-nowrap">{new Date(tarefa.data).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/agenda/tarefas/${tarefa.id}`);
+                          }}
+                          className="p-1 rounded hover:bg-slate-100 transition-colors"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="w-4 h-4 text-slate-400" />
+                        </button>
                       </motion.div>
                     ))
                   ) : (
@@ -832,7 +852,7 @@ export default function MetaDetailPage() {
                                 <span className="text-xs text-slate-500">{sub.progresso || 0}%</span>
                               </div>
                               <Badge variant="outline" className="text-xs hidden sm:inline-flex">{subConfig.label}</Badge>
-                              <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0 mt-1 sm:mt-0" />
+                              <Eye className="w-4 h-4 text-slate-400 flex-shrink-0 mt-1 sm:mt-0" />
                             </div>
                           </Link>
                         </motion.div>
