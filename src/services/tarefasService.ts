@@ -85,6 +85,7 @@ export const tarefasService = {
       .from('tarefas')
       .select('*')
       .eq('meta_id', metaId)
+      .eq('is_template', false) // Não incluir templates (tarefas mãe de recorrentes)
       .order('data', { ascending: true });
 
     if (error) throw error;
