@@ -15,6 +15,32 @@ function formatDateLocal(date: Date): string {
   return `${ano}-${mes}-${dia}`;
 }
 
+function getUltimoDiaEsperado(diasSemana: number[], hoje: Date): Date {
+  const diaSemanaHoje = hoje.getDay();
+
+  if (!diasSemana || diasSemana.length === 0 || diasSemana.length === 7) {
+    const ontem = new Date(hoje);
+    ontem.setDate(hoje.getDate() - 1);
+    return ontem;
+  }
+
+  const sorted = [...diasSemana].sort((a, b) => b - a);
+  let daysAgo = -1;
+  for (const dia of sorted) {
+    if (dia < diaSemanaHoje) {
+      daysAgo = diaSemanaHoje - dia;
+      break;
+    }
+  }
+  if (daysAgo === -1) {
+    daysAgo = diaSemanaHoje + (7 - sorted[0]);
+  }
+
+  const ultimoDia = new Date(hoje);
+  ultimoDia.setDate(hoje.getDate() - daysAgo);
+  return ultimoDia;
+}
+
 // Tipo auxiliar para criação de hábito (campos que o frontend envia)
 interface HabitoCreateData {
   titulo: string;
@@ -179,43 +205,34 @@ export const habitosService = {
     const habito = await this.getById(id);
     if (!habito) throw new Error('Hábito não encontrado');
 
-    const hoje = new Date().toISOString().split('T')[0];
-    const todayDate = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(todayDate.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const hojeDate = new Date();
+    const hoje = formatDateLocal(hojeDate);
+    const ultimoEsperado = getUltimoDiaEsperado(habito.dias_semana, hojeDate);
+    const ultimoEsperadoStr = formatDateLocal(ultimoEsperado);
 
-    // Verificar se já foi completado hoje
     if (habito.ultima_conclusao === hoje) {
-      // Desmarcar: remover conclusão de hoje
-      let novoStreak = 0;
-      
-      // Se a conclusão anterior era yesterday, mantém o streak (não perde a sequência)
-      if (habito.ultima_conclusao === yesterdayStr) {
-        novoStreak = habito.streak_atual || 0;
-      }
-      
-      return this.update(id, {
-        streak_atual: novoStreak,
-        ultima_conclusao: null,
-      });
-    } else {
-      // Marcar: adicionar conclusão de hoje
-      let novoStreak = 1;
-
-      if (habito.ultima_conclusao === yesterdayStr) {
-        // Consecutivo! Mantém a sequência
-        novoStreak = (habito.streak_atual || 0) + 1;
-      }
-
-      const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
+      const streakAnterior = (habito.streak_atual || 0) - 1;
+      const novoStreak = Math.max(0, streakAnterior);
+      const ultimaConclusaoAnterior = novoStreak > 0 ? ultimoEsperadoStr : null;
 
       return this.update(id, {
         streak_atual: novoStreak,
-        melhor_streak: novoMelhor,
-        ultima_conclusao: hoje,
+        ultima_conclusao: ultimaConclusaoAnterior,
       });
     }
+
+    let novoStreak = 1;
+    if (habito.ultima_conclusao === ultimoEsperadoStr) {
+      novoStreak = (habito.streak_atual || 0) + 1;
+    }
+
+    const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
+
+    return this.update(id, {
+      streak_atual: novoStreak,
+      melhor_streak: novoMelhor,
+      ultima_conclusao: hoje,
+    });
   },
 
   async pausar(id: string): Promise<Habito> {

@@ -91,7 +91,7 @@ export function HabitCard({ habito, index, onTogglePausar, onDelete, taskStats }
   const isRecord = (habito.streak_atual || 0) >= (habito.melhor_streak || 0) && (habito.melhor_streak || 0) > 0;
   
   const progressPercent = Math.min(
-    ((habito.streak_atual || 0) / Math.max(habito.melhor_streak || 1, 7)) * 100, 
+    ((habito.streak_atual || 0) / Math.max(habito.melhor_streak || 1, 1)) * 100, 
     100
   );
 
