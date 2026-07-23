@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { areasService } from '../../services/areasService';
 import { metasService, type MetaNivel } from '../../services/metasService';
 import { tarefasService } from '../../services/tarefasService';
-import { habitosService } from '../../services/habitosService';
+import { habitosService, formatDateLocal } from '../../services/habitosService';
 import { recorrenciaService } from '../../services/recorrenciaService';
 import type { Database } from '../../lib/supabase';
 import { mapTarefasToUI, mapTarefaToUI, type TarefaUI } from '../../lib/mapeamento';
@@ -209,7 +209,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const updated = await tarefasService.toggleCompleted(id);
     const tarefaMapeada = mapTarefaToUI(updated);
     setTarefasHoje(prev => prev.map(t => t.id === id ? tarefaMapeada : t));
-  }, []);
+
+    if (updated.habito_id) {
+      if (updated.completed) {
+        await habitosService.marcarHabito(updated.habito_id);
+      } else {
+        const hoje = formatDateLocal(new Date());
+        const tasksHoje = await tarefasService.getByHabitoId(updated.habito_id, hoje);
+        const outrasCompletas = tasksHoje.filter(
+          t => t.id !== id && t.data === hoje && t.completed
+        );
+        if (outrasCompletas.length === 0) {
+          await habitosService.desmarcarHabito(updated.habito_id);
+        }
+      }
+      loadHabitos();
+    }
+  }, [loadHabitos]);
 
   const toggleHabitoStreak = useCallback(async (id: string) => {
     try {

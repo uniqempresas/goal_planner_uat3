@@ -8,7 +8,7 @@ type HabitoUpdate = Database['public']['Tables']['habitos']['Update'];
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type TarefaInsert = Database['public']['Tables']['tarefas']['Insert'];
 
-function formatDateLocal(date: Date): string {
+export function formatDateLocal(date: Date): string {
   const ano = date.getFullYear();
   const mes = String(date.getMonth() + 1).padStart(2, '0');
   const dia = String(date.getDate()).padStart(2, '0');
@@ -232,6 +232,54 @@ export const habitosService = {
       streak_atual: novoStreak,
       melhor_streak: novoMelhor,
       ultima_conclusao: hoje,
+    });
+  },
+
+  async marcarHabito(id: string): Promise<Habito | null> {
+    const habito = await this.getById(id);
+    if (!habito) return null;
+
+    const hojeDate = new Date();
+    const hoje = formatDateLocal(hojeDate);
+
+    if (habito.ultima_conclusao === hoje) return habito;
+
+    const ultimoEsperado = getUltimoDiaEsperado(habito.dias_semana, hojeDate);
+    const ultimoEsperadoStr = formatDateLocal(ultimoEsperado);
+
+    let novoStreak = 1;
+    if (habito.ultima_conclusao === ultimoEsperadoStr) {
+      novoStreak = (habito.streak_atual || 0) + 1;
+    }
+
+    const novoMelhor = Math.max(habito.melhor_streak || 0, novoStreak);
+
+    return this.update(id, {
+      streak_atual: novoStreak,
+      melhor_streak: novoMelhor,
+      ultima_conclusao: hoje,
+    });
+  },
+
+  async desmarcarHabito(id: string): Promise<Habito | null> {
+    const habito = await this.getById(id);
+    if (!habito) return null;
+
+    const hojeDate = new Date();
+    const hoje = formatDateLocal(hojeDate);
+
+    if (habito.ultima_conclusao !== hoje) return habito;
+
+    const ultimoEsperado = getUltimoDiaEsperado(habito.dias_semana, hojeDate);
+    const ultimoEsperadoStr = formatDateLocal(ultimoEsperado);
+
+    const streakAnterior = (habito.streak_atual || 0) - 1;
+    const novoStreak = Math.max(0, streakAnterior);
+    const ultimaConclusaoAnterior = novoStreak > 0 ? ultimoEsperadoStr : null;
+
+    return this.update(id, {
+      streak_atual: novoStreak,
+      ultima_conclusao: ultimaConclusaoAnterior,
     });
   },
 
