@@ -256,6 +256,7 @@ export default function TarefaCreatePage() {
   const dataParam = searchParams.get('data');
   const blocoParam = searchParams.get('bloco');
   const origemParam = searchParams.get('origem');
+  const metaParam = searchParams.get('meta');
 
   // Estado do wizard
   const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -269,7 +270,7 @@ export default function TarefaCreatePage() {
   const [hora, setHora] = useState('');
   const [bloco, setBloco] = useState<Bloco>(blocoParam as Bloco || null);
   const [prioridade, setPrioridade] = useState<Prioridade>('media');
-  const [metaId, setMetaId] = useState<string | null>(null);
+  const [metaId, setMetaId] = useState<string | null>(metaParam);
   
   // Recorrência
   const [recorrenciaConfig, setRecorrenciaConfig] = useState<RecorrenciaConfig | null>(null);
