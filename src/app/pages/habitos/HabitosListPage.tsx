@@ -119,9 +119,10 @@ export default function HabitosListPage() {
 
   async function loadTaskStats(habitosData: Habito[]) {
     if (!user) return;
+    const hoje = new Date().toISOString().split('T')[0];
     const stats = await Promise.all(
       habitosData.map(async h => {
-        const tasks = await tarefasService.getByHabitoId(h.id);
+        const tasks = await tarefasService.getByHabitoId(h.id, hoje);
         return {
           id: h.id,
           total: tasks.length,

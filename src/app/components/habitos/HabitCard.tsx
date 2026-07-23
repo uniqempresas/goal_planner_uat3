@@ -270,8 +270,10 @@ export function HabitCard({ habito, index, onTogglePausar, onDelete, taskStats }
             >
               <ListChecks className="w-4 h-4" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold leading-none">{taskStats.completed}/{taskStats.total}</span>
-                <span className="text-xs opacity-70">concluídas</span>
+                <span className="text-sm font-bold leading-none">
+                  {taskStats.completed}/{taskStats.total} ({Math.round(taskStats.completed / taskStats.total * 100)}%)
+                </span>
+                <span className="text-xs opacity-70">efetividade</span>
               </div>
             </motion.div>
           )}

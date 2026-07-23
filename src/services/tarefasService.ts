@@ -92,12 +92,13 @@ export const tarefasService = {
     return data || [];
   },
 
-  async getByHabitoId(habitoId: string): Promise<Tarefa[]> {
+  async getByHabitoId(habitoId: string, ate: string): Promise<Tarefa[]> {
     const { data, error } = await supabase
       .from('tarefas')
       .select('*')
       .eq('habito_id', habitoId)
       .eq('is_template', false)
+      .lte('data', ate)
       .order('data', { ascending: false });
 
     if (error) throw error;
