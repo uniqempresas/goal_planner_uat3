@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import { habitosService } from '../../../services/habitosService';
+import { tarefasService } from '../../../services/tarefasService';
 import type { Database } from '../../../lib/supabase';
 import { HabitCard } from '../../components/habitos/HabitCard';
 import { FilterTabs } from '../../components/habitos/FilterTabs';
@@ -45,6 +46,7 @@ export default function HabitosListPage() {
   const [stats, setStats] = useState<HabitStats>({ 
     total: 0, ativos: 0, concluidos: 0, pausados: 0, streakTotal: 0, streakAverage: 0 
   });
+  const [habitoTaskStats, setHabitoTaskStats] = useState<Record<string, { total: number; completed: number }>>({});
   const [celebration, setCelebration] = useState<{
     isOpen: boolean;
     streak: number;
@@ -107,11 +109,29 @@ export default function HabitosListPage() {
       }
       
       setHabitos(habitosData);
+      loadTaskStats(habitosData);
     } catch (error) {
       console.error('Erro ao carregar hábitos:', error);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadTaskStats(habitosData: Habito[]) {
+    if (!user) return;
+    const stats = await Promise.all(
+      habitosData.map(async h => {
+        const tasks = await tarefasService.getByHabitoId(h.id);
+        return {
+          id: h.id,
+          total: tasks.length,
+          completed: tasks.filter(t => t.completed).length
+        };
+      })
+    );
+    const statsMap: Record<string, { total: number; completed: number }> = {};
+    stats.forEach(s => { statsMap[s.id] = { total: s.total, completed: s.completed }; });
+    setHabitoTaskStats(statsMap);
   }
 
   async function handleDelete(id: string) {
@@ -363,6 +383,7 @@ export default function HabitosListPage() {
                   index={index}
                   onTogglePausar={handleTogglePausar}
                   onDelete={handleDelete}
+                  taskStats={habitoTaskStats[habito.id]}
                 />
               ))}
             </AnimatePresence>

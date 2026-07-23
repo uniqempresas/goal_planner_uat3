@@ -16,7 +16,8 @@ import {
   Target,
   Sun,
   CloudSun,
-  Moon
+  Moon,
+  ListChecks
 } from 'lucide-react';
 import type { Database } from '../../../lib/supabase';
 
@@ -27,6 +28,7 @@ interface HabitCardProps {
   index: number;
   onTogglePausar: (habito: Habito) => void;
   onDelete: (id: string) => void;
+  taskStats?: { total: number; completed: number };
 }
 
 const getPriorityColor = (prioridade: string) => {
@@ -75,7 +77,7 @@ const getDiasSemanaLabel = (dias: number[]) => {
   return dias.map(d => labels[d]).join(', ');
 };
 
-export function HabitCard({ habito, index, onTogglePausar, onDelete }: HabitCardProps) {
+export function HabitCard({ habito, index, onTogglePausar, onDelete, taskStats }: HabitCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
@@ -256,6 +258,21 @@ export function HabitCard({ habito, index, onTogglePausar, onDelete }: HabitCard
               className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg text-xs font-bold text-white shadow-md"
             >
               🏆 Recorde!
+            </motion.div>
+          )}
+          
+          {taskStats && taskStats.total > 0 && (
+            <motion.div 
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <ListChecks className="w-4 h-4" />
+              <div className="flex flex-col">
+                <span className="text-sm font-bold leading-none">{taskStats.completed}/{taskStats.total}</span>
+                <span className="text-xs opacity-70">concluídas</span>
+              </div>
             </motion.div>
           )}
         </div>
