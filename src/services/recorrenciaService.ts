@@ -698,7 +698,8 @@ export async function editarTodasFuturas(
 export async function editarTodas(
   parentId: string,
   dadosMae: Partial<TarefaInsert>,
-  novaConfig?: RecorrenciaConfig
+  novaConfig?: RecorrenciaConfig,
+  itens?: Array<{ nome: string; ordem: number; completed?: boolean }>
 ): Promise<void> {
   console.log(`[recorrencia] Editando TODAS as instâncias da tarefa ${parentId}`);
 
@@ -714,6 +715,31 @@ export async function editarTodas(
     .eq('id', parentId);
 
   if (errorUpdate) throw errorUpdate;
+
+  // Atualizar itens (checklist) da tarefa mãe se a lista for informada
+  if (itens) {
+    const { error: errorDeleteItens } = await supabase
+      .from('tarefa_itens')
+      .delete()
+      .eq('tarefa_id', parentId);
+
+    if (errorDeleteItens) throw errorDeleteItens;
+
+    if (itens.length > 0) {
+      const rows = itens.map((item, index) => ({
+        tarefa_id: parentId,
+        nome: item.nome,
+        ordem: item.ordem ?? index + 1,
+        completed: item.completed || false,
+      }));
+
+      const { error: errorInsertItens } = await supabase
+        .from('tarefa_itens')
+        .insert(rows);
+
+      if (errorInsertItens) throw errorInsertItens;
+    }
+  }
 
   // Atualizar todas as instâncias (exceto data e completed)
   const instanciaUpdate = {
@@ -731,6 +757,31 @@ export async function editarTodas(
     .eq('parent_id', parentId);
 
   if (errorUpdateInstancias) throw errorUpdateInstancias;
+
+  // Propagar itens para TODAS as instâncias (passadas e futuras)
+  if (itens) {
+    const { data: instancias, error: errorInstancias } = await supabase
+      .from('tarefas')
+      .select('id')
+      .eq('parent_id', parentId);
+
+    if (errorInstancias) throw errorInstancias;
+
+    const instanciasIds = (instancias || []).map(i => i.id);
+
+    if (instanciasIds.length > 0) {
+      // Remover itens existentes de cada instância
+      const { error: errorDeleteItensInstancias } = await supabase
+        .from('tarefa_itens')
+        .delete()
+        .in('tarefa_id', instanciasIds);
+
+      if (errorDeleteItensInstancias) throw errorDeleteItensInstancias;
+
+      // Copiar o checklist da tarefa mãe para cada instância
+      await copiarItensParaInstancias(parentId, instanciasIds);
+    }
+  }
 
   console.log('[recorrencia] Todas as instâncias atualizadas com sucesso');
 }
