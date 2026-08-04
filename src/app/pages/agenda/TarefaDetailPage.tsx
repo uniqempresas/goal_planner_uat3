@@ -3,8 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { useApp } from '../../contexts/AppContext';
 import { tarefasService } from '../../../services/tarefasService';
 import { recorrenciaService } from '../../../services/recorrenciaService';
+import { tarefaItensService } from '../../../services/tarefaItensService';
 import type { Database } from '../../../lib/supabase';
-import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Repeat } from 'lucide-react';
+import type { TarefaItemUI } from '../../../lib/mapeamento';
+import { TarefaItensList } from '../../components/agenda/TarefaItensList';
+import { ArrowLeft, Edit, Trash2, Calendar, Clock, Target, CheckCircle2, Circle, AlertTriangle, Repeat, ListChecks } from 'lucide-react';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 
@@ -52,6 +55,8 @@ export default function TarefaDetailPage() {
   const navigate = useNavigate();
   const { user } = useApp();
   const [tarefa, setTarefa] = useState<Tarefa | null>(null);
+  const [itens, setItens] = useState<TarefaItemUI[]>([]);
+  const [loadingItens, setLoadingItens] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteMode, setDeleteMode] = useState<'single' | 'series'>('single');
@@ -61,7 +66,55 @@ export default function TarefaDetailPage() {
     
     tarefasService.getById(id).then(setTarefa).catch(console.error)
       .finally(() => setLoading(false));
+
+    setLoadingItens(true);
+    tarefaItensService.getByTarefaId(id)
+      .then(data => setItens(data.map(i => ({
+        id: i.id,
+        tarefaId: i.tarefa_id,
+        nome: i.nome,
+        ordem: i.ordem,
+        completed: i.completed,
+      }))))
+      .catch(console.error)
+      .finally(() => setLoadingItens(false));
   }, [id, user]);
+
+  const handleToggleItem = async (itemId: string) => {
+    try {
+      await tarefaItensService.toggle(itemId);
+      setItens(prev => prev.map(item =>
+        item.id === itemId ? { ...item, completed: !item.completed } : item
+      ));
+    } catch (err) {
+      console.error('Erro ao toggle item:', err);
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await tarefaItensService.delete(itemId);
+      setItens(prev => prev.filter(item => item.id !== itemId));
+    } catch (err) {
+      console.error('Erro ao excluir item:', err);
+    }
+  };
+
+  const handleAddItem = async (nome: string) => {
+    if (!id) return;
+    try {
+      const novoItem = await tarefaItensService.create({ tarefa_id: id, nome });
+      setItens(prev => [...prev, {
+        id: novoItem.id,
+        tarefaId: novoItem.tarefa_id,
+        nome: novoItem.nome,
+        ordem: novoItem.ordem,
+        completed: novoItem.completed,
+      }]);
+    } catch (err) {
+      console.error('Erro ao adicionar item:', err);
+    }
+  };
 
   const handleDelete = async () => {
     if (!id || !tarefa) return;
@@ -257,6 +310,26 @@ export default function TarefaDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Itens da Tarefa (Checklist) */}
+          {(itens.length > 0 || !loadingItens) && (
+            <div>
+              <p className="text-xs text-slate-400 mb-2 flex items-center gap-1">
+                <ListChecks size={14} />
+                Itens da Tarefa
+              </p>
+              {loadingItens ? (
+                <span className="text-sm text-slate-400">Carregando itens...</span>
+              ) : (
+                <TarefaItensList
+                  itens={itens}
+                  onToggle={handleToggleItem}
+                  onDelete={handleDeleteItem}
+                  onAdd={handleAddItem}
+                />
+              )}
+            </div>
+          )}
 
           {/* Meta Vinculada */}
           {tarefa.meta_id && (
