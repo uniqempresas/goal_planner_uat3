@@ -401,6 +401,12 @@ export default function TarefaCreatePage() {
           data_fim_recorrencia: recorrenciaConfig?.data_fim || null,
         });
 
+        // Salvar itens na tarefa mãe (para propagar às instâncias)
+        if (tarefaMae && tarefaItens.length > 0) {
+          const nomes = tarefaItens.map(i => i.nome);
+          await tarefaItensService.createMany(tarefaMae.id, nomes);
+        }
+
         // Gerar instâncias
         if (tarefaMae) {
           await recorrenciaService.gerarInstancias(tarefaMae, 30);

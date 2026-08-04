@@ -254,7 +254,7 @@ export default function TarefaEditPage() {
       bloco: values.bloco || null,
       prioridade: values.prioridade,
       meta_id: values.metaId || null,
-    });
+    }, undefined, itens.map(i => ({ nome: i.nome, ordem: i.ordem, completed: i.completed })));
     await loadTarefas();
     navigate(`/agenda/tarefas/${id}`);
   };

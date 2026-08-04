@@ -469,10 +469,57 @@ export async function gerarInstancias(
     }
 
     console.log(`[recorrencia] ${criadas?.length || 0} instâncias criadas com sucesso`);
+
+    // Copiar itens (checklist) da tarefa mãe para cada instância criada
+    if (criadas && criadas.length > 0) {
+      await copiarItensParaInstancias(tarefaMae.id, criadas.map(c => c.id));
+    }
+
     return criadas || [];
   }
 
   return [];
+}
+
+/**
+ * Copia os itens (checklist) da tarefa origem para cada instância.
+ * Cada instância recebe uma cópia independente (completed: false).
+ */
+async function copiarItensParaInstancias(
+  origemId: string,
+  instanciasIds: string[]
+): Promise<void> {
+  if (!instanciasIds || instanciasIds.length === 0) return;
+
+  const { data: itens, error: errorItens } = await supabase
+    .from('tarefa_itens')
+    .select('nome, ordem')
+    .eq('tarefa_id', origemId)
+    .order('ordem', { ascending: true });
+
+  if (errorItens) {
+    console.error('[recorrencia] Erro ao buscar itens da tarefa mãe:', errorItens);
+    return;
+  }
+
+  if (!itens || itens.length === 0) return;
+
+  const itensCopiados = instanciasIds.flatMap(instanciaId =>
+    itens.map(item => ({
+      tarefa_id: instanciaId,
+      nome: item.nome,
+      ordem: item.ordem,
+      completed: false,
+    }))
+  );
+
+  const { error: errorInsert } = await supabase
+    .from('tarefa_itens')
+    .insert(itensCopiados);
+
+  if (errorInsert) {
+    console.error('[recorrencia] Erro ao copiar itens para instâncias:', errorInsert);
+  }
 }
 
 /**
@@ -574,7 +621,8 @@ export async function editarApenasEsta(
 export async function editarTodasFuturas(
   parentId: string,
   dadosMae: Partial<TarefaInsert>,
-  novaConfig?: RecorrenciaConfig
+  novaConfig?: RecorrenciaConfig,
+  itens?: Array<{ nome: string; ordem: number; completed?: boolean }>
 ): Promise<void> {
   console.log(`[recorrencia] Editando todas as futuras da tarefa ${parentId}`);
 
@@ -592,6 +640,31 @@ export async function editarTodasFuturas(
     .eq('id', parentId);
 
   if (errorUpdate) throw errorUpdate;
+
+  // Atualizar itens (checklist) da tarefa mãe se a lista for informada
+  if (itens) {
+    const { error: errorDeleteItens } = await supabase
+      .from('tarefa_itens')
+      .delete()
+      .eq('tarefa_id', parentId);
+
+    if (errorDeleteItens) throw errorDeleteItens;
+
+    if (itens.length > 0) {
+      const rows = itens.map((item, index) => ({
+        tarefa_id: parentId,
+        nome: item.nome,
+        ordem: item.ordem ?? index + 1,
+        completed: item.completed || false,
+      }));
+
+      const { error: errorInsertItens } = await supabase
+        .from('tarefa_itens')
+        .insert(rows);
+
+      if (errorInsertItens) throw errorInsertItens;
+    }
+  }
 
   // Deletar instâncias futuras (a partir de hoje)
   const { error: errorDelete } = await supabase
