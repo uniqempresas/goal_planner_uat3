@@ -1,6 +1,5 @@
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
-import { tarefasService } from './tarefasService';
 
 type Habito = Database['public']['Tables']['habitos']['Row'];
 type HabitoInsert = Database['public']['Tables']['habitos']['Insert'];

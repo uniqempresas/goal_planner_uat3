@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
-import type { Database, RecorrenciaConfig } from '../lib/supabase';
+import { habitosService, formatDateLocal } from './habitosService';
+import type { Database } from '../lib/supabase';
 
 type Tarefa = Database['public']['Tables']['tarefas']['Row'];
 type TarefaInsert = Database['public']['Tables']['tarefas']['Insert'];
@@ -76,8 +77,26 @@ export const tarefasService = {
   async toggleCompleted(id: string): Promise<Tarefa> {
     const tarefa = await this.getById(id);
     if (!tarefa) throw new Error('Tarefa não encontrada');
-    
-    return this.update(id, { completed: !tarefa.completed });
+
+    const updated = await this.update(id, { completed: !tarefa.completed });
+
+    // Sincronizar streak do hábito vinculado a esta tarefa
+    if (updated.habito_id) {
+      if (updated.completed) {
+        await habitosService.marcarHabito(updated.habito_id);
+      } else {
+        const hoje = formatDateLocal(new Date());
+        const tasksHoje = await this.getByHabitoId(updated.habito_id, hoje);
+        const outrasCompletas = tasksHoje.filter(
+          t => t.id !== id && t.data === hoje && t.completed
+        );
+        if (outrasCompletas.length === 0) {
+          await habitosService.desmarcarHabito(updated.habito_id);
+        }
+      }
+    }
+
+    return updated;
   },
 
   async getByMetaId(metaId: string): Promise<Tarefa[]> {

@@ -266,18 +266,13 @@ export default function AgendaSemanaPage() {
       if (!b.hora) return -1;
       return a.hora.localeCompare(b.hora);
     });
-  const dayTarefas = dayTasks.filter(t => !t.habitoId);
-  const completedTarefas = dayTarefas.filter(t => t.completed).length;
-  const totalTarefas = dayTarefas.length;
-  const dayHabitos = dayTasks.filter(t => t.habitoId);
-  const completedHabitos = dayHabitos.filter(t => t.completed).length;
-  const totalHabitos = dayHabitos.length;
+  const completedTarefas = dayTasks.filter(t => t.completed).length;
+  const totalTarefas = dayTasks.length;
 
   // Week stats calculation
   const weekTotalTasks = Object.values(tasksByDay).flat();
-  const weekOnlyTarefas = weekTotalTasks.filter(t => !t.habitoId);
-  const weekCompleted = weekOnlyTarefas.filter(t => t.completed).length;
-  const weekMissed = weekOnlyTarefas.filter(t => t.missed).length;
+  const weekCompleted = weekTotalTasks.filter(t => t.completed).length;
+  const weekMissed = weekTotalTasks.filter(t => t.missed).length;
   const weekOneThings = weekTotalTasks.filter(t => t.isOneThing).length;
   const weekProgress = weekTotalTasks.length > 0 
     ? Math.round((weekTotalTasks.filter(t => t.completed).length / weekTotalTasks.length) * 100) 
