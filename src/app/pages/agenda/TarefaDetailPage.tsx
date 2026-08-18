@@ -116,6 +116,16 @@ export default function TarefaDetailPage() {
     }
   };
 
+  const handleToggle = async () => {
+    if (!id || !tarefa) return;
+    try {
+      const updated = await tarefasService.toggleCompleted(id);
+      setTarefa(updated);
+    } catch (err) {
+      console.error('Erro ao alternar status da tarefa:', err);
+    }
+  };
+
   const handleDelete = async () => {
     if (!id || !tarefa) return;
     
@@ -200,16 +210,20 @@ export default function TarefaDetailPage() {
         {/* Status Header */}
         <div className={`px-6 py-4 border-b ${tarefa.completed ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-100'}`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <button
+              onClick={handleToggle}
+              className="flex items-center gap-3 cursor-pointer group"
+              title={tarefa.completed ? 'Marcar como pendente' : 'Marcar como concluída'}
+            >
               {tarefa.completed ? (
                 <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               ) : (
-                <Circle className="w-6 h-6 text-slate-300" />
+                <Circle className="w-6 h-6 text-slate-300 group-hover:text-indigo-500 transition-colors" />
               )}
               <span className={`font-medium ${tarefa.completed ? 'text-emerald-700' : 'text-slate-700'}`}>
                 {tarefa.completed ? 'Concluída' : 'Pendente'}
               </span>
-            </div>
+            </button>
             <div className="flex items-center gap-2">
               <Link
                 to={`/agenda/tarefas/${tarefa.id}/editar`}

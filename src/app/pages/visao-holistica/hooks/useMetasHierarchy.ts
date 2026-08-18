@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { metasService } from '../../../../services/metasService';
+import { tarefasService } from '../../../../services/tarefasService';
 import { useApp } from '../../../contexts/AppContext';
 import { buildHierarchy, calculateProgressRecursively } from '../utils/hierarchyBuilder';
 import type { MetaNode } from '../types';
@@ -27,11 +28,29 @@ export function useMetasHierarchy(): UseMetasHierarchyResult {
       setIsLoading(true);
       setError(null);
 
-      const data = await metasService.getFullHierarchy(user.id);
-      const hierarchy = buildHierarchy(data);
+      const [data, tarefas] = await Promise.all([
+        metasService.getFullHierarchy(user.id),
+        tarefasService.getAll(user.id),
+      ]);
+
+      const progressMap: Record<string, number> = {};
+      const porMeta = new Map<string, { total: number; concluidas: number }>();
+      tarefas
+        .filter(t => t.meta_id && !t.is_template)
+        .forEach(t => {
+          const atual = porMeta.get(t.meta_id!) ?? { total: 0, concluidas: 0 };
+          atual.total += 1;
+          if (t.completed) atual.concluidas += 1;
+          porMeta.set(t.meta_id!, atual);
+        });
+      porMeta.forEach((stats, metaId) => {
+        progressMap[metaId] = stats.total > 0 ? Math.round((stats.concluidas / stats.total) * 100) : 0;
+      });
+
+      const hierarchy = buildHierarchy(data, progressMap);
       
       // Recalcular progresso para garantir consistência
-      calculateProgressRecursively(hierarchy);
+      calculateProgressRecursively(hierarchy, progressMap);
       
       setMetas(hierarchy);
     } catch (err) {

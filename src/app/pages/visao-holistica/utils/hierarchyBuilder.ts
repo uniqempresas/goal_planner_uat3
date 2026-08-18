@@ -11,7 +11,10 @@ const nivelOrder: Record<MetaNivel, number> = {
 /**
  * Constrói a hierarquia de metas a partir de uma lista plana
  */
-export function buildHierarchy(metas: Meta[]): MetaNode[] {
+export function buildHierarchy(
+  metas: Meta[],
+  progressMap?: Record<string, number>,
+): MetaNode[] {
   const map = new Map<string, MetaNode>();
   const roots: MetaNode[] = [];
 
@@ -45,7 +48,7 @@ export function buildHierarchy(metas: Meta[]): MetaNode[] {
   sortChildrenByPrazo(roots);
 
   // Terceira passagem: calcular progresso recursivamente
-  calculateProgressRecursively(roots);
+  calculateProgressRecursively(roots, progressMap);
 
   return roots;
 }
@@ -69,22 +72,31 @@ function sortChildrenByPrazo(nodes: MetaNode[]) {
 /**
  * Calcula o progresso recursivamente para todos os nós
  */
-export function calculateProgressRecursively(nodes: MetaNode[]): number {
+export function calculateProgressRecursively(
+  nodes: MetaNode[],
+  progressMap?: Record<string, number>,
+): number {
   if (!nodes.length) return 0;
 
   const totalProgress = nodes.reduce((sum, node) => {
-    // Metas semanais e diárias: progresso manual
-    if (node.nivel === 'semanal' || node.nivel === 'diaria') {
-      const progress = node.metricas?.progresso_manual || 0;
-      node.computedProgress = progress;
-      return sum + progress;
+    // Meta concluída manualmente: sempre 100%
+    if (node.status === 'concluida') {
+      node.computedProgress = 100;
+      return sum + 100;
+    }
+
+    // Progresso por tarefas vinculadas (mesma regra da página de detalhe)
+    const progressoTarefas = progressMap?.[node.id];
+    if (progressoTarefas !== undefined) {
+      node.computedProgress = progressoTarefas;
+      return sum + progressoTarefas;
     }
 
     // Metas superiores: média dos filhos
     if (node.children && node.children.length > 0) {
-      node.computedProgress = calculateProgressRecursively(node.children);
+      node.computedProgress = calculateProgressRecursively(node.children, progressMap);
     } else {
-      // Sem filhos: usar progresso do banco ou 0
+      // Sem filhos e sem tarefas: usar progresso manual ou 0
       node.computedProgress = node.metricas?.progresso_manual || 0;
     }
 
