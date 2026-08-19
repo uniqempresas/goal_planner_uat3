@@ -5,9 +5,11 @@ import { useApp } from '../../contexts/AppContext';
 import { levelConfig } from '../../data/mockData';
 import { CircularProgress } from '../agenda/CircularProgress';
 import { fadeInUp, staggerContainer, scaleIn } from '../metas/animations';
+import { useMetasProgresso } from '../../hooks/useMetasProgresso';
 
 export function GrandesMetasWidget() {
   const { grandesMetas, areas } = useApp();
+  const progressos = useMetasProgresso();
 
   if (grandesMetas.length === 0) {
     return (
@@ -76,8 +78,7 @@ export function GrandesMetasWidget() {
       >
         {grandesMetas.slice(0, 4).map((meta) => {
           const area = areas.find(a => a.id === meta.area_id);
-          // Calculate a mock progress for now - in a real app this would be calculated
-          const progress = 0;
+          const progress = progressos[meta.id] ?? 0;
 
           return (
             <motion.div key={meta.id} variants={scaleIn}>

@@ -4,9 +4,11 @@ import { Target, ArrowRight } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import { levelConfig } from '../../data/mockData';
 import { fadeInUp, staggerContainer, scaleIn } from '../metas/animations';
+import { useMetasProgresso } from '../../hooks/useMetasProgresso';
 
 export function MetasAnuaisWidget() {
   const { metasAnuais } = useApp();
+  const progressos = useMetasProgresso();
 
   if (metasAnuais.length === 0) {
     return (
@@ -68,8 +70,7 @@ export function MetasAnuaisWidget() {
         className="space-y-3"
       >
         {metasAnuais.slice(0, 3).map((meta) => {
-          // Mock progress - in a real app this would be calculated
-          const progress = 0;
+          const progress = progressos[meta.id] ?? 0;
 
           return (
             <motion.div key={meta.id} variants={scaleIn}>

@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 import { tarefasService } from './tarefasService';
+import { buildHierarchy, calculateProgressRecursively } from '../app/pages/visao-holistica/utils/hierarchyBuilder';
+import type { Meta as HierarchyMeta, MetaNode } from '../app/pages/visao-holistica/types';
 
 type Meta = Database['public']['Tables']['metas']['Row'];
 type MetaInsert = Database['public']['Tables']['metas']['Insert'];
@@ -217,6 +219,46 @@ export const metasService = {
       })
     );
     
+    return progressos;
+  },
+
+  /**
+   * Calcula o progresso de todas as metas de um usuário baseado
+   * nas tarefas vinculadas e na média dos filhos (mesma regra da visão holística).
+   * Retorna um mapa metaId -> progresso (%)
+   */
+  async calcularProgressoHierarquia(userId: string): Promise<Record<string, number>> {
+    const [metas, tarefas] = await Promise.all([
+      this.getFullHierarchy(userId),
+      tarefasService.getAll(userId),
+    ]);
+
+    const progressMap: Record<string, number> = {};
+    const porMeta = new Map<string, { total: number; concluidas: number }>();
+    tarefas
+      .filter(t => t.meta_id && !t.is_template)
+      .forEach(t => {
+        const atual = porMeta.get(t.meta_id!) ?? { total: 0, concluidas: 0 };
+        atual.total += 1;
+        if (t.completed) atual.concluidas += 1;
+        porMeta.set(t.meta_id!, atual);
+      });
+    porMeta.forEach((stats, metaId) => {
+      progressMap[metaId] = stats.total > 0 ? Math.round((stats.concluidas / stats.total) * 100) : 0;
+    });
+
+    const hierarchy = buildHierarchy(metas as HierarchyMeta[], progressMap);
+    calculateProgressRecursively(hierarchy, progressMap);
+
+    const progressos: Record<string, number> = {};
+    const percorrer = (nodes: MetaNode[]) => {
+      nodes.forEach(node => {
+        progressos[node.id] = node.computedProgress;
+        if (node.children) percorrer(node.children);
+      });
+    };
+    percorrer(hierarchy);
+
     return progressos;
   },
 };
